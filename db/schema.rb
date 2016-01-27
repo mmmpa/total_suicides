@@ -134,6 +134,7 @@ ActiveRecord::Schema.define(version: 20160127044141) do
     t.integer  "employed"
     t.integer  "total_unemployed"
     t.integer  "student"
+    t.integer  "not_student"
     t.integer  "unemployed"
     t.integer  "stay_at_home"
     t.integer  "pensioner"
