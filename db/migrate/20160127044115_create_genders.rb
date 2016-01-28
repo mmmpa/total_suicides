@@ -1,10 +1,8 @@
 class CreateGenders < ActiveRecord::Migration
   def change
     create_table :genders do |t|
-      t.integer :content
-      t.string :name
-
-      t.timestamps null: false
+      t.integer :content, null: false
+      t.string :name, null: false
     end
   end
 end

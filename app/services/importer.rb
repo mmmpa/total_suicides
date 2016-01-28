@@ -29,7 +29,6 @@ class Importer
         metadata[:range].to_a.each_with_index do |n, index|
           params.merge!(metadata[:columns][index] => line[n])
         end
-        pp params
         klass.create!(params)
       end
     end

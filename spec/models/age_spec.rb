@@ -1,5 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Age, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+describe Age, type: :model do
+  it { expect(Age.new).to be_a(Age) }
+  it { expect(Age.new.valid?).to be_falsey }
 end

@@ -1,20 +1,18 @@
 class CreateAges < ActiveRecord::Migration
   def change
     create_table :ages do |t|
-      t.references :gender, index: true, foreign_key: true
-      t.references :area, index: true, foreign_key: true
-      t.references :year, index: true, foreign_key: true
-      t.integer :o0
-      t.integer :o20
-      t.integer :o30
-      t.integer :o40
-      t.integer :o50
-      t.integer :o60
-      t.integer :o70
-      t.integer :o80
-      t.integer :unknown
-
-      t.timestamps null: false
+      t.references :gender, index: true, foreign_key: true, null: false
+      t.references :area, index: true, foreign_key: true, null: false
+      t.references :year, index: true, foreign_key: true, null: false
+      t.integer :o0, null: false
+      t.integer :o20, null: false
+      t.integer :o30, null: false
+      t.integer :o40, null: false
+      t.integer :o50, null: false
+      t.integer :o60, null: false
+      t.integer :o70, null: false
+      t.integer :o80, null: false
+      t.integer :unknown, null: false
     end
   end
 end

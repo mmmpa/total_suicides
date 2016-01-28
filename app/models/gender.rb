@@ -1,4 +1,5 @@
 class Gender < ActiveRecord::Base
+  include Tagging
 
   before_validation :detect_name
 
