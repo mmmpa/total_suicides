@@ -18,5 +18,10 @@ module Tagging
         select { [:name, :content] }
       end
     end
+
+    def as_json(options = {})
+      options.merge!(only:[:content, :name])
+      super
+    end
   end
 end
