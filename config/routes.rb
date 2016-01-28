@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-
   scope 'api/:gender/:year/:area' do
     get 'age', to: 'api#age', as: :api_age
     get 'housemate', to: 'api#housemate', as: :api_housemate
@@ -12,4 +11,7 @@ Rails.application.routes.draw do
     get 'attempted', to: 'api#attempted', as: :api_attempted
     get 'total', to: 'api#total', as: :api_total
   end
+
+  get '', to: 'portal#portal', as: :portal
+  get '*path', to: 'portal#portal'
 end

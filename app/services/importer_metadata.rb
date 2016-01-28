@@ -78,6 +78,7 @@ module ImporterMetadata
   end
 
   def tables
-    %w(age housemate job location way hour day reason attempted total)
+    Constants::TABLE_NAMES
   end
+
 end

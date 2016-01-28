@@ -1,6 +1,6 @@
 class ApiController < ApplicationController
 
-  %w(age housemate job location way hour day reason attempted total).map do |name|
+  Constants::TABLE_NAMES.map do |name|
     class_eval <<-EOS
       def #{name}
         render json: #{name.classify}.in(year).at(area).by(gender), status: 200

@@ -1,9 +1,8 @@
 doctype html
 html
   head
-    title
-      | TotalSuicides
-    = stylesheet_link_tag    'application', media: 'all'
-    = csrf_meta_tags
+    title TotalSuicides
+    = stylesheet_link_tag  '/css/common.css', media: 'all'
   body
     = yield
+    script src='/js/common.js'
