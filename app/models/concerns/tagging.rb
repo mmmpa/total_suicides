@@ -1,16 +1,22 @@
 module Tagging
   extend ActiveSupport::Concern
-  included do
-    has_many :genders
-    has_many :ages
-    has_many :housemates
-    has_many :jobs
-    has_many :locations
-    has_many :ways
-    has_many :hours
-    has_many :days
-    has_many :reasons
-    has_many :attempteds
-    has_many :totals
+  included do |klass|
+    has_many :genders, dependent: :destroy
+    has_many :ages, dependent: :destroy
+    has_many :housemates, dependent: :destroy
+    has_many :jobs, dependent: :destroy
+    has_many :locations, dependent: :destroy
+    has_many :ways, dependent: :destroy
+    has_many :hours, dependent: :destroy
+    has_many :days, dependent: :destroy
+    has_many :reasons, dependent: :destroy
+    has_many :attempteds, dependent: :destroy
+    has_many :totals, dependent: :destroy
+
+    class << klass
+      def selectable
+        select { [:name, :content] }
+      end
+    end
   end
 end

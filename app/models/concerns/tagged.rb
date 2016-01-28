@@ -8,8 +8,12 @@ module Tagged
 
     validates :gender, :area, :year,
               presence: true
-    
+
     validates :gender,
               uniqueness: {scope: [:area, :year]}
+
+    scope :in, ->(target_year) { joins { year }.where { year.content == target_year } }
+    scope :at, ->(target_area) { joins { area }.where { area.content == target_area } }
+    scope :by, ->(target_gender) { joins { gender }.where { gender.content == target_gender } }
   end
 end

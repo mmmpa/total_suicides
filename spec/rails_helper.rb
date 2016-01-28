@@ -1,4 +1,3 @@
-
 require "codeclimate-test-reporter"
 CodeClimate::TestReporter.start
 require 'coveralls'
@@ -28,8 +27,15 @@ SimpleCov.start 'rails' do
 end
 
 Dir[Rails.root.join('spec/supports/**/*.rb')].each { |f| require f }
-load "#{Rails.root}/db/schema.rb"
-load "#{Rails.root}/db/seeds.rb"
+
+if Area.count == 0
+  Dir.glob("#{Rails.root}/db/csv/*").each do |file_name|
+    if file_name.match(/(21|22|23)/)
+      Importer.(file_name.split('/').pop)
+    end
+  end
+end
+
 ActiveRecord::Migration.maintain_test_schema!
 
 RSpec.configure do |config|

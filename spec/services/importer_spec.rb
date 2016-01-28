@@ -1,6 +1,14 @@
 require 'rails_helper'
 
 describe Importer do
+  before :all do
+    ActiveRecord::Base.establish_connection(:test_sqlite)
+    load "#{Rails.root}/db/schema.rb"
+  end
+
+  after :all do
+    ActiveRecord::Base.establish_connection(:test)
+  end
 
   describe 'import' do
     it do

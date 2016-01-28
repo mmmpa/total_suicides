@@ -1,3 +1,5 @@
+require 'csv'
+
 class Importer
   include ImporterMetadata
 
@@ -18,9 +20,9 @@ class Importer
 
     csv = CSV.read(file_path, encoding: 'cp932') rescue CSV.read(file_path)
 
-    index.to_a.each do |i|
+    index.to_a.each.with_index do |i, area_code|
       line = csv[i]
-      area = detect_area(i, line[area_index])
+      area = detect_area(area_code, line[area_index])
 
       tables.map do |name|
         metadata = send(name)
@@ -38,7 +40,7 @@ class Importer
     eval(string.classify)
   end
 
-  def find_or_create_record(klass, content, name)
+  def find_or_create_record(klass, content, name = nil)
     if (target = klass.find_by(content: content))
       return target
     end
@@ -47,11 +49,11 @@ class Importer
   end
 
   def detect_year(id)
-    find_or_create_record(Year, id, "平成#{}年")
+    find_or_create_record(Year, id)
   end
 
   def detect_gender(id)
-    find_or_create_record(Gender, id, nil)
+    find_or_create_record(Gender, id)
   end
 
   def detect_area(id, name)
