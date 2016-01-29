@@ -13,10 +13,13 @@
   "author": "mmmpa",
   "license": "ISC",
   "dependencies": {
+    "d3act": "^1.1.1",
     "flumpt": "^0.1.4",
     "history": "^1.17.0",
     "lodash": "^4.0.1",
     "react": "^0.14.6",
+    "react-d3": "^0.4.0",
+    "react-d3-basic": "^1.5.2",
     "react-dom": "^0.14.6",
     "react-router": "^1.0.3",
     "superagent": "^1.7.2"
