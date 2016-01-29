@@ -21,7 +21,7 @@ class Importer
     csv = CSV.read(file_path, encoding: 'cp932') rescue CSV.read(file_path)
 
     index.to_a.each.with_index do |i, area_code|
-      line = csv[i]
+      line = delete_after_26(csv[i], year)
       area = detect_area(area_code, line[area_index])
 
       tables.map do |name|
@@ -34,6 +34,12 @@ class Importer
         klass.create!(params)
       end
     end
+  end
+
+  def delete_after_26(csv, year)
+    return csv if year.content < 26
+    index_need_delete_after_26.each { |n| csv.delete_at(n) }
+    csv
   end
 
   def classify(string)

@@ -52704,7 +52704,7 @@ var eventer_1 = require('../lib/eventer');
 var D3 = require('react-d3');
 var constants_1 = require("../initializers/constants");
 var _ = require('lodash');
-var d3_1 = require('d3');
+var normalizer_1 = require('../services/normalizer');
 var CircleGraphComponent = (function (_super) {
     __extends(CircleGraphComponent, _super);
     function CircleGraphComponent(props) {
@@ -52719,44 +52719,12 @@ var CircleGraphComponent = (function (_super) {
     CircleGraphComponent.prototype.componentWillReceiveProps = function (nextProps) {
         this.normalizeState(nextProps);
     };
-    CircleGraphComponent.prototype.sortedData = function (props) {
-        var split = props.split, data = props.data;
-        if (!data) {
-            return [];
-        }
-        switch (split) {
-            case 'year':
-                return _.sortBy(data, function (el) { return el.year.content; });
-            default:
-                return props.data;
-        }
-    };
-    CircleGraphComponent.prototype.normalizeData = function (props) {
-        var sorted = this.sortedData(props);
-        switch (props.table) {
-            case 'day':
-                var dayKeys = constants_1.default.dayKeys, dayTexts = constants_1.default.dayTexts;
-                return sorted.map(function (one) {
-                    var total = _.reduce(dayKeys, function (a, key) { return a + one[key]; }, 0);
-                    return {
-                        name: one.year.name + " (" + total + ")",
-                        data: _.map(_.zip(dayKeys, dayTexts), function (kt) {
-                            var key = kt[0];
-                            var label = kt[1] + " (" + one[key] + ")";
-                            return { label: label, value: Math.round(one[key] / total * 1000) / 10 };
-                        })
-                    };
-                });
-            default:
-                return sorted;
-        }
-    };
     CircleGraphComponent.prototype.normalizeState = function (props) {
-        var normalized = this.normalizeData(props);
+        var normalized = normalizer_1.normalizePieData(props);
         this.setState({ normalized: normalized });
     };
     CircleGraphComponent.prototype.writeChart = function (data) {
-        return React.createElement(D3.PieChart, {"colors": d3_1.scale.category20(), "data": data.data, "width": constants_1.default.pieWidth, "height": constants_1.default.pieHeight, "radius": constants_1.default.pieSize / 3, "innerRadius": constants_1.default.pieInnerSize / 2, "sectorBorderColor": "white", "title": data.name});
+        return React.createElement(D3.PieChart, React.__spread({"data": data.data, "title": data.name}, constants_1.default.pieProps));
     };
     CircleGraphComponent.prototype.writeCharts = function (normalized) {
         var _this = this;
@@ -52775,7 +52743,7 @@ var CircleGraphComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CircleGraphComponent;
 
-},{"../initializers/constants":272,"../lib/eventer":273,"d3":2,"lodash":52,"react":263,"react-d3":84}],269:[function(require,module,exports){
+},{"../initializers/constants":272,"../lib/eventer":273,"../services/normalizer":275,"lodash":52,"react":263,"react-d3":84}],269:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -52884,7 +52852,7 @@ var eventer_1 = require('./lib/eventer');
 var preset_graph_1 = require("./contexts/preset-graph");
 var simple_graph_1 = require("./components/simple-graph");
 var circle_graph_1 = require("./components/circle-graph");
-var request = require('superagent');
+var fetcher_1 = require('./services/fetcher');
 var Child = (function (_super) {
     __extends(Child, _super);
     function Child() {
@@ -52917,32 +52885,18 @@ var App = (function (_super) {
         this.fetchData(nextProps);
     };
     App.prototype.fetchData = function (props) {
+        var _this = this;
         var presetName = props.params.presetName;
         if (!!presetName) {
-            return this.fetchPreset(presetName);
+            return fetcher_1.fetchPreset(presetName, function (state) {
+                _this.setState(state);
+            });
         }
         if (this.needFetch(props)) {
-            this.fetchWithParams(props);
+            fetcher_1.fetchWithParams(props, function (state) {
+                _this.setState(state);
+            });
         }
-    };
-    App.prototype.fetchPreset = function (presetName) {
-        var _this = this;
-        request
-            .get('/api/0/-/0/day')
-            .end(function (err, res) {
-            if (err) {
-            }
-            else {
-                _this.setState({
-                    table: 'day',
-                    split: 'year',
-                    data: res.body
-                });
-            }
-        });
-    };
-    App.prototype.fetchWithParams = function (props) {
-        console.log('fetchWithParams');
     };
     App.prototype.needFetch = function (props) {
         var _a = props.params, table = _a.table, horizontal = _a.horizontal, vertical = _a.vertical;
@@ -52962,24 +52916,78 @@ var App = (function (_super) {
 })(eventer_1.Root);
 react_dom_1.render((React.createElement(react_router_1.Router, {"history": new CreateHistory()}, React.createElement(react_router_1.Route, {"path": "/", "component": App}, React.createElement(react_router_1.Route, {"path": "preset", "component": preset_graph_1.default}, React.createElement(react_router_1.Route, {"path": "child", "component": Child}), React.createElement(react_router_1.Route, {"path": "way/:gender/:year/:area", "component": simple_graph_1.default, "myprops": "a"})), React.createElement(react_router_1.Route, {"path": "circle", "component": preset_graph_1.default}, React.createElement(react_router_1.Route, {"path": ":presetName", "component": circle_graph_1.default, "myprops": "a"}), React.createElement(react_router_1.Route, {"path": ":table/:split/:horizontal/:vertical/:rotation", "component": circle_graph_1.default, "myprops": "a"}))))), document.querySelector('#app'));
 
-},{"./components/circle-graph":268,"./components/simple-graph":269,"./contexts/preset-graph":270,"./lib/eventer":273,"history/lib/createBrowserHistory":39,"react":263,"react-dom":110,"react-router":130,"superagent":266}],272:[function(require,module,exports){
+},{"./components/circle-graph":268,"./components/simple-graph":269,"./contexts/preset-graph":270,"./lib/eventer":273,"./services/fetcher":274,"history/lib/createBrowserHistory":39,"react":263,"react-dom":110,"react-router":130}],272:[function(require,module,exports){
+var d3_1 = require('d3');
 var Constants = (function () {
     function Constants() {
     }
+    Object.defineProperty(Constants, "pieProps", {
+        get: function () {
+            return {
+                colors: this.pieColors,
+                width: this.pieWidth,
+                height: this.pieHeight,
+                radius: this.pieSize / 3,
+                innerRadius: this.pieInnerSize / 2,
+                sectorBorderColor: 'white'
+            };
+        },
+        enumerable: true,
+        configurable: true
+    });
     Constants.tables = ['age', 'housemate', 'job', 'location', 'way', 'hour', 'day', 'reason', 'attempted', 'total'];
     Constants.horizontals = ['year', 'gender', 'area'];
     Constants.pieSize = 500;
     Constants.pieWidth = 600;
     Constants.pieHeight = 500;
     Constants.pieInnerSize = 50;
-    Constants.dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'unknown'];
-    Constants.dayTexts = ['日', '月', '火', '水', '木', '金', '土', '不明'];
+    Constants.pieColors = d3_1.scale.category20();
+    Constants.ageProps = {
+        keys: ['o0', 'o20', 'o30', 'o40', 'o50', 'o60', 'o70', 'o80', 'unknown'],
+        texts: ['20歳未満', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '80歳以上']
+    };
+    Constants.housemateProps = {
+        keys: ['yes', 'no', 'unknown'],
+        texts: ['あり', 'なし', '不詳']
+    };
+    Constants.jobProps = {
+        keys: ['self_employed', 'employed', 'total_unemployed', 'student', 'not_student', 'unemployed', 'stay_at_home', 'pensioner', 'unknown'],
+        texts: ['自営業・家族従業者', '被雇用・勤め人', '無職', '学生・生徒等', '無職者', '主婦', '失業者', '年金・雇用保険等生活者', '', 'その他の無職者']
+    };
+    Constants.locationProps = {
+        keys: ['home', 'building', 'vehicle', 'sea', 'mountain', 'other', 'unknown'],
+        texts: ['自宅等', '高層ビル', '乗物', '海（湖）・河川等', '山', 'その他', '不詳']
+    };
+    Constants.wayProps = {
+        keys: ['hanging', 'poison', 'briquet', 'jumping', 'diving', 'other', 'unknown'],
+        texts: ['首つり', '服毒', '練炭等', '飛降り', '飛込み', 'その他', '不詳']
+    };
+    Constants.hourProps = {
+        keys: ['a0', 'a2', 'a4', 'a6', 'a8', 'a10', 'a12', 'a14', 'a16', 'a18', 'a20', 'a22', 'unknown'],
+        texts: ['0-2時', '2-4時', '4-6時', '6-8時', '8-10時', '10-12時', '12-14時', '14-16時', '16-18時', '18-20時', '20-22時', '22-24時', '不詳']
+    };
+    Constants.dayProps = {
+        keys: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'unknown'],
+        texts: ['日曜', '月曜', '火曜', '水曜', '木曜', '金曜', '土曜', '不詳']
+    };
+    Constants.reasonProps = {
+        keys: ['family', 'health', 'life', 'work', 'partner', 'school', 'other', 'unknown'],
+        texts: ['家庭問題', '健康問題', '経済・生活問題', '勤務問題', '男女問題', '学校問題', 'その他', '不詳']
+    };
+    Constants.attemptedProps = {
+        keys: ['yes', 'no', 'unknown'],
+        texts: ['あり', 'なし', '不詳']
+    };
+    Constants.totalProps = {
+        keys: ['hanging', 'poison', 'briquet', 'jumping', 'diving', 'other', 'unknown'],
+        texts: ['自殺者数', '自殺死亡率']
+    };
     return Constants;
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Constants;
 
-},{}],273:[function(require,module,exports){
+},{"d3":2}],273:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -53039,4 +53047,71 @@ var Root = (function (_super) {
 })(Node);
 exports.Root = Root;
 
-},{"events":6,"react":263}]},{},[271]);
+},{"events":6,"react":263}],274:[function(require,module,exports){
+var request = require('superagent');
+function fetchPreset(presetName, callback) {
+    var _a = detectPreset(presetName), uri = _a.uri, state = _a.state;
+    request
+        .get(uri)
+        .end(function (err, res) {
+        return !!err ? null : callback(state(res.body));
+    });
+}
+exports.fetchPreset = fetchPreset;
+function detectPreset(presetName) {
+    if (presetName.match(/([a-z]+)-each-year/)) {
+        var table = RegExp.$1;
+        return {
+            uri: "/api/0/-/0/" + table,
+            state: function (data) { return ({ table: table, split: 'year', data: data }); }
+        };
+    }
+    return {};
+}
+function fetchWithParams(props, callback) {
+    console.log('fetchWithParams');
+}
+exports.fetchWithParams = fetchWithParams;
+
+},{"superagent":266}],275:[function(require,module,exports){
+var constants_1 = require("../initializers/constants");
+function sortData(props) {
+    var split = props.split, data = props.data;
+    if (!data) {
+        return [];
+    }
+    switch (split) {
+        case 'year':
+            return _.sortBy(data, function (el) { return el.year.content; });
+        case 'gender':
+            return _.sortBy(data, function (el) { return el.gender.content; });
+        case 'area':
+            return _.sortBy(data, function (el) { return el.area.content; });
+        default:
+            return props.data;
+    }
+}
+function detectChartProps(props) {
+    return constants_1.default[(props.table + "Props")] || {};
+}
+function normalizePieData(props) {
+    var sorted = sortData(props);
+    var _a = detectChartProps(props), keys = _a.keys, texts = _a.texts;
+    if (!keys || !texts) {
+        return [];
+    }
+    return sorted.map(function (one) {
+        var total = _.reduce(keys, function (a, key) { return a + one[key]; }, 0);
+        return {
+            name: one.year.name + " (" + total + ")",
+            data: _.map(_.zip(keys, texts), function (kt) {
+                var key = kt[0];
+                var label = kt[1] + " (" + one[key] + ")";
+                return { label: label, value: Math.round(one[key] / total * 1000) / 10 };
+            })
+        };
+    });
+}
+exports.normalizePieData = normalizePieData;
+
+},{"../initializers/constants":272}]},{},[271]);

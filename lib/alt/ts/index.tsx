@@ -6,8 +6,7 @@ import {Root, Node} from './lib/eventer'
 import PresetGraph from "./contexts/preset-graph";
 import SimpleGraph from "./components/simple-graph";
 import CircleGraphComponent from "./components/circle-graph";
-
-const request = require('superagent');
+import {fetchPreset, fetchWithParams} from './services/fetcher'
 
 class Child extends Node<{},{}> {
   render() {
@@ -37,32 +36,16 @@ class App extends Root<{},{}> {
   fetchData(props) {
     let {presetName} = props.params;
     if (!!presetName) {
-      return this.fetchPreset(presetName);
+      return fetchPreset(presetName, (state)=>{
+        this.setState(state);
+      });
     }
 
     if (this.needFetch(props)) {
-      this.fetchWithParams(props)
-    }
-  }
-
-  fetchPreset(presetName:string) {
-    request
-      .get('/api/0/-/0/day')
-      .end((err, res)=> {
-        if (err) {
-
-        } else {
-          this.setState({
-            table: 'day',
-            split: 'year',
-            data: res.body
-          })
-        }
+      fetchWithParams(props, (state)=>{
+        this.setState(state);
       })
-  }
-
-  fetchWithParams(props) {
-    console.log('fetchWithParams')
+    }
   }
 
   needFetch(props) {

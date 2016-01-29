@@ -1,4 +1,8 @@
 module ImporterMetadata
+  def index_need_delete_after_26
+    [7, 5, 3]
+  end
+
   def index
     7..55
   end
