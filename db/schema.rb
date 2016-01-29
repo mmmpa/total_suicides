@@ -123,6 +123,7 @@ ActiveRecord::Schema.define(version: 20160127044141) do
     t.integer "not_student",      null: false
     t.integer "unemployed",       null: false
     t.integer "stay_at_home",     null: false
+    t.integer "lost_job",         null: false
     t.integer "pensioner",        null: false
     t.integer "unknown",          null: false
   end

@@ -5,7 +5,7 @@ import Constants from "../initializers/constants";
 import * as _ from 'lodash';
 import {normalizePieData} from '../services/normalizer'
 
-export default class CircleGraphComponent extends Node<{},{}> {
+export default class PieChartComponent extends Node<{},{}> {
   constructor(props) {
     super(props);
     this.state = {
@@ -49,6 +49,7 @@ export default class CircleGraphComponent extends Node<{},{}> {
   }
 
   render() {
+    console.log(this.props)
     return <section className="pie-chart">
       {this.writeCharts(this.state.normalized)}
     </section>

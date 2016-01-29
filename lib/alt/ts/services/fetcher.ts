@@ -10,7 +10,7 @@ export function fetchPreset(presetName:string, callback:Function) {
 }
 
 function detectPreset(presetName:string) {
-  if(presetName.match(/([a-z]+)-each-year/)){
+  if (presetName.match(/([a-z]+)-each-year/)) {
     let table = RegExp.$1;
     return {
       uri: `/api/0/-/0/${table}`,
@@ -22,5 +22,19 @@ function detectPreset(presetName:string) {
 }
 
 export function fetchWithParams(props, callback:Function) {
-  console.log('fetchWithParams')
+  let {table, split, year} = props.params;
+  if(split != 'year' && !year){
+    throw 'year required'
+  }
+
+  let yearParam = year || '-';
+  let genderParam = split == 'gender' ? '1,2' : '0';
+  let areaParam = split == 'area' ? '-' : '0';
+
+  let uri = ['/api', genderParam, yearParam, areaParam, table].join('/')
+  request
+    .get(uri)
+    .end((err, res)=>
+      !!err ? null : callback({table: table, split: split, data: res.body})
+    )
 }

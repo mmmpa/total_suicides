@@ -5,7 +5,7 @@ import * as CreateHistory from 'history/lib/createBrowserHistory'
 import {Root, Node} from './lib/eventer'
 import PresetGraph from "./contexts/preset-graph";
 import SimpleGraph from "./components/simple-graph";
-import CircleGraphComponent from "./components/circle-graph";
+import PieChart from "./components/pie-chart";
 import {fetchPreset, fetchWithParams} from './services/fetcher'
 
 class Child extends Node<{},{}> {
@@ -36,21 +36,21 @@ class App extends Root<{},{}> {
   fetchData(props) {
     let {presetName} = props.params;
     if (!!presetName) {
-      return fetchPreset(presetName, (state)=>{
+      return fetchPreset(presetName, (state)=> {
         this.setState(state);
       });
     }
 
     if (this.needFetch(props)) {
-      fetchWithParams(props, (state)=>{
+      fetchWithParams(props, (state)=> {
+        console.log('loaded', state)
         this.setState(state);
       })
     }
   }
 
   needFetch(props) {
-    let {table, horizontal, vertical} = props.params;
-    return !!table && !!horizontal && !!vertical;
+    return !!props.params.table;
   }
 
   normalizeRouteParams(props) {
@@ -73,11 +73,12 @@ render((
     <Route path="/" component={App}>
       <Route path="preset" component={PresetGraph}>
         <Route path="child" component={Child}/>
-        <Route path="way/:gender/:year/:area" component={SimpleGraph} myprops={"a"}/>
+        <Route path="way/:gender/:year/:area" component={SimpleGraph}/>
       </Route>
-      <Route path="circle" component={PresetGraph}>
-        <Route path=":presetName" component={CircleGraphComponent} myprops={"a"}/>
-        <Route path=":table/:split/:horizontal/:vertical/:rotation" component={CircleGraphComponent} myprops={"a"}/>
+      <Route path="pie" component={PresetGraph}>
+        <Route path=":presetName" component={PieChart}/>
+        <Route path=":table/:split" component={PieChart}/>
+        <Route path=":table/:split/:year" component={PieChart}/>
       </Route>
     </Route>
   </Router>
