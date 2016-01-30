@@ -24,11 +24,33 @@ export default class Constants {
     };
   }
 
+  static get smallPieProps() {
+    return {
+      colors: this.pieColors,
+      width: this.pieWidth / 2,
+      height: this.pieHeight / 2,
+      radius: this.pieSize / 6,
+      innerRadius: this.pieInnerSize / 4,
+      sectorBorderColor: 'white'
+    };
+  }
+
+  static get widePieProps() {
+    return {
+      colors: this.pieColors,
+      width: this.pieWidth / 1.5,
+      height: this.pieHeight / 2,
+      radius: this.pieSize / 6,
+      innerRadius: this.pieInnerSize / 4,
+      sectorBorderColor: 'white'
+    };
+  }
+
   static colors:string[] = ['#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#e74c3c', '#e67e22', '#f1c40f', '#95a5a6', '#16a085', '#27ae60', '#2980b9', '#8e44ad', '#c0392b', '#d35400', '#f39c12', '#7f8c8d'];
 
   static ageProps = {
     keys: ['o0', 'o20', 'o30', 'o40', 'o50', 'o60', 'o70', 'o80', 'unknown'],
-    texts: ['20歳未満', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '80歳以上']
+    texts: ['20歳未満', '20-29歳', '30-39歳', '40-49歳', '50-59歳', '60-69歳', '70-79歳', '80歳以上', '不詳']
   };
 
   static housemateProps = {
@@ -37,8 +59,8 @@ export default class Constants {
   };
 
   static jobProps = {
-    keys: ['self_employed', 'employed', 'student', 'stay_at_home', 'lost_job', 'pensioner', 'unknown'],
-    texts: ['自営業・家族従業者', '被雇用・勤め人', '学生・生徒等', '主婦', '失業者', '年金・雇用保険等生活者', 'その他の無職者']
+    keys: ['self_employed', 'employed', 'student', 'stay_at_home', 'lost_job', 'pensioner', 'unemployed', 'unknown'],
+    texts: ['自営業・家族従業者', '被雇用・勤め人', '学生・生徒等', '主婦', '失業者', '年金・雇用保険等生活者', 'その他の無職者', '不詳']
   };
 
   static locationProps = {

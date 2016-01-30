@@ -43,7 +43,6 @@ class App extends Root<{},{}> {
 
     if (this.needFetch(props)) {
       fetchWithParams(props, (state)=> {
-        console.log('loaded', state)
         this.setState(state);
       })
     }
@@ -77,7 +76,6 @@ render((
       </Route>
       <Route path="pie" component={PresetGraph}>
         <Route path=":presetName" component={PieChart}/>
-        <Route path=":table/:split" component={PieChart}/>
         <Route path=":table/:split/:year" component={PieChart}/>
       </Route>
     </Route>

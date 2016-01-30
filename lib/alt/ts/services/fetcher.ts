@@ -27,6 +27,12 @@ export function fetchWithParams(props, callback:Function) {
     throw 'year required'
   }
 
+  if(split != 'gender' && split != 'area'){
+    let store = split;
+    split = table;
+    table = store;
+  }
+
   let yearParam = year || '-';
   let genderParam = split == 'gender' ? '1,2' : '0';
   let areaParam = split == 'area' ? '-' : '0';
@@ -35,6 +41,6 @@ export function fetchWithParams(props, callback:Function) {
   request
     .get(uri)
     .end((err, res)=>
-      !!err ? null : callback({table: table, split: split, data: res.body})
+      !!err ? null : callback({table: props.params.table, split: props.params.split, data: res.body})
     )
 }

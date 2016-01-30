@@ -26,16 +26,39 @@ export default class PieChartComponent extends Node<{},{}> {
     this.setState({normalized});
   }
 
+  detectPieProp(props){
+    let {split, table} = props;
+    if(split == 'area'){
+      return Constants.pieProps;
+    }else if(split == 'job'){
+      return Constants.widePieProps
+    }
+
+    return Constants.smallPieProps;
+  }
+
+
   writeChart(data) {
+    let pieProps = this.detectPieProp(this.props);
+
     return <D3.PieChart
       data={data.data}
       title={data.name}
-      {...Constants.pieProps}
+      {...pieProps}
     />
   }
 
-  writeCharts(normalized) {
-    if(!_.isArray(normalized)){
+  writeCharts(normalizedList) {
+    return _.map(normalizedList, (normalized)=>{
+      return <section key={normalized.year.name}>
+        <h1>{normalized.year.name}</h1>
+        {this.writeChartList(normalized.dataList)}
+      </section>
+    });
+  }
+
+  writeChartList(normalized) {
+    if (!_.isArray(normalized)) {
       return null;
     }
 
@@ -49,7 +72,6 @@ export default class PieChartComponent extends Node<{},{}> {
   }
 
   render() {
-    console.log(this.props)
     return <section className="pie-chart">
       {this.writeCharts(this.state.normalized)}
     </section>

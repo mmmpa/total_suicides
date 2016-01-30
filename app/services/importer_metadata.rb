@@ -35,7 +35,7 @@ module ImporterMetadata
   def job
     {
       range: 17..26,
-      columns: %w(self_employed employed total_unemployed student not_student unemployed stay_at_home lost_job pensioner unknown)
+      columns: %w(self_employed employed total_unemployed student not_student stay_at_home lost_job pensioner unemployed  unknown)
     }
   end
 

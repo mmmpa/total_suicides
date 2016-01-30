@@ -12,9 +12,9 @@ module Tagged
     validates :gender,
               uniqueness: {scope: [:area, :year]}
 
-    scope :in, ->(target_year) { joins { year }.where { year.content.in target_year } }
-    scope :at, ->(target_area) { joins { area }.where { area.content.in target_area } }
-    scope :by, ->(target_gender) { joins { gender }.where { gender.content.in target_gender } }
+    scope :in, ->(target_year) { includes { year }.joins { year }.where { year.content.in target_year } }
+    scope :at, ->(target_area) { includes { area }.joins { area }.where { area.content.in target_area } }
+    scope :by, ->(target_gender) { includes { gender }.joins { gender }.where { gender.content.in target_gender } }
 
     def tagged_data
       {
