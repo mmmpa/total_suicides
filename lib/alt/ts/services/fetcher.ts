@@ -22,12 +22,12 @@ function detectPreset(presetName:string) {
 }
 
 export function fetchWithParams(props, callback:Function) {
-  let {table, split, year} = props.params;
-  if(split != 'year' && !year){
+  let {table, split, year, filter} = props.params;
+  if(split != 'year' && !year && !filter){
     throw 'year required'
   }
 
-  if(split != 'gender' && split != 'area'){
+  if(!!split && split != 'gender' && split != 'area'){
     let store = split;
     split = table;
     table = store;
@@ -36,6 +36,16 @@ export function fetchWithParams(props, callback:Function) {
   let yearParam = year || '-';
   let genderParam = split == 'gender' ? '1,2' : '0';
   let areaParam = split == 'area' ? '-' : '0';
+
+  if(table == 'area'){
+    table = 'total';
+    areaParam = '-';
+  }
+
+  if(table == 'gender'){
+    table = 'total';
+    genderParam = '-';
+  }
 
   let uri = ['/api', genderParam, yearParam, areaParam, table].join('/')
   request

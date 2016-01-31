@@ -6,6 +6,7 @@ import {Root, Node} from './lib/eventer'
 import PresetGraph from "./contexts/preset-graph";
 import SimpleGraph from "./components/simple-graph";
 import PieChart from "./components/pie-chart";
+import BarChart from "./components/bar-chart";
 import {fetchPreset, fetchWithParams} from './services/fetcher'
 
 class Child extends Node<{},{}> {
@@ -76,7 +77,11 @@ render((
       </Route>
       <Route path="pie" component={PresetGraph}>
         <Route path=":presetName" component={PieChart}/>
+        <Route path=":table/:year" component={PieChart}/>
         <Route path=":table/:split/:year" component={PieChart}/>
+      </Route>
+      <Route path="bar" component={PresetGraph}>
+        <Route path=":table/:split/:filter" component={BarChart}/>
       </Route>
     </Route>
   </Router>

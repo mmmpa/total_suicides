@@ -46,6 +46,34 @@ export default class Constants {
     };
   }
 
+  static get barProps() {
+    return {
+      colors: this.pieColors,
+      width: 800,
+      height: 400,
+      sectorBorderColor: 'white'
+    };
+  }
+
+
+  static get genderBarProps() {
+    return {
+      colors: scale.ordinal().range(['#2ecc71', '#3498db']),
+      width: 800,
+      height: 400,
+      sectorBorderColor: 'white'
+    };
+  }
+
+  static get areaBarProps() {
+    return {
+      colors: this.pieColors,
+      width: 800,
+      height: 1000,
+      sectorBorderColor: 'white'
+    };
+  }
+
   static colors:string[] = ['#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#e74c3c', '#e67e22', '#f1c40f', '#95a5a6', '#16a085', '#27ae60', '#2980b9', '#8e44ad', '#c0392b', '#d35400', '#f39c12', '#7f8c8d'];
 
   static ageProps = {
@@ -94,8 +122,8 @@ export default class Constants {
   };
 
   static totalProps = {
-    keys: ['number', 'rate'],
-    texts: ['自殺者数', '自殺死亡率']
+    keys: ['number'],
+    texts: ['自殺者数']
   };
 
   static genders = [

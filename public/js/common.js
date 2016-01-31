@@ -52705,6 +52705,79 @@ var D3 = require('react-d3');
 var constants_1 = require("../initializers/constants");
 var _ = require('lodash');
 var normalizer_1 = require('../services/normalizer');
+var BarChartComponent = (function (_super) {
+    __extends(BarChartComponent, _super);
+    function BarChartComponent(props) {
+        _super.call(this, props);
+        this.state = {
+            normalized: []
+        };
+    }
+    BarChartComponent.prototype.componentDidMount = function () {
+        this.normalizeState(this.props);
+    };
+    BarChartComponent.prototype.componentWillReceiveProps = function (nextProps) {
+        this.normalizeState(nextProps);
+    };
+    BarChartComponent.prototype.normalizeState = function (props) {
+        var normalized = normalizer_1.normalizeBarData(props);
+        this.setState({ normalized: normalized });
+    };
+    BarChartComponent.prototype.detectChartProp = function (props) {
+        var split = props.split, table = props.table;
+        if (split == 'area') {
+            return constants_1.default.areaBarProps;
+        }
+        else if (split == 'gender') {
+            return constants_1.default.genderBarProps;
+        }
+        return constants_1.default.barProps;
+    };
+    Object.defineProperty(BarChartComponent.prototype, "sectionClass", {
+        get: function () {
+            return 'bar-chart section';
+        },
+        enumerable: true,
+        configurable: true
+    });
+    BarChartComponent.prototype.writeChart = function (dataList) {
+        return React.createElement(D3.BarChart, React.__spread({"data": dataList, "fill": '#ffffff', "yAxisLabel": '人数', "xAxisLabel": '平成年'}, this.detectChartProp(this.props)));
+    };
+    BarChartComponent.prototype.writeCharts = function (normalizedList) {
+        var _this = this;
+        return _.map(normalizedList, function (normalized) {
+            return React.createElement("section", {"key": normalized.title, "className": _this.sectionClass}, React.createElement("h1", null, normalized.title), _this.writeChart(normalized.dataList));
+        });
+    };
+    BarChartComponent.prototype.writeChartList = function (normalized) {
+        var _this = this;
+        if (!_.isArray(normalized)) {
+            return null;
+        }
+        return React.createElement("ul", {"className": "chart-list pies"}, normalized.map(function (data, index) {
+            return React.createElement("li", {"className": "chart-list pie", "key": index}, _this.writeChart(data));
+        }));
+    };
+    BarChartComponent.prototype.render = function () {
+        return React.createElement("section", {"className": "bar-chart"}, this.writeCharts(this.state.normalized));
+    };
+    return BarChartComponent;
+})(eventer_1.Node);
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = BarChartComponent;
+
+},{"../initializers/constants":273,"../lib/eventer":274,"../services/normalizer":276,"lodash":52,"react":263,"react-d3":84}],269:[function(require,module,exports){
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var React = require('react');
+var eventer_1 = require('../lib/eventer');
+var D3 = require('react-d3');
+var constants_1 = require("../initializers/constants");
+var _ = require('lodash');
+var normalizer_1 = require('../services/normalizer');
 var PieChartComponent = (function (_super) {
     __extends(PieChartComponent, _super);
     function PieChartComponent(props) {
@@ -52733,6 +52806,13 @@ var PieChartComponent = (function (_super) {
         }
         return constants_1.default.smallPieProps;
     };
+    Object.defineProperty(PieChartComponent.prototype, "sectionClass", {
+        get: function () {
+            return !!this.props.split ? 'pie-chart splitted-section' : 'pie-chart unsplitted-section';
+        },
+        enumerable: true,
+        configurable: true
+    });
     PieChartComponent.prototype.writeChart = function (data) {
         var pieProps = this.detectPieProp(this.props);
         return React.createElement(D3.PieChart, React.__spread({"data": data.data, "title": data.name}, pieProps));
@@ -52740,7 +52820,7 @@ var PieChartComponent = (function (_super) {
     PieChartComponent.prototype.writeCharts = function (normalizedList) {
         var _this = this;
         return _.map(normalizedList, function (normalized) {
-            return React.createElement("section", {"key": normalized.year.name}, React.createElement("h1", null, normalized.year.name), _this.writeChartList(normalized.dataList));
+            return React.createElement("section", {"key": normalized.year.name, "className": _this.sectionClass}, React.createElement("h1", null, normalized.year.name), _this.writeChartList(normalized.dataList));
         });
     };
     PieChartComponent.prototype.writeChartList = function (normalized) {
@@ -52753,6 +52833,7 @@ var PieChartComponent = (function (_super) {
         }));
     };
     PieChartComponent.prototype.render = function () {
+        console.log(this.state.normalized);
         return React.createElement("section", {"className": "pie-chart"}, this.writeCharts(this.state.normalized));
     };
     return PieChartComponent;
@@ -52760,7 +52841,7 @@ var PieChartComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PieChartComponent;
 
-},{"../initializers/constants":272,"../lib/eventer":273,"../services/normalizer":275,"lodash":52,"react":263,"react-d3":84}],269:[function(require,module,exports){
+},{"../initializers/constants":273,"../lib/eventer":274,"../services/normalizer":276,"lodash":52,"react":263,"react-d3":84}],270:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -52817,7 +52898,7 @@ var SimpleGraph = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SimpleGraph;
 
-},{"../lib/eventer":273,"react":263,"react-d3":84}],270:[function(require,module,exports){
+},{"../lib/eventer":274,"react":263,"react-d3":84}],271:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -52855,7 +52936,7 @@ var PresetGraph = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PresetGraph;
 
-},{"../lib/eventer":273}],271:[function(require,module,exports){
+},{"../lib/eventer":274}],272:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -52869,6 +52950,7 @@ var eventer_1 = require('./lib/eventer');
 var preset_graph_1 = require("./contexts/preset-graph");
 var simple_graph_1 = require("./components/simple-graph");
 var pie_chart_1 = require("./components/pie-chart");
+var bar_chart_1 = require("./components/bar-chart");
 var fetcher_1 = require('./services/fetcher');
 var Child = (function (_super) {
     __extends(Child, _super);
@@ -52930,9 +53012,9 @@ var App = (function (_super) {
     };
     return App;
 })(eventer_1.Root);
-react_dom_1.render((React.createElement(react_router_1.Router, {"history": new CreateHistory()}, React.createElement(react_router_1.Route, {"path": "/", "component": App}, React.createElement(react_router_1.Route, {"path": "preset", "component": preset_graph_1.default}, React.createElement(react_router_1.Route, {"path": "child", "component": Child}), React.createElement(react_router_1.Route, {"path": "way/:gender/:year/:area", "component": simple_graph_1.default})), React.createElement(react_router_1.Route, {"path": "pie", "component": preset_graph_1.default}, React.createElement(react_router_1.Route, {"path": ":presetName", "component": pie_chart_1.default}), React.createElement(react_router_1.Route, {"path": ":table/:split/:year", "component": pie_chart_1.default}))))), document.querySelector('#app'));
+react_dom_1.render((React.createElement(react_router_1.Router, {"history": new CreateHistory()}, React.createElement(react_router_1.Route, {"path": "/", "component": App}, React.createElement(react_router_1.Route, {"path": "preset", "component": preset_graph_1.default}, React.createElement(react_router_1.Route, {"path": "child", "component": Child}), React.createElement(react_router_1.Route, {"path": "way/:gender/:year/:area", "component": simple_graph_1.default})), React.createElement(react_router_1.Route, {"path": "pie", "component": preset_graph_1.default}, React.createElement(react_router_1.Route, {"path": ":presetName", "component": pie_chart_1.default}), React.createElement(react_router_1.Route, {"path": ":table/:year", "component": pie_chart_1.default}), React.createElement(react_router_1.Route, {"path": ":table/:split/:year", "component": pie_chart_1.default})), React.createElement(react_router_1.Route, {"path": "bar", "component": preset_graph_1.default}, React.createElement(react_router_1.Route, {"path": ":table/:split/:filter", "component": bar_chart_1.default}))))), document.querySelector('#app'));
 
-},{"./components/pie-chart":268,"./components/simple-graph":269,"./contexts/preset-graph":270,"./lib/eventer":273,"./services/fetcher":274,"history/lib/createBrowserHistory":39,"react":263,"react-dom":110,"react-router":130}],272:[function(require,module,exports){
+},{"./components/bar-chart":268,"./components/pie-chart":269,"./components/simple-graph":270,"./contexts/preset-graph":271,"./lib/eventer":274,"./services/fetcher":275,"history/lib/createBrowserHistory":39,"react":263,"react-dom":110,"react-router":130}],273:[function(require,module,exports){
 var d3_1 = require('d3');
 var Constants = (function () {
     function Constants() {
@@ -52986,6 +53068,42 @@ var Constants = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Constants, "barProps", {
+        get: function () {
+            return {
+                colors: this.pieColors,
+                width: 800,
+                height: 400,
+                sectorBorderColor: 'white'
+            };
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Constants, "genderBarProps", {
+        get: function () {
+            return {
+                colors: d3_1.scale.ordinal().range(['#2ecc71', '#3498db']),
+                width: 800,
+                height: 400,
+                sectorBorderColor: 'white'
+            };
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Constants, "areaBarProps", {
+        get: function () {
+            return {
+                colors: this.pieColors,
+                width: 800,
+                height: 1000,
+                sectorBorderColor: 'white'
+            };
+        },
+        enumerable: true,
+        configurable: true
+    });
     Constants.tables = ['age', 'housemate', 'job', 'location', 'way', 'hour', 'day', 'reason', 'attempted', 'total'];
     Constants.horizontals = ['year', 'gender', 'area'];
     Constants.pieSize = 800;
@@ -53030,8 +53148,8 @@ var Constants = (function () {
         texts: ['あり', 'なし', '不詳']
     };
     Constants.totalProps = {
-        keys: ['number', 'rate'],
-        texts: ['自殺者数', '自殺死亡率']
+        keys: ['number'],
+        texts: ['自殺者数']
     };
     Constants.genders = [
         { key: 1, text: '女性' },
@@ -53092,7 +53210,7 @@ var Constants = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Constants;
 
-},{"d3":2}],273:[function(require,module,exports){
+},{"d3":2}],274:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -53152,7 +53270,7 @@ var Root = (function (_super) {
 })(Node);
 exports.Root = Root;
 
-},{"events":6,"react":263}],274:[function(require,module,exports){
+},{"events":6,"react":263}],275:[function(require,module,exports){
 var request = require('superagent');
 function fetchPreset(presetName, callback) {
     var _a = detectPreset(presetName), uri = _a.uri, state = _a.state;
@@ -53174,11 +53292,11 @@ function detectPreset(presetName) {
     return {};
 }
 function fetchWithParams(props, callback) {
-    var _a = props.params, table = _a.table, split = _a.split, year = _a.year;
-    if (split != 'year' && !year) {
+    var _a = props.params, table = _a.table, split = _a.split, year = _a.year, filter = _a.filter;
+    if (split != 'year' && !year && !filter) {
         throw 'year required';
     }
-    if (split != 'gender' && split != 'area') {
+    if (!!split && split != 'gender' && split != 'area') {
         var store = split;
         split = table;
         table = store;
@@ -53186,6 +53304,14 @@ function fetchWithParams(props, callback) {
     var yearParam = year || '-';
     var genderParam = split == 'gender' ? '1,2' : '0';
     var areaParam = split == 'area' ? '-' : '0';
+    if (table == 'area') {
+        table = 'total';
+        areaParam = '-';
+    }
+    if (table == 'gender') {
+        table = 'total';
+        genderParam = '-';
+    }
     var uri = ['/api', genderParam, yearParam, areaParam, table].join('/');
     request
         .get(uri)
@@ -53195,15 +53321,43 @@ function fetchWithParams(props, callback) {
 }
 exports.fetchWithParams = fetchWithParams;
 
-},{"superagent":266}],275:[function(require,module,exports){
+},{"superagent":266}],276:[function(require,module,exports){
 var constants_1 = require("../initializers/constants");
+function normalizePieData(props) {
+    var data = props.data, split = props.split, table = props.table;
+    switch (split) {
+        case undefined:
+            return normalizePieDataYear(props);
+        case 'area':
+            return normalizePieDataNormal(data, split, table);
+        case 'gender':
+            return normalizePieDataNormal(data, split, table);
+        default:
+            return normalizePieDataReverse(data, table, split);
+    }
+}
+exports.normalizePieData = normalizePieData;
+function normalizeBarData(props) {
+    var data = props.data, split = props.split, table = props.table;
+    switch (split) {
+        case undefined:
+            return normalizePieDataYear(props);
+        case 'area':
+            return normalizeBarDataNormal(data, split, table);
+        case 'gender':
+            return normalizeBarDataNormal(data, split, table);
+        default:
+            return normalizePieDataReverse(data, table, split);
+    }
+}
+exports.normalizeBarData = normalizeBarData;
 function sortData(dataList, split) {
     if (!dataList) {
         return [];
     }
     switch (split) {
         case 'year':
-            return _.sortBy(dataList, function (el) { return el.year.content; });
+            return _.sortBy(dataList, function (el) { return -el.year.content; });
         case 'gender':
             return _.sortBy(dataList, function (el) { return el.gender.content; });
         case 'area':
@@ -53215,17 +53369,6 @@ function sortData(dataList, split) {
 function detectChartProps(table) {
     return constants_1.default[(table + "Props")] || {};
 }
-function normalizePieData(props) {
-    switch (props.params.split) {
-        case 'area':
-            return normalizePieDataNormal(props);
-        case 'gender':
-            return normalizePieDataNormal(props);
-        default:
-            return normalizePieDataReverse(props);
-    }
-}
-exports.normalizePieData = normalizePieData;
 function splitYear(dataList) {
     var result = {};
     _.map(dataList, function (data) {
@@ -53266,29 +53409,27 @@ function positReverse(dataList, split, keys) {
     });
     return result;
 }
-function normalizePieDataReverse(props) {
-    var data = props.data, split = props.split, table = props.table;
-    var sorted = sortData(data, table);
-    var _a = detectChartProps(split), keys = _a.keys, texts = _a.texts;
+function normalizePieDataReverse(data, split, table) {
+    console.log('reverse');
+    var sorted = sortData(data, split);
+    var _a = detectChartProps(table), keys = _a.keys, texts = _a.texts;
     if (!keys || !texts) {
         return [];
     }
     var years = splitYear(sorted);
-    var elements = constants_1.default[(table + "s")];
+    var elements = constants_1.default[(split + "s")];
     var normalizedList = {};
     _.forEach(years, function (value, key) {
-        var result = positReverse(value.dataList, table, keys);
+        var result = positReverse(value.dataList, split, keys);
         result.year = value.year;
         normalizedList[key] = result;
     });
-    console.log(split, elements, normalizedList);
     var results = [];
     _.forEach(normalizedList, function (normalized, key) {
         var result = {
             year: normalized.year,
             dataList: []
         };
-        console.log(normalized);
         _.forEach(elements, function (el) {
             var data = normalized[el.key];
             var total = _.reduce(keys, function (a, ek) {
@@ -53306,11 +53447,9 @@ function normalizePieDataReverse(props) {
         });
         results.push(result);
     });
-    console.log(results);
     return _.sortBy(results, function (result) { return -result.year.content; });
 }
-function normalizePieDataNormal(props) {
-    var data = props.data, split = props.split, table = props.table;
+function normalizePieDataNormal(data, split, table) {
     var sorted = sortData(data, split);
     var _a = detectChartProps(table), keys = _a.keys, texts = _a.texts;
     if (!keys || !texts) {
@@ -53340,35 +53479,109 @@ function normalizePieDataNormal(props) {
             }, 0);
             result.dataList.push({
                 name: title + " (" + total + ")",
-                data: _.sortBy(_.compact(elements.map(function (el) {
+                data: _.compact(elements.map(function (el) {
                     if (data[el.key] == 0) {
                         return null;
                     }
                     var label = el.text + " (" + data[el.key] + ")";
                     return { label: label, value: par(data[el.key], total) };
-                })), function (d) { return split == 'gender' ? 0 : -d.value; })
+                }))
             });
         });
         results.push(result);
     });
-    console.log(results);
     return _.sortBy(results, function (result) { return -result.year.content; });
 }
+function normalizeBarDataNormal(data, split, table) {
+    var sorted = sortData(data, split);
+    var _a = detectChartProps(table), keys = _a.keys, texts = _a.texts;
+    if (!keys || !texts) {
+        return [];
+    }
+    var years = splitYear(sorted);
+    var elements = constants_1.default[(split + "s")];
+    console.log('years', years);
+    var normalizedList = {};
+    _.forEach(years, function (value, key) {
+        var result = posit(value.dataList, split, keys);
+        result.year = value.year;
+        normalizedList[key] = result;
+    });
+    /*
+     {
+     "name": "sunday",
+     "values": [
+     { "x": 1, "y":  201},
+     { "x": 2, "y":  21}
+     ]
+     },
+     {
+     "name": "monday",
+     "values": [
+     { "x": 1, "y":  91},
+     { "x": 2, "y":  91}
+     ]
+     }
+     */
+    var result = {};
+    _.forEach(normalizedList, function (normalized, key) {
+        _.forEach(_.zip(keys, texts), function (kt) {
+            var key = kt[0];
+            var title = kt[1];
+            var data = normalized[key];
+            if (!result[key]) {
+                result[key] = {};
+            }
+            elements.map(function (e) {
+                if (!result[key][e.key]) {
+                    result[key][e.key] = [];
+                }
+                result[key][e.key].push({ x: normalized.year.content, y: data[e.key] });
+            });
+        });
+    });
+    console.log(result);
+    var results = [];
+    _.forEach(_.zip(keys, texts), function (kt) {
+        var key = kt[0];
+        var title = kt[1];
+        var dataSet = elements.map(function (e) {
+            return {
+                name: e.text,
+                values: result[key][e.key]
+            };
+        });
+        results.push({
+            key: key,
+            title: title,
+            dataList: dataSet
+        });
+    });
+    return results;
+}
+function detectYearTable(table) {
+    return table == 'gender' || table == 'area' ? 'total' : table;
+}
 function normalizePieDataYear(props) {
-    var sorted = sortData(props);
-    var _a = detectChartProps(props), keys = _a.keys, texts = _a.texts;
+    var data = props.data, table = props.table;
+    var sorted = sortData(data, 'year');
+    var _a = detectChartProps(detectYearTable(table)), keys = _a.keys, texts = _a.texts;
+    console.log(keys, texts, sorted);
     if (!keys || !texts) {
         return [];
     }
     return sorted.map(function (one) {
         var total = _.reduce(keys, function (a, key) { return a + one[key]; }, 0);
         return {
-            name: one.year.name + " (" + total + ")",
-            data: _.map(_.zip(keys, texts), function (kt) {
-                var key = kt[0];
-                var label = kt[1] + " (" + one[key] + ")";
-                return { label: label, value: par(one[key], total) };
-            })
+            year: one.year,
+            dataList: [{
+                    name: "(" + total + ")",
+                    data: _.map(_.zip(keys, texts), function (kt) {
+                        var key = kt[0];
+                        var label = kt[1] + " (" + one[key] + ")";
+                        return { label: label, value: par(one[key], total) };
+                    })
+                }]
         };
     });
 }
@@ -53376,4 +53589,4 @@ function par(n, total) {
     return Math.round(n / total * 1000) / 10;
 }
 
-},{"../initializers/constants":272}]},{},[271]);
+},{"../initializers/constants":273}]},{},[272]);

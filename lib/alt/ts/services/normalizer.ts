@@ -1,5 +1,35 @@
 import Constants from "../initializers/constants";
 
+export function normalizePieData(props) {
+  let {data, split, table} = props;
+
+  switch (split) {
+    case undefined:
+      return normalizePieDataYear(props);
+    case 'area':
+      return normalizePieDataNormal(data, split, table);
+    case 'gender':
+      return normalizePieDataNormal(data, split, table);
+    default:
+      return normalizePieDataReverse(data, table, split);
+  }
+}
+
+export function normalizeBarData(props) {
+  let {data, split, table} = props;
+
+  switch (split) {
+    case undefined:
+      return normalizePieDataYear(props);
+    case 'area':
+      return normalizeBarDataNormal(data, split, table);
+    case 'gender':
+      return normalizeBarDataNormal(data, split, table);
+    default:
+      return normalizePieDataReverse(data, table, split);
+  }
+}
+
 function sortData(dataList, split) {
   if (!dataList) {
     return [];
@@ -7,7 +37,7 @@ function sortData(dataList, split) {
 
   switch (split) {
     case 'year':
-      return _.sortBy(dataList, (el)=> el.year.content);
+      return _.sortBy(dataList, (el)=> -el.year.content);
     case 'gender':
       return _.sortBy(dataList, (el)=> el.gender.content);
     case 'area':
@@ -22,23 +52,13 @@ function detectChartProps(table) {
   return Constants[`${table}Props`] || {};
 }
 
-export function normalizePieData(props) {
-  switch (props.params.split) {
-    case 'area':
-      return normalizePieDataNormal(props);
-    case 'gender':
-      return normalizePieDataNormal(props);
-    default:
-      return normalizePieDataReverse(props);
-  }
-}
 
-function splitYear(dataList:any[]){
+function splitYear(dataList:any[]) {
   let result = {};
 
-  _.map(dataList, (data)=>{
+  _.map(dataList, (data)=> {
     let year = data.year.content;
-    if(!result[year]){
+    if (!result[year]) {
       result[year] = {
         year: data.year,
         dataList: []
@@ -50,7 +70,7 @@ function splitYear(dataList:any[]){
   return result;
 }
 
-function posit(dataList:any[], split:string, keys:string[]){
+function posit(dataList:any[], split:string, keys:string[]) {
   let result = {};
 
   dataList.map((data)=> {
@@ -66,7 +86,7 @@ function posit(dataList:any[], split:string, keys:string[]){
   return result;
 }
 
-function positReverse(dataList:any[], split:string, keys:string[]){
+function positReverse(dataList:any[], split:string, keys:string[]) {
   let result = {};
 
   dataList.map((data)=> {
@@ -81,41 +101,35 @@ function positReverse(dataList:any[], split:string, keys:string[]){
   return result;
 }
 
-function normalizePieDataReverse(props) {
-
-  let {data, split, table} = props;
-  let sorted = sortData(data, table);
-  let {keys, texts} = detectChartProps(split);
+function normalizePieDataReverse(data:any[], split:string, table:string) {
+  console.log('reverse');
+  let sorted = sortData(data, split);
+  let {keys, texts} = detectChartProps(table);
 
   if (!keys || !texts) {
     return [];
   }
 
   let years = splitYear(sorted);
-
-
-  let elements = Constants[`${table}s`];
+  let elements = Constants[`${split}s`];
 
   let normalizedList = {};
 
-  _.forEach(years, (value, key)=>{
-    let result = positReverse(value.dataList, table, keys);
+  _.forEach(years, (value, key)=> {
+    let result = positReverse(value.dataList, split, keys);
     result.year = value.year;
     normalizedList[key] = result;
   });
 
-  console.log(split, elements, normalizedList)
-
   let results = [];
 
-  _.forEach(normalizedList, (normalized, key)=>{
+  _.forEach(normalizedList, (normalized, key)=> {
     let result = {
       year: normalized.year,
       dataList: []
     };
-    console.log(normalized);
 
-    _.forEach(elements, (el)=>{
+    _.forEach(elements, (el)=> {
       let data = normalized[el.key]
 
       let total = _.reduce(keys, (a, ek)=> {
@@ -127,7 +141,7 @@ function normalizePieDataReverse(props) {
         data: _.sortBy(_.compact(_.zip(keys, texts).map((kt)=> {
           let key = kt[0];
           let title = kt[1];
-          let label = `${title} (${data[key]})`
+          let label = `${title} (${data[key]})`;
           return {label, value: par(data[key], total)}
         })), (d)=> 0)
       })
@@ -135,11 +149,10 @@ function normalizePieDataReverse(props) {
     results.push(result);
   });
 
-  console.log(results)
   return _.sortBy(results, (result)=> -result.year.content);
 }
-function normalizePieDataNormal(props) {
-  let {data, split, table} = props;
+
+function normalizePieDataNormal(data:any[], split:string, table:string) {
   let sorted = sortData(data, split);
   let {keys, texts} = detectChartProps(table);
 
@@ -148,13 +161,11 @@ function normalizePieDataNormal(props) {
   }
 
   let years = splitYear(sorted);
-
-
   let elements = Constants[`${split}s`];
 
   let normalizedList = {};
 
-  _.forEach(years, (value, key)=>{
+  _.forEach(years, (value, key)=> {
     let result = posit(value.dataList, split, keys);
     result.year = value.year;
     normalizedList[key] = result;
@@ -162,7 +173,7 @@ function normalizePieDataNormal(props) {
 
   let results = [];
 
-  _.forEach(normalizedList, (normalized, key)=>{
+  _.forEach(normalizedList, (normalized, key)=> {
     let result = {
       year: normalized.year,
       dataList: []
@@ -180,25 +191,115 @@ function normalizePieDataNormal(props) {
 
       result.dataList.push({
         name: `${title} (${total})`,
-        data: _.sortBy(_.compact(elements.map((el)=> {
-          if(data[el.key] == 0){
+        data: _.compact(elements.map((el)=> {
+          if (data[el.key] == 0) {
             return null;
           }
           let label = `${el.text} (${data[el.key]})`
           return {label, value: par(data[el.key], total)}
-        })), (d)=> split == 'gender' ?0 : -d.value)
+        }))
       })
     });
     results.push(result);
   });
 
-  console.log(results)
   return _.sortBy(results, (result)=> -result.year.content);
 }
 
+function normalizeBarDataNormal(data:any[], split:string, table:string) {
+  let sorted = sortData(data, split);
+  let {keys, texts} = detectChartProps(table);
+
+  if (!keys || !texts) {
+    return [];
+  }
+
+  let years = splitYear(sorted);
+  let elements = Constants[`${split}s`];
+
+  console.log('years', years)
+
+  let normalizedList = {};
+
+  _.forEach(years, (value, key)=> {
+    let result = posit(value.dataList, split, keys);
+    result.year = value.year;
+    normalizedList[key] = result;
+  });
+
+
+  /*
+   {
+   "name": "sunday",
+   "values": [
+   { "x": 1, "y":  201},
+   { "x": 2, "y":  21}
+   ]
+   },
+   {
+   "name": "monday",
+   "values": [
+   { "x": 1, "y":  91},
+   { "x": 2, "y":  91}
+   ]
+   }
+   */
+
+  let result = {};
+  _.forEach(normalizedList, (normalized, key)=> {
+    _.forEach(_.zip(keys, texts), (kt)=> {
+
+      let key = kt[0];
+      let title = kt[1];
+
+      let data = normalized[key];
+
+      if(!result[key]){
+        result[key] = {};
+      }
+
+      elements.map((e)=> {
+        if(!result[key][e.key]){
+          result[key][e.key] = [];
+        }
+        result[key][e.key].push({x: normalized.year.content, y: data[e.key]})
+      });
+    });
+  });
+  console.log(result)
+
+  let results = []
+  _.forEach(_.zip(keys, texts), (kt)=> {
+
+    let key = kt[0];
+    let title = kt[1];
+
+    let dataSet = elements.map((e)=> {
+      return {
+        name: e.text,
+        values: result[key][e.key]
+      }
+    });
+    results.push({
+      key: key,
+      title: title,
+      dataList: dataSet
+    });
+  });
+
+  return results;
+}
+
+function detectYearTable(table){
+  return table == 'gender' || table == 'area' ? 'total' : table;
+}
+
 function normalizePieDataYear(props) {
-  let sorted = sortData(props);
-  let {keys, texts} = detectChartProps(props);
+  let {data, table} = props;
+  let sorted = sortData(data, 'year');
+  let {keys, texts} = detectChartProps(detectYearTable(table));
+
+  console.log(keys, texts, sorted)
 
   if (!keys || !texts) {
     return [];
@@ -208,12 +309,15 @@ function normalizePieDataYear(props) {
     let total = _.reduce(keys, (a, key)=>  a + one[key], 0);
 
     return {
-      name: `${one.year.name} (${total})`,
-      data: _.map(_.zip(keys, texts), (kt)=> {
-        let key = kt[0];
-        let label = `${kt[1]} (${one[key]})`;
-        return {label, value: par(one[key], total)}
-      })
+      year: one.year,
+      dataList: [{
+        name: `(${total})`,
+        data: _.map(_.zip(keys, texts), (kt)=> {
+          let key = kt[0];
+          let label = `${kt[1]} (${one[key]})`;
+          return {label, value: par(one[key], total)}
+        })
+      }]
     }
   });
 }

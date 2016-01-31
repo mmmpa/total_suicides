@@ -3,9 +3,9 @@ import {Node} from '../lib/eventer'
 import * as D3 from 'react-d3'
 import Constants from "../initializers/constants";
 import * as _ from 'lodash';
-import {normalizePieData} from '../services/normalizer'
+import {normalizeBarData} from '../services/normalizer'
 
-export default class PieChartComponent extends Node<{},{}> {
+export default class BarChartComponent extends Node<{},{}> {
   constructor(props) {
     super(props);
     this.state = {
@@ -22,40 +22,40 @@ export default class PieChartComponent extends Node<{},{}> {
   }
 
   normalizeState(props) {
-    let normalized = normalizePieData(props);
+    let normalized = normalizeBarData(props);
     this.setState({normalized});
   }
 
-  detectPieProp(props){
+  detectChartProp(props){
     let {split, table} = props;
     if(split == 'area'){
-      return Constants.pieProps;
-    }else if(split == 'job'){
-      return Constants.widePieProps
+      return Constants.areaBarProps;
+    }else if(split == 'gender'){
+      return Constants.genderBarProps
     }
 
-    return Constants.smallPieProps;
+    return Constants.barProps;
   }
 
   get sectionClass(){
-    return !!this.props.split ? 'pie-chart splitted-section' : 'pie-chart unsplitted-section'
+    return 'bar-chart section'
   }
 
-  writeChart(data) {
-    let pieProps = this.detectPieProp(this.props);
-
-    return <D3.PieChart
-      data={data.data}
-      title={data.name}
-      {...pieProps}
-    />
+  writeChart(dataList) {
+    return <D3.BarChart
+      data={dataList}
+      fill={'#ffffff'}
+      yAxisLabel='人数'
+      xAxisLabel='平成年'
+      {...this.detectChartProp(this.props)}
+    />;
   }
 
   writeCharts(normalizedList) {
     return _.map(normalizedList, (normalized)=>{
-      return <section key={normalized.year.name} className={this.sectionClass}>
-        <h1>{normalized.year.name}</h1>
-        {this.writeChartList(normalized.dataList)}
+      return <section key={normalized.title} className={this.sectionClass}>
+        <h1>{normalized.title}</h1>
+        {this.writeChart(normalized.dataList)}
       </section>
     });
   }
@@ -75,8 +75,7 @@ export default class PieChartComponent extends Node<{},{}> {
   }
 
   render() {
-    console.log(this.state.normalized)
-    return <section className="pie-chart">
+    return <section className="bar-chart">
       {this.writeCharts(this.state.normalized)}
     </section>
   }
