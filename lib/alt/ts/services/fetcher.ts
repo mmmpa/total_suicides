@@ -47,6 +47,15 @@ export function fetchWithParams(props, callback:Function) {
     genderParam = '-';
   }
 
+  if(!!props.location.query.area){
+    areaParam = props.location.query.area;
+  }
+
+  if(!!props.location.query.gender){
+    genderParam = props.location.query.gender;
+  }
+
+
   let uri = ['/api', genderParam, yearParam, areaParam, table].join('/')
   request
     .get(uri)

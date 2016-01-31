@@ -208,6 +208,7 @@ function normalizePieDataNormal(data:any[], split:string, table:string) {
 
 
 function normalizeBarDataNormal(data:any[], split:string, table:string) {
+  console.log('regular')
   let sorted = sortData(data, split);
   let {keys, texts} = detectChartProps(table);
 
@@ -247,6 +248,10 @@ function normalizeBarDataNormal(data:any[], split:string, table:string) {
       let myNum = 0;
       elements.map((e)=> {
         let num = data[e.key];
+        if (!num) {
+          _.remove(chartSeries, (c)=> c.field == e.key)
+          return;
+        }
         myNum += num;
 
         now[e.key] = num
@@ -279,6 +284,7 @@ function normalizeBarDataNormal(data:any[], split:string, table:string) {
 }
 
 function normalizeBarDataReverse(data:any[], split:string, table:string) {
+  console.log('rotated')
   let sorted = sortData(data, split);
   let {keys, texts} = detectChartProps(table);
 
@@ -301,12 +307,9 @@ function normalizeBarDataReverse(data:any[], split:string, table:string) {
   let chartSeries = _.zip(keys, texts).map((kt)=> ({field: kt[0], name: kt[1]}));
   console.log('chartSeries', chartSeries)
 
-  let max = 0;
-
   let result = {};
   _.forEach(normalizedList, (normalized, key)=> {
     let store = {};
-    var myNum = 0;
     _.forEach(_.zip(keys, texts), (kt)=> {
       let key = kt[0];
       let title = kt[1];
@@ -316,7 +319,6 @@ function normalizeBarDataReverse(data:any[], split:string, table:string) {
           store[e.key] = {year: normalized.year.content}
         }
         let num = normalized[key][e.key];
-        myNum += num;
         store[e.key][key] = num;
       });
     });
@@ -326,11 +328,10 @@ function normalizeBarDataReverse(data:any[], split:string, table:string) {
       }
       result[e.key].push(store[e.key]);
     });
-    myNum > max && (max = myNum);
-    console.log('myNum', myNum);
   });
 
   console.log('now', result)
+  let max = 0;
 
   let results = []
   _.forEach(elements, (e)=> {
@@ -340,6 +341,14 @@ function normalizeBarDataReverse(data:any[], split:string, table:string) {
       key: e.key,
       title: e.text,
       dataList: result[e.key]
+    });
+
+    result[e.key].map((d)=> {
+      var myNum = 0;
+      keys.map((k)=> {
+        myNum += d[k];
+      });
+      myNum > max && (max = myNum);
     });
   });
   console.log('results', results)
