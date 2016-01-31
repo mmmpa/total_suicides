@@ -26,7 +26,7 @@ export function normalizeBarData(props) {
     case 'gender':
       return normalizeBarDataNormal(data, split, table);
     default:
-      return normalizePieDataReverse(data, table, split);
+      return normalizeBarDataReverse(data, table, split);
   }
 }
 
@@ -206,6 +206,7 @@ function normalizePieDataNormal(data:any[], split:string, table:string) {
   return _.sortBy(results, (result)=> -result.year.content);
 }
 
+
 function normalizeBarDataNormal(data:any[], split:string, table:string) {
   let sorted = sortData(data, split);
   let {keys, texts} = detectChartProps(table);
@@ -227,23 +228,9 @@ function normalizeBarDataNormal(data:any[], split:string, table:string) {
     normalizedList[key] = result;
   });
 
+  let chartSeries = elements.map((e)=> ({field: e.key, name: e.text}));
 
-  /*
-   {
-   "name": "sunday",
-   "values": [
-   { "x": 1, "y":  201},
-   { "x": 2, "y":  21}
-   ]
-   },
-   {
-   "name": "monday",
-   "values": [
-   { "x": 1, "y":  91},
-   { "x": 2, "y":  91}
-   ]
-   }
-   */
+  let max = 0;
 
   let result = {};
   _.forEach(normalizedList, (normalized, key)=> {
@@ -254,19 +241,25 @@ function normalizeBarDataNormal(data:any[], split:string, table:string) {
 
       let data = normalized[key];
 
-      if(!result[key]){
-        result[key] = {};
-      }
-
+      let now = {
+        year: normalized.year.content
+      };
+      let myNum = 0;
       elements.map((e)=> {
-        if(!result[key][e.key]){
-          result[key][e.key] = [];
-        }
-        result[key][e.key].push({x: normalized.year.content, y: data[e.key]})
+        let num = data[e.key];
+        myNum += num;
+
+        now[e.key] = num
       });
+      myNum > max && (max = myNum);
+
+      if (!result[key]) {
+        result[key] = [];
+      }
+      result[key].push(now);
     });
   });
-  console.log(result)
+  console.log('now', result)
 
   let results = []
   _.forEach(_.zip(keys, texts), (kt)=> {
@@ -274,23 +267,87 @@ function normalizeBarDataNormal(data:any[], split:string, table:string) {
     let key = kt[0];
     let title = kt[1];
 
-    let dataSet = elements.map((e)=> {
-      return {
-        name: e.text,
-        values: result[key][e.key]
-      }
-    });
     results.push({
+      chartSeries,
       key: key,
       title: title,
-      dataList: dataSet
+      dataList: result[key]
     });
   });
 
-  return results;
+  return {max, results};
 }
 
-function detectYearTable(table){
+function normalizeBarDataReverse(data:any[], split:string, table:string) {
+  let sorted = sortData(data, split);
+  let {keys, texts} = detectChartProps(table);
+
+  if (!keys || !texts) {
+    return [];
+  }
+
+  let years = splitYear(sorted);
+  let elements = Constants[`${split}s`];
+
+
+  let normalizedList = {};
+
+  _.forEach(years, (value, key)=> {
+    let result = posit(value.dataList, split, keys);
+    result.year = value.year;
+    normalizedList[key] = result;
+  });
+
+  let chartSeries = _.zip(keys, texts).map((kt)=> ({field: kt[0], name: kt[1]}));
+  console.log('chartSeries', chartSeries)
+
+  let max = 0;
+
+  let result = {};
+  _.forEach(normalizedList, (normalized, key)=> {
+    let store = {};
+    var myNum = 0;
+    _.forEach(_.zip(keys, texts), (kt)=> {
+      let key = kt[0];
+      let title = kt[1];
+
+      elements.map((e)=> {
+        if (!store[e.key]) {
+          store[e.key] = {year: normalized.year.content}
+        }
+        let num = normalized[key][e.key];
+        myNum += num;
+        store[e.key][key] = num;
+      });
+    });
+    elements.map((e)=> {
+      if (!result[e.key]) {
+        result[e.key] = [];
+      }
+      result[e.key].push(store[e.key]);
+    });
+    myNum > max && (max = myNum);
+    console.log('myNum', myNum);
+  });
+
+  console.log('now', result)
+
+  let results = []
+  _.forEach(elements, (e)=> {
+
+    results.push({
+      chartSeries,
+      key: e.key,
+      title: e.text,
+      dataList: result[e.key]
+    });
+  });
+  console.log('results', results)
+
+  return {max, results};
+}
+
+function detectYearTable(table) {
   return table == 'gender' || table == 'area' ? 'total' : table;
 }
 

@@ -50,18 +50,23 @@ export default class Constants {
     return {
       colors: this.pieColors,
       width: 800,
-      height: 400,
-      sectorBorderColor: 'white'
+      height: 600,
+      sectorBorderColor: 'white',
+      fontSize: "18px"
     };
   }
 
+  static normalColor(index){
+    return this.colors[index]
+  }
 
   static get genderBarProps() {
     return {
       colors: scale.ordinal().range(['#2ecc71', '#3498db']),
       width: 800,
       height: 400,
-      sectorBorderColor: 'white'
+      sectorBorderColor: 'white',
+      fontSize: "18px"
     };
   }
 
@@ -70,11 +75,12 @@ export default class Constants {
       colors: this.pieColors,
       width: 800,
       height: 1000,
-      sectorBorderColor: 'white'
+      sectorBorderColor: 'white',
+      fontSize: "18px"
     };
   }
 
-  static colors:string[] = ['#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#e74c3c', '#e67e22', '#f1c40f', '#95a5a6', '#16a085', '#27ae60', '#2980b9', '#8e44ad', '#c0392b', '#d35400', '#f39c12', '#7f8c8d'];
+  static colors:string[] = ['#1abc9c','#3498db','#f1c40f','#e74c3c','#2ecc71','#9b59b6','#e67e22','#34495e','#95a5a6','#16a085','#2980b9','#f39c12','#c0392b','#27ae60','#8e44ad','#d35400','#2c3e50','#7f8c8d'];
 
   static ageProps = {
     keys: ['o0', 'o20', 'o30', 'o40', 'o50', 'o60', 'o70', 'o80', 'unknown'],
