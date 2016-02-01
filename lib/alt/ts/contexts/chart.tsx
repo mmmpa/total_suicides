@@ -27,7 +27,15 @@ export default class ChartContext extends Root<{},{}> {
         this.props.location.pathname,
         query
       )
-    })
+    });
+    to('chart:autoScale', (autoScale)=> {
+      let {query} = this.props.location;
+      query.autoScale = autoScale;
+      this.props.history.pushState(null,
+        this.props.location.pathname,
+        query
+      )
+    });
   }
 }
 

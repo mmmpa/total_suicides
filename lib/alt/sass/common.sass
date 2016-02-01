@@ -1,32 +1,118 @@
 @import "./font-awesome/font-awesome"
 @import "./default"
 
+body
+  background: #f0f3f4
+
+.header
+  &.body
+    background: #000
+    padding: 20px
+  &.title
+    color: #fff
+
+.main-content
+  background: #fff
+  h1
+    @extend .size-h4
 
 .chart-list
   li
     display: inline-block
     vertical-align: top
+
 .pie-chart
   &.unsplitted-section
     display: inline-block
   &.splitted-section
-    //
+//
 .bar-chart
+  &.body
+    padding: 20px
   &.section
     display: inline-block
-    font-size: 24px
+    font-size: 14px
+
+.global-wrapper
+  position: relative
+
+
+span
+  &.input-input,
+  &.input-label
+    @extend .size-h5
+    display: inline-block
+    vertical-align: middle
+input[type="checkbox"],
+input[type="radio"]
+  width: $font-size-h4
+  height: $font-size-h4
+
+.chart-config
+  &.body
+    padding: 20px
+    background: #e1e8ea
+  &.title
+    display: table-cell
+    vertical-align: middle
+  &.auto-scale
+    display: table-cell
+    vertical-align: middle
+    label
+      padding: 0 10px
+
 .area-selector
+  &.body
+    padding: 20px
+    background: #f0f3f5
+  &.title
+    vertical-align: top
+    display: table-cell
+    white-space: nowrap
+    padding-right: 20px
   &.area-list
+    vertical-align: top
+    display: table-cell
     margin: 0
     padding: 0
   &.selector
     display: inline-block
     white-space: nowrap
     padding-right: 20px
-    input[type="checkbox"]
-      width: $font-size-h4
-      height: $font-size-h4
     span
       @extend .size-h5
       display: inline-block
       vertical-align: top
+
+.site-map
+  &.body
+    padding: 20px
+  &.sub-section
+    margin-top: 10px
+    display: inline-block
+    padding-right: 60px
+  &.section-title
+    @extend .size-h4
+  &.sub-title
+    @extend .size-h5
+    border-bottom: 1px solid #bdc3c7
+    padding: 0 0 10px 0
+    margin: 0 0 10px 0
+  &.link-list
+    padding: 0 0 0 30px
+    margin: 10px 0
+    @extend .size-h6
+  &.split
+    @extend .size-h6
+  &.link-set
+    @extend .size-h5
+  &.main-link
+    @extend .size-h5
+  &.sub-link
+    padding-left: 5px
+    @extend .size-h6
+
+.global-footer
+  @extend .size-h6
+  color: #555
+  background: #f0f3f4

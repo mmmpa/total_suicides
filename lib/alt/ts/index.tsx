@@ -8,6 +8,8 @@ import ChartContext from "./contexts/chart";
 import SimpleGraph from "./components/simple-graph";
 import PieChart from "./components/pie-chart";
 import BarChart from "./components/bar-chart";
+import Common from "./components/common";
+import ChartController from "./components/chart-controller";
 import {fetchPreset, fetchWithParams} from './services/fetcher'
 
 class Child extends Node<{},{}> {
@@ -60,11 +62,9 @@ class App extends Root<{},{}> {
 
 
   listen(to) {
-    to('increment', ()=> {
-      console.log('app increment')
-    });
-    to('get:way', (gender:number[], year:number[], area:number[])=> {
-
+    to('link', (uri)=> {
+      window.scrollTo(0, 0);
+      this.props.history.pushState(null, uri)
     });
   }
 }
@@ -72,17 +72,21 @@ class App extends Root<{},{}> {
 render((
   <Router history={new CreateHistory()}>
     <Route path="/" component={App}>
-      <Route path="preset" component={PresetGraph}>
-        <Route path="child" component={Child}/>
-        <Route path="way/:gender/:year/:area" component={SimpleGraph}/>
-      </Route>
-      <Route path="pie" component={PresetGraph}>
-        <Route path=":presetName" component={PieChart}/>
-        <Route path=":table/:year" component={PieChart}/>
-        <Route path=":table/:split/:year" component={PieChart}/>
-      </Route>
-      <Route path="bar" component={ChartContext}>
-        <Route path=":table/:split/:filter" component={BarChart}/>
+      <Route path="" component={Common}>
+        <Route path="preset" component={PresetGraph}>
+          <Route path="child" component={Child}/>
+          <Route path="way/:gender/:year/:area" component={SimpleGraph}/>
+        </Route>
+        <Route path="pie" component={PresetGraph}>
+          <Route path=":presetName" component={PieChart}/>
+          <Route path=":table/:year" component={PieChart}/>
+          <Route path=":table/:split/:year" component={PieChart}/>
+        </Route>
+        <Route path="bar" component={ChartContext}>
+          <Route path="" component={ChartController}>
+            <Route path=":table/:split/:filter" component={BarChart}/>
+          </Route>
+        </Route>
       </Route>
     </Route>
   </Router>

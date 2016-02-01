@@ -49,10 +49,10 @@ export default class Constants {
   static get barProps() {
     return {
       colors: this.pieColors,
-      width: 800,
-      height: 600,
+      width: 500,
+      height: 250,
       sectorBorderColor: 'white',
-      fontSize: "18px"
+      fontSize: "14px"
     };
   }
 
@@ -61,23 +61,11 @@ export default class Constants {
   }
 
   static get genderBarProps() {
-    return {
-      colors: scale.ordinal().range(['#2ecc71', '#3498db']),
-      width: 800,
-      height: 400,
-      sectorBorderColor: 'white',
-      fontSize: "18px"
-    };
+    return this.barProps;
   }
 
   static get areaBarProps() {
-    return {
-      colors: this.pieColors,
-      width: 800,
-      height: 1000,
-      sectorBorderColor: 'white',
-      fontSize: "18px"
-    };
+    return this.barProps;
   }
 
   static monoBlue:string[] = ['#103b56','#13496c','#175882','#1a6799','#1d76af','#2085c5','#0d0d0d','#1a1a1a','#262626'];

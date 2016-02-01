@@ -18,7 +18,6 @@ export default class AreaSelectorComponent extends Node<{},{}> {
   }
 
   writeSelector(props) {
-    console.log()
     let selected = (props.location.query.area || '').split(',').map((n)=> +n);
     let {areas} = Constants;
     return areas.map((area)=> {
@@ -40,6 +39,7 @@ export default class AreaSelectorComponent extends Node<{},{}> {
   render() {
     return <div>
       <section className="area-selector body">
+        <h1 className="area-selector title">地域で絞り込み</h1>
         <ul className="area-selector area-list">
           {this.writeSelector(this.props)}
         </ul>

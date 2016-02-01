@@ -5,7 +5,6 @@ import Constants from "../initializers/constants";
 import * as _ from 'lodash';
 import {normalizeBarData} from '../services/normalizer'
 import * as RD3 from 'react-d3-basic'
-import AreaSelector from './area-selector'
 
 export default class BarChartComponent extends Node<{},{}> {
   constructor(props) {
@@ -43,8 +42,13 @@ export default class BarChartComponent extends Node<{},{}> {
     return 'bar-chart section'
   }
 
+  get autoScale():boolean{
+    let {autoScale} = this.props.location.query;
+    return autoScale && autoScale != 'false'
+  }
+
   domain(max) {
-    return this.props.location.query.scale == 'auto' ? null : [0, max];
+    return this.autoScale ? null : [0, max];
   }
 
   detectColor(chartSeries, props) {
@@ -82,10 +86,12 @@ export default class BarChartComponent extends Node<{},{}> {
 
   render() {
     return <div>
-      <AreaSelector {...this.props}/>
-      <section className="bar-chart">
-        {this.writeCharts(this.state.normalized)}
-      </section>
+      <article className="bar-chart body">
+        <section className="bar-chart">
+          {this.writeCharts(this.state.normalized)}
+        </section>
+      </article>
     </div>
   }
 }
+
