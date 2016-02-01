@@ -248,7 +248,7 @@ function normalizeBarDataNormal(data:any[], split:string, table:string) {
       let myNum = 0;
       elements.map((e)=> {
         let num = data[e.key];
-        if (!num) {
+        if (num != 0 && !num) {
           _.remove(chartSeries, (c)=> c.field == e.key)
           return;
         }

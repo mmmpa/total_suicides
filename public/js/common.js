@@ -63725,7 +63725,7 @@ var AreaSelectorComponent = (function (_super) {
         });
     };
     AreaSelectorComponent.prototype.render = function () {
-        return React.createElement("div", null, React.createElement("section", {"className": "area-selector body"}, React.createElement("ul", {"className": "area-selector list"}, this.writeSelector(this.props))));
+        return React.createElement("div", null, React.createElement("section", {"className": "area-selector body"}, React.createElement("ul", {"className": "area-selector area-list"}, this.writeSelector(this.props))));
     };
     return AreaSelectorComponent;
 })(eventer_1.Node);
@@ -63970,7 +63970,6 @@ var ChartContext = (function (_super) {
     ChartContext.prototype.listen = function (to) {
         var _this = this;
         to('area:select', function (key) {
-            console.log('area:select', key, _this.props.location.pathname);
             var query = _this.props.location.query;
             query.area = key.join(',');
             _this.props.history.pushState(null, _this.props.location.pathname, query);
@@ -64405,9 +64404,11 @@ function fetchWithParams(props, callback) {
         genderParam = '-';
     }
     if (!!props.location.query.area) {
+        console.log('strict area');
         areaParam = props.location.query.area;
     }
     if (!!props.location.query.gender) {
+        console.log('strict gender');
         genderParam = props.location.query.gender;
     }
     var uri = ['/api', genderParam, yearParam, areaParam, table].join('/');
@@ -64620,7 +64621,7 @@ function normalizeBarDataNormal(data, split, table) {
             var myNum = 0;
             elements.map(function (e) {
                 var num = data[e.key];
-                if (!num) {
+                if (num != 0 && !num) {
                     _.remove(chartSeries, function (c) { return c.field == e.key; });
                     return;
                 }

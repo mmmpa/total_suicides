@@ -48,10 +48,12 @@ export function fetchWithParams(props, callback:Function) {
   }
 
   if(!!props.location.query.area){
+    console.log('strict area')
     areaParam = props.location.query.area;
   }
 
   if(!!props.location.query.gender){
+    console.log('strict gender')
     genderParam = props.location.query.gender;
   }
 

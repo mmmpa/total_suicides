@@ -40,7 +40,7 @@ export default class AreaSelectorComponent extends Node<{},{}> {
   render() {
     return <div>
       <section className="area-selector body">
-        <ul className="area-selector list">
+        <ul className="area-selector area-list">
           {this.writeSelector(this.props)}
         </ul>
       </section>
