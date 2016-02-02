@@ -1,4 +1,5 @@
 import Constants from "../initializers/constants";
+import * as _ from 'lodash';
 
 export function normalizePieData(props) {
   let {data, split, table} = props;
@@ -28,6 +29,147 @@ export function normalizeBarData(props) {
     default:
       return normalizeBarDataReverse(data, table, split);
   }
+}
+
+export function normalizeStackBarData(props) {
+  let {data, split, table, rotation, sort} = props;
+  let arranged = arrangeData(data, table);
+  console.log(arranged)
+  if (rotation == 'true') {
+    return normalizeRotatedStackBarData(arranged, table, split, sort);
+  } else {
+    return normalizeRegularStackBarData(arranged, table, split, sort);
+  }
+}
+
+function detectTableKeyMap(table:string) {
+  return Constants[`${table}Props`];
+}
+
+function detectSplitterMap(split:string) {
+  return Constants.splitters[split];
+}
+
+function findOrCreate(hash:any, key:string, initial:any):any{
+  if (!hash[key]) {
+    hash[key] = initial;
+  }
+  return hash[key];
+}
+
+function arrangeData(data:any[], table:string):any {
+  if (!_.isArray(data)) {
+    return null;
+  }
+
+  let keyMaps = detectTableKeyMap(table);
+  let {splitters} = Constants;
+
+  let arranged = {};
+
+  data.map((part)=> {
+    part.total = part.gender;
+
+    /*
+    // 総数
+    if(part.gender.content == 0){
+      //項目のstore
+      let totalStore = findOrCreate(arranged, 'total', {});
+      //項目の年度別store
+      let totalYearStore = findOrCreate(totalStore, part.year.content, {});
+      //項目の年度内種別配列
+      let dataArray = findOrCreate(totalYearStore, 0, []);
+      dataArray.push(part);
+    };
+*/
+    // 各splitへ値を割り当て
+    _.each(splitters, (keys, name:string)=> {
+      if(!part[name]){
+        return;
+      }
+      //項目のstore
+      let splitStore = findOrCreate(arranged, name, {});
+      //項目の年度別store
+      let yearStore = findOrCreate(splitStore, part.year.content, {});
+      //項目の年度内種別配列
+      let dataArray = findOrCreate(yearStore, part[name].content, []);
+
+      dataArray.push(part);
+    });
+
+    // valueのnumberを {name, content, splitters} 形式に変更
+    _.each(keyMaps, (keyMap)=> {
+      part[keyMap.key] = {
+        name: keyMap.name,
+        content: part[keyMap.key]
+      };
+      _.each(splitters, (keys, name)=> {
+        part[keyMap.key][name] = arranged[name];
+      });
+    });
+
+    // 各項目の属性ごとに値を割り当て
+    _.each(keyMaps, (keyMap)=> {
+      let partStore = findOrCreate(arranged, keyMap.key, {});
+      _.each(splitters, (keys, name:string)=> {
+        partStore[name] = arranged[name]
+      });
+    });
+  });
+
+  console.log('arranged', arranged);
+  return arranged;
+}
+
+function normalizeRotatedStackBarData(arranged, table, split, sort) {
+  console.log(arranged)
+}
+
+function normalizeRegularStackBarData(arranged, table, split, sort) {
+  if (!_.isObject(arranged)) {
+    return [];
+  }
+  let keyMaps = detectTableKeyMap(table);
+  let splitterMaps = detectSplitterMap(split);
+
+  let chartSeries = splitterMaps.map((keyMap)=> ({field: keyMap.key, name: keyMap.name}));
+
+  let chartData = {
+    chartSeries,
+    eachYear: {},
+    eachSplit: {},
+    max: 0
+  };
+
+  _.each(splitterMaps, (splitterMap)=> {
+    let {name, key} = splitterMap;
+    _.each(arranged[split], (yearResult, year:string)=>{
+      let rawList = yearResult[key];
+      let eachYearStore = findOrCreate(chartData.eachYear, year, {});
+      _.each(rawList, (raw)=> {
+        _.each(keyMaps, (keyMap)=> {
+          let eachYearData = findOrCreate(eachYearStore, keyMap.key, {title: raw[keyMap.key].name, data: {}});
+          let eachYearDataDetail = findOrCreate(eachYearData.data, raw[sort].content, {sort: raw[sort]});
+          eachYearDataDetail[raw[split].content] = raw[keyMap.key].content;
+        });
+      })
+    });
+  });
+
+  _.each(chartData.eachYear, (yearData)=> {
+    _.each(yearData, (chart)=> {
+      _.each(chart.data, (child)=> {
+        let maxStore = 0;
+        _.each(splitterMaps, (sp)=> {
+          maxStore += child[sp.key];
+        });
+        maxStore > chartData.max && (chartData.max = maxStore);
+      })
+    });
+  });
+
+  console.log('normalized', chartData);
+  return chartData;
 }
 
 function sortData(dataList, split) {
@@ -335,7 +477,7 @@ function normalizeBarDataReverse(data:any[], split:string, table:string) {
 
   let results = []
   _.forEach(elements, (e)=> {
-    if(!result[e.key][0][keys[0]]){
+    if (!result[e.key][0][keys[0]]) {
       return;
     }
     results.push({

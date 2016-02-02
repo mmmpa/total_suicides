@@ -1,22 +1,43 @@
 import {Root} from '../lib/eventer'
+import {fetchPreset, fetchWithParams} from '../services/fetcher'
 
 export default class ChartContext extends Root<{},{}> {
   initialState(props) {
-    let {data, table, split} = props;
-    return {data, table, split}
+    let {data} = props;
+    let {table, split, sort} = props.params;
+    return {data, table, split, sort}
   }
 
   relay(props) {
-    let {data, table, split} = props;
-    this.setState({data, table, split});
+    let {data} = props;
+    let {table, split, sort} = props.params;
+    this.setState({data, table, split, sort});
   }
 
   componentDidMount() {
+    this.fetchData(this.props);
     this.relay(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
+    this.fetchData(nextProps, this.props);
     this.relay(nextProps);
+  }
+
+  fetchData(props, preProps?) {
+    if (this.needFetch(props, preProps)) {
+      fetchWithParams(props, (data)=> {
+        let {table, split, rotation} = props.params;
+        this.setState({table, split, rotation, data});
+      })
+    }
+  }
+
+  needFetch(props, preProps?) {
+    if(preProps && props.location.pathname == preProps.location.pathname){
+      return false;
+    }
+    return !!props.params.table;
   }
 
   listen(to) {

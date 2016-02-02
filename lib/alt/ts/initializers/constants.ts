@@ -74,60 +74,119 @@ export default class Constants {
 
   static colors:string[] = ['#1abc9c', '#3498db', '#f1c40f', '#e74c3c', '#2ecc71', '#9b59b6', '#e67e22', '#34495e', '#95a5a6', '#16a085', '#2980b9', '#f39c12', '#c0392b', '#27ae60', '#8e44ad', '#d35400', '#2c3e50', '#7f8c8d'];
 
-  static ageProps = {
-    keys: ['o0', 'o20', 'o30', 'o40', 'o50', 'o60', 'o70', 'o80', 'unknown'],
-    texts: ['20歳未満', '20-29歳', '30-39歳', '40-49歳', '50-59歳', '60-69歳', '70-79歳', '80歳以上', '不詳']
-  };
+  static ageProps = [
+    {key: 'o0', name: '20歳未満'},
+    {key: 'o20', name: '20-29歳'},
+    {key: 'o30', name: '30-39歳'},
+    {key: 'o40', name: '40-49歳'},
+    {key: 'o50', name: '50-59歳'},
+    {key: 'o60', name: '60-69歳'},
+    {key: 'o70', name: '70-79歳'},
+    {key: 'o80', name: '80歳以上'},
+    {key: 'unknown', name: '不詳'},
+  ];
 
-  static housemateProps = {
-    keys: ['yes', 'no', 'unknown'],
-    texts: ['あり', 'なし', '不詳']
-  };
+  static housemateProps = [
+    {key: 'yes', name: 'あり'},
+    {key: 'no', name: 'なし'},
+    {key: 'unknown', name: '不詳'},
+  ];
 
-  static jobProps = {
-    keys: ['self_employed', 'employed', 'student', 'stay_at_home', 'lost_job', 'pensioner', 'unemployed', 'unknown'],
-    texts: ['自営業・家族従業者', '被雇用・勤め人', '学生・生徒等', '主婦', '失業者', '年金・雇用保険等生活者', 'その他の無職者', '不詳']
-  };
+  static jobProps = [
+    {key: 'self_employed', name: '自営業・家族従業者'},
+    {key: 'employed', name: '被雇用・勤め人'},
+    {key: 'student', name: '学生・生徒等'},
+    {key: 'stay_at_home', name: '主婦'},
+    {key: 'lost_job', name: '失業者'},
+    {key: 'pensioner', name: '年金・雇用保険等生活者'},
+    {key: 'unemployed', name: 'その他の無職者'},
+    {key: 'unknown', name: '不詳'},
+  ];
 
-  static locationProps = {
-    keys: ['home', 'building', 'vehicle', 'sea', 'mountain', 'other', 'unknown'],
-    texts: ['自宅等', '高層ビル', '乗物', '海（湖）・河川等', '山', 'その他', '不詳']
-  };
+  static locationProps = [
+    {key: 'home', name: '自宅等'},
+    {key: 'building', name: '高層ビル'},
+    {key: 'vehicle', name: '乗物'},
+    {key: 'sea', name: '海（湖）・河川等'},
+    {key: 'mountain', name: '山'},
+    {key: 'other', name: 'その他'},
+    {key: 'unknown', name: '不詳'},
+  ];
 
-  static wayProps = {
-    keys: ['hanging', 'poison', 'briquet', 'jumping', 'diving', 'other', 'unknown'],
-    texts: ['首つり', '服毒', '練炭等', '飛降り', '飛込み', 'その他', '不詳']
-  };
+  static wayProps = [
+    {key: 'hanging', name: '首つり'},
+    {key: 'poison', name: '服毒'},
+    {key: 'briquet', name: '練炭等'},
+    {key: 'jumping', name: '飛降り'},
+    {key: 'diving', name: '飛込み'},
+    {key: 'other', name: 'その他'},
+    {key: 'unknown', name: '不詳'},
+  ];
 
-  static hourProps = {
-    keys: ['a0', 'a2', 'a4', 'a6', 'a8', 'a10', 'a12', 'a14', 'a16', 'a18', 'a20', 'a22', 'unknown'],
-    texts: ['0-2時', '2-4時', '4-6時', '6-8時', '8-10時', '10-12時', '12-14時', '14-16時', '16-18時', '18-20時', '20-22時', '22-24時', '不詳']
-  };
+  static hourProps = [
+    {key: 'a0', name: '0-2時'},
+    {key: 'a2', name: '2-4時'},
+    {key: 'a4', name: '4-6時'},
+    {key: 'a6', name: '6-8時'},
+    {key: 'a8', name: '8-10時'},
+    {key: 'a10', name: '10-12時'},
+    {key: 'a12', name: '12-14時'},
+    {key: 'a14', name: '14-16時'},
+    {key: 'a16', name: '16-18時'},
+    {key: 'a18', name: '18-20時'},
+    {key: 'a20', name: '20-22時'},
+    {key: 'a22', name: '22-24時'},
+    {key: 'unknown', name: '不詳'},
+  ];
 
-  static dayProps = {
-    keys: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'unknown'],
-    texts: ['日曜', '月曜', '火曜', '水曜', '木曜', '金曜', '土曜', '不詳']
-  };
+  static dayProps = [
+    {key: 'sunday', name: '日曜'},
+    {key: 'monday', name: '月曜'},
+    {key: 'tuesday', name: '火曜'},
+    {key: 'wednesday', name: '水曜'},
+    {key: 'thursday', name: '木曜'},
+    {key: 'friday', name: '金曜'},
+    {key: 'saturday', name: '土曜'},
+    {key: 'unknown', name: '不詳'},
+  ];
 
-  static reasonProps = {
-    keys: ['family', 'health', 'life', 'work', 'partner', 'school', 'other', 'unknown'],
-    texts: ['家庭問題', '健康問題', '経済・生活問題', '勤務問題', '男女問題', '学校問題', 'その他', '不詳']
-  };
+  static reasonProps = [
+    {key: 'family', name: '家庭問題'},
+    {key: 'health', name: '健康問題'},
+    {key: 'life', name: '経済・生活問題'},
+    {key: 'work', name: '勤務問題'},
+    {key: 'partner', name: '男女問題'},
+    {key: 'school', name: '学校問題'},
+    {key: 'other', name: 'その他'},
+    {key: 'unknown', name: '不詳'},
+  ];
 
-  static attemptedProps = {
-    keys: ['yes', 'no', 'unknown'],
-    texts: ['あり', 'なし', '不詳']
-  };
+  static attemptedProps = [
+    {key: 'yes', name: 'あり'},
+    {key: 'no', name: 'なし'},
+    {key: 'unknown', name: '不詳'},
+  ];
 
-  static totalProps = {
-    keys: ['number'],
-    texts: ['自殺者数']
-  };
+  static totalProps = [
+    {key: 'number', name: '自殺者数'},
+  ];
+
+  static get splitters(){
+    return {
+      area: this.areas,
+      gender: this.genders,
+      year: {},
+      total:[
+        {key: 0, name: '総数'}
+      ]
+    }
+  }
+
 
   static genders = [
-    {key: 1, text: '女性'},
-    {key: 2, text: '男性'}
-  ]
+    {key: 1, name: '女性'},
+    {key: 2, name: '男性'}
+  ];
 
   static _areas;
   static get areas() {
@@ -147,94 +206,94 @@ export default class Constants {
     {
       name: '北海道',
       areas: [
-        {key: 1, text: '北海道'}
+        {key: 1, name: '北海道'}
       ]
     },
     {
       name: '東北',
       areas: [
-        {key: 2, text: '青森県'},
-        {key: 3, text: '岩手県'},
-        {key: 4, text: '宮城県'},
-        {key: 5, text: '秋田県'},
-        {key: 6, text: '山形県'},
-        {key: 7, text: '福島県'},
+        {key: 2, name: '青森県'},
+        {key: 3, name: '岩手県'},
+        {key: 4, name: '宮城県'},
+        {key: 5, name: '秋田県'},
+        {key: 6, name: '山形県'},
+        {key: 7, name: '福島県'},
       ]
     },
     {
       name: '関東',
       areas: [
-        {key: 8, text: '茨城県'},
-        {key: 9, text: '栃木県'},
-        {key: 10, text: '群馬県'},
-        {key: 11, text: '埼玉県'},
-        {key: 12, text: '千葉県'},
-        {key: 13, text: '東京都'},
-        {key: 14, text: '神奈川県'},
+        {key: 8, name: '茨城県'},
+        {key: 9, name: '栃木県'},
+        {key: 10, name: '群馬県'},
+        {key: 11, name: '埼玉県'},
+        {key: 12, name: '千葉県'},
+        {key: 13, name: '東京都'},
+        {key: 14, name: '神奈川県'},
       ]
     },
     {
       name: '中部',
       areas: [
-        {key: 15, text: '新潟県'},
-        {key: 16, text: '富山県'},
-        {key: 17, text: '石川県'},
-        {key: 18, text: '福井県'},
-        {key: 19, text: '山梨県'},
-        {key: 20, text: '長野県'},
-        {key: 21, text: '岐阜県'},
-        {key: 22, text: '静岡県'},
-        {key: 23, text: '愛知県'},
+        {key: 15, name: '新潟県'},
+        {key: 16, name: '富山県'},
+        {key: 17, name: '石川県'},
+        {key: 18, name: '福井県'},
+        {key: 19, name: '山梨県'},
+        {key: 20, name: '長野県'},
+        {key: 21, name: '岐阜県'},
+        {key: 22, name: '静岡県'},
+        {key: 23, name: '愛知県'},
       ]
     },
     {
       name: '近畿',
       areas: [
-        {key: 24, text: '三重県'},
-        {key: 25, text: '滋賀県'},
-        {key: 26, text: '京都府'},
-        {key: 27, text: '大阪府'},
-        {key: 28, text: '兵庫県'},
-        {key: 29, text: '奈良県'},
-        {key: 30, text: '和歌山県'},
+        {key: 24, name: '三重県'},
+        {key: 25, name: '滋賀県'},
+        {key: 26, name: '京都府'},
+        {key: 27, name: '大阪府'},
+        {key: 28, name: '兵庫県'},
+        {key: 29, name: '奈良県'},
+        {key: 30, name: '和歌山県'},
       ]
     },
     {
       name: '中国',
       areas: [
-        {key: 31, text: '鳥取県'},
-        {key: 32, text: '島根県'},
-        {key: 33, text: '岡山県'},
-        {key: 34, text: '広島県'},
-        {key: 35, text: '山口県'},
+        {key: 31, name: '鳥取県'},
+        {key: 32, name: '島根県'},
+        {key: 33, name: '岡山県'},
+        {key: 34, name: '広島県'},
+        {key: 35, name: '山口県'},
       ]
     },
     {
       name: '四国',
       areas: [
-        {key: 36, text: '徳島県'},
-        {key: 37, text: '香川県'},
-        {key: 38, text: '愛媛県'},
-        {key: 39, text: '高知県'},
+        {key: 36, name: '徳島県'},
+        {key: 37, name: '香川県'},
+        {key: 38, name: '愛媛県'},
+        {key: 39, name: '高知県'},
       ]
     },
     {
       name: '九州・沖縄',
       areas: [
-        {key: 40, text: '福岡県'},
-        {key: 41, text: '佐賀県'},
-        {key: 42, text: '長崎県'},
-        {key: 43, text: '熊本県'},
-        {key: 44, text: '大分県'},
-        {key: 45, text: '宮崎県'},
-        {key: 46, text: '鹿児島県'},
-        {key: 47, text: '沖縄県'}
+        {key: 40, name: '福岡県'},
+        {key: 41, name: '佐賀県'},
+        {key: 42, name: '長崎県'},
+        {key: 43, name: '熊本県'},
+        {key: 44, name: '大分県'},
+        {key: 45, name: '宮崎県'},
+        {key: 46, name: '鹿児島県'},
+        {key: 47, name: '沖縄県'}
       ]
     },
     {
       name: 'その他',
       areas: [
-        {key: 48, text: '不明'}
+        {key: 48, name: '不明'}
       ]
     }
   ];

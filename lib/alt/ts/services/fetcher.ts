@@ -1,3 +1,4 @@
+import Constants from "../initializers/constants";
 const request = require('superagent');
 
 export function fetchPreset(presetName:string, callback:Function) {
@@ -22,46 +23,46 @@ function detectPreset(presetName:string) {
 }
 
 export function fetchWithParams(props, callback:Function) {
-  let {table, split, year, filter} = props.params;
-  if(split != 'year' && !year && !filter){
-    throw 'year required'
-  }
+  let {table, split, sort, rotation} = props.params;
+  let {area, gender, year} = props.location.query;
 
-  if(!!split && split != 'gender' && split != 'area'){
-    let store = split;
-    split = table;
-    table = store;
-  }
-
-  let yearParam = year || '-';
+  let yearParam = '-';
   let genderParam = split == 'gender' ? '1,2' : '0';
   let areaParam = split == 'area' ? '-' : '0';
 
-  if(table == 'area'){
-    table = 'total';
-    areaParam = '-';
+  switch (sort) {
+    case 'gender':
+      genderParam = '0,1,2';
+    case 'area':
+      areaParam = Constants.areas.map((a)=> a.key).join(',');
+    case 'year':
+      yearParam = '-';
+    default:
+      yearParam = '-';
   }
 
-  if(table == 'gender'){
-    table = 'total';
-    genderParam = '-';
+  if (!!area) {
+    areaParam = area;
   }
 
-  if(!!props.location.query.area){
-    console.log('strict area')
-    areaParam = props.location.query.area;
+  if (!!gender) {
+    genderParam = gender;
   }
 
-  if(!!props.location.query.gender){
-    console.log('strict gender')
-    genderParam = props.location.query.gender;
+  if (!!year) {
+    yearParam = year;
   }
-
 
   let uri = ['/api', genderParam, yearParam, areaParam, table].join('/')
   request
     .get(uri)
-    .end((err, res)=>
-      !!err ? null : callback({table: props.params.table, split: props.params.split, data: res.body})
-    )
+    .end((err, res)=> {
+      if (!!err) {
+        //
+      } else {
+        let data = res.body;
+        console.log(`fetched from ${uri}`, {table, split, rotation, data});
+        callback(data)
+      }
+    });
 }
