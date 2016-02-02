@@ -50,9 +50,9 @@ function detectSplitterMap(split:string) {
   return Constants.splitters[split];
 }
 
-function findOrCreate(hash:any, key:string, initial:any):any{
+function findOrCreate(hash:any, key:string, initial:any):any {
   if (!hash[key]) {
-    hash[key] = initial;
+    hash[key.toString()] = initial;
   }
   return hash[key];
 }
@@ -70,42 +70,26 @@ function arrangeData(data:any[], table:string):any {
   data.map((part)=> {
     part.total = part.gender;
 
-    /*
-    // 総数
-    if(part.gender.content == 0){
-      //項目のstore
-      let totalStore = findOrCreate(arranged, 'total', {});
-      //項目の年度別store
-      let totalYearStore = findOrCreate(totalStore, part.year.content, {});
-      //項目の年度内種別配列
-      let dataArray = findOrCreate(totalYearStore, 0, []);
-      dataArray.push(part);
-    };
-*/
-    // 各splitへ値を割り当て
+    // 各splitのkeyでアクセスできるようにする
     _.each(splitters, (keys, name:string)=> {
-      if(!part[name]){
+      if (!part[name]) {
         return;
       }
       //項目のstore
       let splitStore = findOrCreate(arranged, name, {});
-      //項目の年度別store
-      let yearStore = findOrCreate(splitStore, part.year.content, {});
-      //項目の年度内種別配列
-      let dataArray = findOrCreate(yearStore, part[name].content, []);
+      let dataArray = findOrCreate(splitStore, part[name].content, []);
 
       dataArray.push(part);
     });
 
-    // valueのnumberを {name, content, splitters} 形式に変更
+    // tableの各要素からsplitにアクセスできるようにする
     _.each(keyMaps, (keyMap)=> {
       part[keyMap.key] = {
         name: keyMap.name,
-        content: part[keyMap.key]
+        content: part[keyMap.key],
+        src: part,
+        key: keyMap.key
       };
-      _.each(splitters, (keys, name)=> {
-        part[keyMap.key][name] = arranged[name];
-      });
     });
 
     // 各項目の属性ごとに値を割り当て
@@ -131,6 +115,7 @@ function normalizeRegularStackBarData(arranged, table, split, sort) {
   }
   let keyMaps = detectTableKeyMap(table);
   let splitterMaps = detectSplitterMap(split);
+  let sortMaps = detectSplitterMap(sort);
 
   let chartSeries = splitterMaps.map((keyMap)=> ({field: keyMap.key, name: keyMap.name}));
 
@@ -141,21 +126,54 @@ function normalizeRegularStackBarData(arranged, table, split, sort) {
     max: 0
   };
 
-  _.each(splitterMaps, (splitterMap)=> {
-    let {name, key} = splitterMap;
-    _.each(arranged[split], (yearResult, year:string)=>{
-      let rawList = yearResult[key];
-      let eachYearStore = findOrCreate(chartData.eachYear, year, {});
-      _.each(rawList, (raw)=> {
-        _.each(keyMaps, (keyMap)=> {
-          let eachYearData = findOrCreate(eachYearStore, keyMap.key, {title: raw[keyMap.key].name, data: {}});
-          let eachYearDataDetail = findOrCreate(eachYearData.data, raw[sort].content, {sort: raw[sort]});
-          eachYearDataDetail[raw[split].content] = raw[keyMap.key].content;
-        });
-      })
-    });
-  });
+  if (sort == 'year') {
 
+  } else {
+    _.each(arranged.year, (yearDataList, year:string)=> {
+      let eachYearStore = findOrCreate(chartData.eachYear, year, {});
+      let remap = {};
+      _.each(yearDataList, (d)=>{
+        let store = findOrCreate(remap, d[sort].content, {})
+        store[d[split].content] = d;
+      });
+
+      _.each(sortMaps, (sortMap)=> {
+        let sortElement = remap[sortMap.key];
+        if(!sortElement){
+          return;
+        }
+        _.each(sortElement, (splitValue, splitKey)=>{
+          _.each(keyMaps, (keyMap)=> {
+            var dataList = findOrCreate(eachYearStore, keyMap.key, {});
+            var data = findOrCreate(dataList, sortMap.key, {sort: sortMap});
+            data[splitKey] = splitValue[keyMap.key].content;
+          });
+        });
+      });
+    });
+    console.log('normalized', chartData.eachYear);
+
+    /*
+     _.each(splitterMaps, (splitterMap)=> {
+     let {name, key} = splitterMap;
+     _.each(arranged[split], (yearResult, year:string)=>{
+     let rawList = yearResult[key];
+     let eachYearStore = findOrCreate(chartData.eachYear, year, yearResult);
+     _.each(rawList, (raw)=> {
+
+
+     _.each(keyMaps, (keyMap)=> {
+     let eachYearData = findOrCreate(eachYearStore, keyMap.key, {title: raw[keyMap.key].name, data: {}});
+     let eachYearDataDetail = findOrCreate(eachYearData.data, raw[sort].content, {sort: raw[sort]});
+     eachYearDataDetail[raw[split].content] = raw[keyMap.key].content;
+     });
+     })
+     });
+     });      */
+
+  }
+
+/*
   _.each(chartData.eachYear, (yearData)=> {
     _.each(yearData, (chart)=> {
       _.each(chart.data, (child)=> {
@@ -166,8 +184,7 @@ function normalizeRegularStackBarData(arranged, table, split, sort) {
         maxStore > chartData.max && (chartData.max = maxStore);
       })
     });
-  });
-
+  }); */
   console.log('normalized', chartData);
   return chartData;
 }
