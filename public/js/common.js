@@ -63704,14 +63704,30 @@ var AreaSelectorComponent = (function (_super) {
     function AreaSelectorComponent() {
         _super.apply(this, arguments);
     }
+    Object.defineProperty(AreaSelectorComponent.prototype, "selected", {
+        get: function () {
+            var area = this.props.location.query.area;
+            if (!area) {
+                return [];
+            }
+            return area.split(',').map(function (n) { return +n; });
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AreaSelectorComponent.prototype, "separated", {
+        get: function () {
+        },
+        enumerable: true,
+        configurable: true
+    });
     AreaSelectorComponent.prototype.toggle = function (e) {
-        var selected = (this.props.location.query.area || '').split(',').map(function (n) { return +n; });
         var key = +e.target.value;
-        if (_.includes(selected, key)) {
-            this.dispatch('area:select', _.without(selected, key));
+        if (_.includes(this.selected, key)) {
+            this.dispatch('area:select', _.without(this.selected, key));
         }
         else {
-            this.dispatch('area:select', selected.concat([key]));
+            this.dispatch('area:select', this.selected.concat([key]));
         }
     };
     AreaSelectorComponent.prototype.writeSelector = function (props) {
@@ -63731,7 +63747,7 @@ var AreaSelectorComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AreaSelectorComponent;
 
-},{"../initializers/constants":360,"../lib/eventer":361,"lodash":79,"react":342}],349:[function(require,module,exports){
+},{"../initializers/constants":361,"../lib/eventer":362,"lodash":79,"react":342}],349:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -63815,7 +63831,7 @@ var BarChartComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = BarChartComponent;
 
-},{"../initializers/constants":360,"../lib/eventer":361,"../services/normalizer":364,"d3":2,"lodash":79,"react":342,"react-d3-basic":95}],350:[function(require,module,exports){
+},{"../initializers/constants":361,"../lib/eventer":362,"../services/normalizer":365,"d3":2,"lodash":79,"react":342,"react-d3-basic":95}],350:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -63848,7 +63864,7 @@ var ChartConfigurationComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ChartConfigurationComponent;
 
-},{"../lib/eventer":361,"react":342}],351:[function(require,module,exports){
+},{"../lib/eventer":362,"react":342}],351:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -63878,7 +63894,7 @@ var ChartControllerComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ChartControllerComponent;
 
-},{"../lib/eventer":361,"./area-selector":348,"./chart-configuration":350,"react":342}],352:[function(require,module,exports){
+},{"../lib/eventer":362,"./area-selector":348,"./chart-configuration":350,"react":342}],352:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -63888,20 +63904,21 @@ var React = require('react');
 var eventer_1 = require('../lib/eventer');
 var site_map_1 = require('../components/site-map');
 var header_1 = require('../components/header');
+var copyright_1 = require('../components/copyright');
 var CommonComponent = (function (_super) {
     __extends(CommonComponent, _super);
     function CommonComponent() {
         _super.apply(this, arguments);
     }
     CommonComponent.prototype.render = function () {
-        return React.createElement("div", {"className": "global-wrapper"}, React.createElement("header", {"className": "global-header"}, React.createElement(header_1.default, null)), React.createElement("article", {"className": "main-content"}, React.cloneElement(this.props.children || React.createElement("div", null, "blank"), this.props || {})), React.createElement("footer", {"className": "global-footer"}, React.createElement(site_map_1.default, null)));
+        return React.createElement("div", {"className": "global-wrapper"}, React.createElement("header", {"className": "global-header"}, React.createElement(header_1.default, null)), React.createElement("article", {"className": "main-content"}, React.cloneElement(this.props.children || React.createElement("div", null, "blank"), this.props || {})), React.createElement("footer", {"className": "global-footer"}, React.createElement(site_map_1.default, null), React.createElement(copyright_1.default, null)));
     };
     return CommonComponent;
 })(eventer_1.Node);
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CommonComponent;
 
-},{"../components/header":353,"../components/site-map":356,"../lib/eventer":361,"react":342}],353:[function(require,module,exports){
+},{"../components/copyright":353,"../components/header":354,"../components/site-map":357,"../lib/eventer":362,"react":342}],353:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -63909,20 +63926,43 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var React = require('react');
 var eventer_1 = require('../lib/eventer');
+var CopyrightComponent = (function (_super) {
+    __extends(CopyrightComponent, _super);
+    function CopyrightComponent() {
+        _super.apply(this, arguments);
+    }
+    CopyrightComponent.prototype.render = function () {
+        return React.createElement("div", null, React.createElement("section", {"className": "copyright body"}, React.createElement("address", null, React.createElement("a", {"href": "http://twitter.com/o296sm"}, "@o296sm"))));
+    };
+    return CopyrightComponent;
+})(eventer_1.Node);
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = CopyrightComponent;
+
+},{"../lib/eventer":362,"react":342}],354:[function(require,module,exports){
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var React = require('react');
+var eventer_1 = require('../lib/eventer');
+var fa_1 = require('../lib/fa');
 var HeaderComponent = (function (_super) {
     __extends(HeaderComponent, _super);
     function HeaderComponent() {
         _super.apply(this, arguments);
     }
     HeaderComponent.prototype.render = function () {
-        return React.createElement("div", null, React.createElement("section", {"className": "header body"}, React.createElement("h1", {"className": "header title"}, "自殺を知る、自殺を考える")));
+        var _this = this;
+        return React.createElement("div", null, React.createElement("section", {"className": "header body"}, React.createElement("h1", {"className": "header title"}, "自殺を知る、自殺を考える"), React.createElement("h2", {"className": "header navigator"}, React.createElement(fa_1.default, {"icon": "navicon"}), React.createElement("a", {"onClick": function () { return _this.dispatch('link:navigator'); }}, "チャート一覧"))));
     };
     return HeaderComponent;
 })(eventer_1.Node);
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = HeaderComponent;
 
-},{"../lib/eventer":361,"react":342}],354:[function(require,module,exports){
+},{"../lib/eventer":362,"../lib/fa":363,"react":342}],355:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -63997,7 +64037,7 @@ var PieChartComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PieChartComponent;
 
-},{"../initializers/constants":360,"../lib/eventer":361,"../services/normalizer":364,"lodash":79,"react":342,"react-d3":160}],355:[function(require,module,exports){
+},{"../initializers/constants":361,"../lib/eventer":362,"../services/normalizer":365,"lodash":79,"react":342,"react-d3":160}],356:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -64054,7 +64094,7 @@ var SimpleGraph = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SimpleGraph;
 
-},{"../lib/eventer":361,"react":342,"react-d3":160}],356:[function(require,module,exports){
+},{"../lib/eventer":362,"react":342,"react-d3":160}],357:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -64072,7 +64112,11 @@ var SiteMapComponent = (function (_super) {
         e.preventDefault();
         this.dispatch('link', e.currentTarget.getAttribute('href'));
     };
+    SiteMapComponent.prototype.detectIcon = function (split) {
+        return split == 'gender' ? React.createElement(fa_1.default, {"icon": "venus-mars"}) : React.createElement(fa_1.default, {"icon": "globe"});
+    };
     SiteMapComponent.prototype.writeLinks = function () {
+        var _this = this;
         var splits = [
             { key: 'gender', text: '性別' },
             { key: 'area', text: '地域' }
@@ -64092,7 +64136,7 @@ var SiteMapComponent = (function (_super) {
         var link = this.link.bind(this);
         return tables.map(function (table) {
             return React.createElement("section", {"className": "site-map sub-section", "key": table.key}, splits.map(function (split) {
-                return React.createElement("section", {"className": "site-map link-set", "key": split.key}, React.createElement(fa_1.default, {"icon": "bar-chart"}), React.createElement("span", {"className": "site-map main-link"}, React.createElement("a", {"href": "/bar/" + table.key + "/" + split.key + "/-", "onClick": link}, React.createElement("span", {"className": "site-map split"}, split.text + "::"), "" + table.text)), React.createElement("span", {"className": "site-map sub-link"}, "(", React.createElement("a", {"href": "/bar/" + split.key + "/" + table.key + "/-", "onClick": link}, split.text + "\u5225\u8868"), ")"));
+                return React.createElement("section", {"className": "site-map link-set", "key": split.key}, _this.detectIcon(split.key), React.createElement("span", {"className": "site-map main-link"}, React.createElement("a", {"href": "/bar/" + table.key + "/" + split.key + "/-", "onClick": link}, React.createElement("span", {"className": "site-map split"}, ""), "" + table.text)), React.createElement("span", {"className": "site-map sub-link"}, React.createElement("a", {"href": "/bar/" + split.key + "/" + table.key + "/-", "onClick": link}, "(" + split.text + "\u5225\u8868)")));
             }));
         });
     };
@@ -64105,7 +64149,7 @@ var SiteMapComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SiteMapComponent;
 
-},{"../lib/eventer":361,"../lib/fa":362,"react":342}],357:[function(require,module,exports){
+},{"../lib/eventer":362,"../lib/fa":363,"react":342}],358:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -64135,7 +64179,12 @@ var ChartContext = (function (_super) {
         var _this = this;
         to('area:select', function (key) {
             var query = _this.props.location.query;
-            query.area = key.join(',');
+            if (key && key.length) {
+                query.area = key.join(',');
+            }
+            else {
+                delete query.area;
+            }
             _this.props.history.pushState(null, _this.props.location.pathname, query);
         });
         to('chart:autoScale', function (autoScale) {
@@ -64149,7 +64198,7 @@ var ChartContext = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ChartContext;
 
-},{"../lib/eventer":361}],358:[function(require,module,exports){
+},{"../lib/eventer":362}],359:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -64187,7 +64236,7 @@ var PresetGraph = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PresetGraph;
 
-},{"../lib/eventer":361}],359:[function(require,module,exports){
+},{"../lib/eventer":362}],360:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -64235,9 +64284,9 @@ var App = (function (_super) {
     };
     App.prototype.componentWillReceiveProps = function (nextProps) {
         this.normalizeRouteParams(nextProps);
-        this.fetchData(nextProps);
+        this.fetchData(nextProps, this.props);
     };
-    App.prototype.fetchData = function (props) {
+    App.prototype.fetchData = function (props, preProps) {
         var _this = this;
         var presetName = props.params.presetName;
         if (!!presetName) {
@@ -64257,18 +64306,29 @@ var App = (function (_super) {
     App.prototype.normalizeRouteParams = function (props) {
         console.log(props);
     };
+    App.prototype.normalizeQuery = function (uri, props) {
+        var query = props.location.query;
+        if (uri.indexOf('/area/') == -1) {
+            delete query.area;
+        }
+        return query;
+    };
     App.prototype.listen = function (to) {
         var _this = this;
         to('link', function (uri) {
             window.scrollTo(0, 0);
-            _this.props.history.pushState(null, uri);
+            _this.props.history.pushState(null, uri, _this.normalizeQuery(uri, _this.props));
+        });
+        to('link:navigator', function () {
+            console.log('link:nav');
+            window.scrollTo(0, window.innerHeight);
         });
     };
     return App;
 })(eventer_1.Root);
-react_dom_1.render((React.createElement(react_router_1.Router, {"history": new CreateHistory()}, React.createElement(react_router_1.Route, {"path": "/", "component": App}, React.createElement(react_router_1.Route, {"path": "", "component": common_1.default}, React.createElement(react_router_1.Route, {"path": "preset", "component": preset_graph_1.default}, React.createElement(react_router_1.Route, {"path": "child", "component": Child}), React.createElement(react_router_1.Route, {"path": "way/:gender/:year/:area", "component": simple_graph_1.default})), React.createElement(react_router_1.Route, {"path": "pie", "component": preset_graph_1.default}, React.createElement(react_router_1.Route, {"path": ":presetName", "component": pie_chart_1.default}), React.createElement(react_router_1.Route, {"path": ":table/:year", "component": pie_chart_1.default}), React.createElement(react_router_1.Route, {"path": ":table/:split/:year", "component": pie_chart_1.default})), React.createElement(react_router_1.Route, {"path": "bar", "component": chart_1.default}, React.createElement(react_router_1.Route, {"path": "", "component": chart_controller_1.default}, React.createElement(react_router_1.Route, {"path": ":table/:split/:filter", "component": bar_chart_1.default}))))))), document.querySelector('#app'));
+react_dom_1.render((React.createElement(react_router_1.Router, {"history": new CreateHistory()}, React.createElement(react_router_1.Route, {"path": "/", "component": App}, React.createElement(react_router_1.Route, {"path": "", "component": common_1.default}, React.createElement(react_router_1.Route, {"path": "preset", "component": preset_graph_1.default}, React.createElement(react_router_1.Route, {"path": "child", "component": Child}), React.createElement(react_router_1.Route, {"path": "way/:gender/:year/:area", "component": simple_graph_1.default})), React.createElement(react_router_1.Route, {"path": "pie", "component": preset_graph_1.default}, React.createElement(react_router_1.Route, {"path": ":presetName", "component": pie_chart_1.default}), React.createElement(react_router_1.Route, {"path": ":table/:year", "component": pie_chart_1.default}), React.createElement(react_router_1.Route, {"path": ":table/:split/:year", "component": pie_chart_1.default})), React.createElement(react_router_1.Route, {"path": "bar", "component": chart_1.default}, React.createElement(react_router_1.Route, {"path": "", "component": chart_controller_1.default}, React.createElement(react_router_1.Route, {"path": ":table/:split/:filter", "component": bar_chart_1.default}), React.createElement(react_router_1.Route, {"path": ":table/:split/:filter", "component": bar_chart_1.default}))))))), document.querySelector('#app'));
 
-},{"./components/bar-chart":349,"./components/chart-controller":351,"./components/common":352,"./components/pie-chart":354,"./components/simple-graph":355,"./contexts/chart":357,"./contexts/preset-graph":358,"./lib/eventer":361,"./services/fetcher":363,"history/lib/createBrowserHistory":39,"react":342,"react-dom":186,"react-router":209}],360:[function(require,module,exports){
+},{"./components/bar-chart":349,"./components/chart-controller":351,"./components/common":352,"./components/pie-chart":355,"./components/simple-graph":356,"./contexts/chart":358,"./contexts/preset-graph":359,"./lib/eventer":362,"./services/fetcher":364,"history/lib/createBrowserHistory":39,"react":342,"react-dom":186,"react-router":209}],361:[function(require,module,exports){
 var d3_1 = require('d3');
 var Constants = (function () {
     function Constants() {
@@ -64352,6 +64412,21 @@ var Constants = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Constants, "areas", {
+        get: function () {
+            var _this = this;
+            if (this._areas) {
+                return this._areas;
+            }
+            this._areas = [];
+            this.separatedAreas.map(function (area) {
+                area.areas.map(function (a) { return _this._areas.push(a); });
+            });
+            return this._areas;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Constants.tables = ['age', 'housemate', 'job', 'location', 'way', 'hour', 'day', 'reason', 'attempted', 'total'];
     Constants.horizontals = ['year', 'gender', 'area'];
     Constants.pieSize = 800;
@@ -64405,62 +64480,107 @@ var Constants = (function () {
         { key: 1, text: '女性' },
         { key: 2, text: '男性' }
     ];
-    Constants.areas = [
-        { key: 1, text: '北海道' },
-        { key: 2, text: '青森県' },
-        { key: 3, text: '岩手県' },
-        { key: 4, text: '宮城県' },
-        { key: 5, text: '秋田県' },
-        { key: 6, text: '山形県' },
-        { key: 7, text: '福島県' },
-        { key: 8, text: '茨城県' },
-        { key: 9, text: '栃木県' },
-        { key: 10, text: '群馬県' },
-        { key: 11, text: '埼玉県' },
-        { key: 12, text: '千葉県' },
-        { key: 13, text: '東京都' },
-        { key: 14, text: '神奈川県' },
-        { key: 15, text: '新潟県' },
-        { key: 16, text: '富山県' },
-        { key: 17, text: '石川県' },
-        { key: 18, text: '福井県' },
-        { key: 19, text: '山梨県' },
-        { key: 20, text: '長野県' },
-        { key: 21, text: '岐阜県' },
-        { key: 22, text: '静岡県' },
-        { key: 23, text: '愛知県' },
-        { key: 24, text: '三重県' },
-        { key: 25, text: '滋賀県' },
-        { key: 26, text: '京都府' },
-        { key: 27, text: '大阪府' },
-        { key: 28, text: '兵庫県' },
-        { key: 29, text: '奈良県' },
-        { key: 30, text: '和歌山県' },
-        { key: 31, text: '鳥取県' },
-        { key: 32, text: '島根県' },
-        { key: 33, text: '岡山県' },
-        { key: 34, text: '広島県' },
-        { key: 35, text: '山口県' },
-        { key: 36, text: '徳島県' },
-        { key: 37, text: '香川県' },
-        { key: 38, text: '愛媛県' },
-        { key: 39, text: '高知県' },
-        { key: 40, text: '福岡県' },
-        { key: 41, text: '佐賀県' },
-        { key: 42, text: '長崎県' },
-        { key: 43, text: '熊本県' },
-        { key: 44, text: '大分県' },
-        { key: 45, text: '宮崎県' },
-        { key: 46, text: '鹿児島県' },
-        { key: 47, text: '沖縄県' },
-        { key: 48, text: '不明' }
+    Constants.separatedAreas = [
+        {
+            name: '北海道',
+            areas: [
+                { key: 1, text: '北海道' }
+            ]
+        },
+        {
+            name: '東北',
+            areas: [
+                { key: 2, text: '青森県' },
+                { key: 3, text: '岩手県' },
+                { key: 4, text: '宮城県' },
+                { key: 5, text: '秋田県' },
+                { key: 6, text: '山形県' },
+                { key: 7, text: '福島県' },
+            ]
+        },
+        {
+            name: '関東',
+            areas: [
+                { key: 8, text: '茨城県' },
+                { key: 9, text: '栃木県' },
+                { key: 10, text: '群馬県' },
+                { key: 11, text: '埼玉県' },
+                { key: 12, text: '千葉県' },
+                { key: 13, text: '東京都' },
+                { key: 14, text: '神奈川県' },
+            ]
+        },
+        {
+            name: '中部',
+            areas: [
+                { key: 15, text: '新潟県' },
+                { key: 16, text: '富山県' },
+                { key: 17, text: '石川県' },
+                { key: 18, text: '福井県' },
+                { key: 19, text: '山梨県' },
+                { key: 20, text: '長野県' },
+                { key: 21, text: '岐阜県' },
+                { key: 22, text: '静岡県' },
+                { key: 23, text: '愛知県' },
+            ]
+        },
+        {
+            name: '近畿',
+            areas: [
+                { key: 24, text: '三重県' },
+                { key: 25, text: '滋賀県' },
+                { key: 26, text: '京都府' },
+                { key: 27, text: '大阪府' },
+                { key: 28, text: '兵庫県' },
+                { key: 29, text: '奈良県' },
+                { key: 30, text: '和歌山県' },
+            ]
+        },
+        {
+            name: '中国',
+            areas: [
+                { key: 31, text: '鳥取県' },
+                { key: 32, text: '島根県' },
+                { key: 33, text: '岡山県' },
+                { key: 34, text: '広島県' },
+                { key: 35, text: '山口県' },
+            ]
+        },
+        {
+            name: '四国',
+            areas: [
+                { key: 36, text: '徳島県' },
+                { key: 37, text: '香川県' },
+                { key: 38, text: '愛媛県' },
+                { key: 39, text: '高知県' },
+            ]
+        },
+        {
+            name: '九州・沖縄',
+            areas: [
+                { key: 40, text: '福岡県' },
+                { key: 41, text: '佐賀県' },
+                { key: 42, text: '長崎県' },
+                { key: 43, text: '熊本県' },
+                { key: 44, text: '大分県' },
+                { key: 45, text: '宮崎県' },
+                { key: 46, text: '鹿児島県' },
+                { key: 47, text: '沖縄県' }
+            ]
+        },
+        {
+            name: 'その他',
+            areas: [
+                { key: 48, text: '不明' }
+            ]
+        }
     ];
     return Constants;
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Constants;
 
-},{"d3":2}],361:[function(require,module,exports){
+},{"d3":2}],362:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -64495,13 +64615,8 @@ exports.Node = Node;
 var Root = (function (_super) {
     __extends(Root, _super);
     function Root(props) {
-        var _this = this;
         _super.call(this, props);
         this.state = this.initialState(props);
-        this.emitter = new events_1.EventEmitter();
-        this.listen(function (eventname, callback) {
-            _this.emitter.on(eventname, callback);
-        });
     }
     Object.defineProperty(Root, "childContextTypes", {
         get: function () {
@@ -64510,8 +64625,15 @@ var Root = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Root.prototype.componentWillMount = function () {
+        var _this = this;
+        this.emitter = this.context.emitter || new events_1.EventEmitter();
+        this.listen(function (eventname, callback) {
+            _this.emitter.on(eventname, callback);
+        });
+    };
     Root.prototype.getChildContext = function () {
-        return { emitter: this.emitter };
+        return { emitter: this.context.emitter || this.emitter };
     };
     Root.prototype.render = function () {
         return React.cloneElement(this.props.children || React.createElement("div", null, "blank"), this.state || {});
@@ -64520,7 +64642,7 @@ var Root = (function (_super) {
 })(Node);
 exports.Root = Root;
 
-},{"events":6,"react":342}],362:[function(require,module,exports){
+},{"events":6,"react":342}],363:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -64552,7 +64674,7 @@ var Fa = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Fa;
 
-},{"react":342}],363:[function(require,module,exports){
+},{"react":342}],364:[function(require,module,exports){
 var request = require('superagent');
 function fetchPreset(presetName, callback) {
     var _a = detectPreset(presetName), uri = _a.uri, state = _a.state;
@@ -64611,7 +64733,7 @@ function fetchWithParams(props, callback) {
 }
 exports.fetchWithParams = fetchWithParams;
 
-},{"superagent":346}],364:[function(require,module,exports){
+},{"superagent":346}],365:[function(require,module,exports){
 var constants_1 = require("../initializers/constants");
 function normalizePieData(props) {
     var data = props.data, split = props.split, table = props.table;
@@ -64882,6 +65004,9 @@ function normalizeBarDataReverse(data, split, table) {
     var max = 0;
     var results = [];
     _.forEach(elements, function (e) {
+        if (!result[e.key][0][keys[0]]) {
+            return;
+        }
         results.push({
             chartSeries: chartSeries,
             key: e.key,
@@ -64929,4 +65054,4 @@ function par(n, total) {
     return Math.round(n / total * 1000) / 10;
 }
 
-},{"../initializers/constants":360}]},{},[359]);
+},{"../initializers/constants":361}]},{},[360]);

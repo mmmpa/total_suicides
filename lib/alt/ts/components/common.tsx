@@ -8,6 +8,7 @@ import * as RD3 from 'react-d3-basic'
 import AreaSelector from './area-selector'
 import SiteMap from '../components/site-map'
 import Header from '../components/header'
+import Copyright from '../components/copyright'
 
 export default class CommonComponent extends Node<{},{}> {
   render(){
@@ -20,6 +21,7 @@ export default class CommonComponent extends Node<{},{}> {
       </article>
       <footer className="global-footer">
         <SiteMap />
+        <Copyright />
       </footer>
     </div>
   }

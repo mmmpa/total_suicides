@@ -284,7 +284,7 @@ function normalizeBarDataNormal(data:any[], split:string, table:string) {
 }
 
 function normalizeBarDataReverse(data:any[], split:string, table:string) {
-  console.log('rotated')
+  console.log('rotated');
   let sorted = sortData(data, split);
   let {keys, texts} = detectChartProps(table);
 
@@ -335,7 +335,9 @@ function normalizeBarDataReverse(data:any[], split:string, table:string) {
 
   let results = []
   _.forEach(elements, (e)=> {
-
+    if(!result[e.key][0][keys[0]]){
+      return;
+    }
     results.push({
       chartSeries,
       key: e.key,

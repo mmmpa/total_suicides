@@ -2,7 +2,8 @@
 @import "./default"
 
 body
-  background: #f0f3f4
+  background: #000
+  overflow: scroll
 
 .header
   &.body
@@ -10,11 +11,17 @@ body
     padding: 20px
   &.title
     color: #fff
-
+    display: inline-block
+    padding-right: 20px
+  &.navigator
+    color: #fff
+    display: inline-block
+    @extend .size-h5
 .main-content
   background: #fff
   h1
     @extend .size-h4
+
 
 .chart-list
   li
@@ -51,7 +58,7 @@ input[type="radio"]
 .chart-config
   &.body
     padding: 20px
-    background: #e1e8ea
+    background: $gray2
   &.title
     display: table-cell
     vertical-align: middle
@@ -64,7 +71,7 @@ input[type="radio"]
 .area-selector
   &.body
     padding: 20px
-    background: #f0f3f5
+    background: $gray1
   &.title
     vertical-align: top
     display: table-cell
@@ -105,14 +112,26 @@ input[type="radio"]
   &.split
     @extend .size-h6
   &.link-set
+    color: $gray10
     @extend .size-h5
   &.main-link
     @extend .size-h5
   &.sub-link
     padding-left: 5px
     @extend .size-h6
-
+  a
+    color: #333
 .global-footer
   @extend .size-h6
   color: #555
-  background: #f0f3f4
+  background: $gray1
+
+.copyright
+  &.body
+    background: $gray2
+    padding: 20px
+    address
+      font-style: normal
+      display: block
+    a
+      color: #000

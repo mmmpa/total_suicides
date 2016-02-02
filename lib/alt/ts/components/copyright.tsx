@@ -6,18 +6,14 @@ import * as _ from 'lodash';
 import {normalizeBarData} from '../services/normalizer'
 import * as RD3 from 'react-d3-basic'
 import AreaSelector from './area-selector'
-import Fa from '../lib/fa'
 
-export default class HeaderComponent extends Node<{},{}> {
+export default class CopyrightComponent extends Node<{},{}> {
   render(){
     return <div>
-      <section className="header body">
-        <h1 className="header title">自殺を知る、自殺を考える</h1>
-        <h2 className="header navigator">
-          <Fa icon="navicon"/>
-          <a onClick={()=> this.dispatch('link:navigator')}>チャート一覧</a></h2>
+      <section className="copyright body">
+        <address>
+          <a href="http://twitter.com/o296sm">@o296sm</a></address>
       </section>
     </div>
   }
 }
-

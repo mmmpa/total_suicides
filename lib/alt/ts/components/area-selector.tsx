@@ -7,13 +7,24 @@ import {normalizeBarData} from '../services/normalizer'
 import * as RD3 from 'react-d3-basic'
 
 export default class AreaSelectorComponent extends Node<{},{}> {
+  get selected(){
+    let {area} = this.props.location.query;
+    if(!area){
+      return [];
+    }
+    return area.split(',').map((n)=> +n)
+  }
+
+  get separated(){
+
+  }
+
   toggle(e){
-    let selected = (this.props.location.query.area || '').split(',').map((n)=> +n);
     let key = +e.target.value;
-    if(_.includes(selected, key)){
-      this.dispatch('area:select', _.without(selected, key));
+    if(_.includes(this.selected, key)){
+      this.dispatch('area:select', _.without(this.selected, key));
     }else{
-      this.dispatch('area:select', selected.concat([key]))
+      this.dispatch('area:select', this.selected.concat([key]))
     }
   }
 

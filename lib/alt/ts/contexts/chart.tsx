@@ -22,7 +22,11 @@ export default class ChartContext extends Root<{},{}> {
   listen(to) {
     to('area:select', (key)=> {
       let {query} = this.props.location;
-      query.area = key.join(',');
+      if(key && key.length){
+        query.area = key.join(',');
+      }else{
+        delete query.area;
+      }
       this.props.history.pushState(null,
         this.props.location.pathname,
         query

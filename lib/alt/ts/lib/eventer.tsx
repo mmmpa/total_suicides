@@ -20,6 +20,7 @@ export abstract class Node<P, S> extends React.Component<P, S> {
   }
 }
 
+
 export abstract class Root<P, S> extends Node<P, S> {
   emitter:EventEmitter;
 
@@ -30,17 +31,20 @@ export abstract class Root<P, S> extends Node<P, S> {
     return EventingShared;
   }
 
-  constructor(props) {
-    super(props);
-    this.state = this.initialState(props);
-    this.emitter = new EventEmitter();
+  componentWillMount(){
+    this.emitter = this.context.emitter || new EventEmitter();
     this.listen((eventname:string, callback:Function) => {
       this.emitter.on(eventname, callback);
     });
   }
 
+  constructor(props) {
+    super(props);
+    this.state = this.initialState(props);
+  }
+
   getChildContext():IEventingShared {
-    return {emitter: this.emitter};
+    return {emitter: this.context.emitter || this.emitter};
   }
 
   render() {

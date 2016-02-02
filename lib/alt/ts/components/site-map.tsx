@@ -14,6 +14,10 @@ export default class SiteMapComponent extends Node<{},{}> {
     this.dispatch('link', e.currentTarget.getAttribute('href'));
   }
 
+  detectIcon(split){
+    return split == 'gender' ? <Fa icon="venus-mars"/> : <Fa icon="globe"/>
+  }
+
   writeLinks() {
     let splits = [
       {key: 'gender', text: '性別'},
@@ -39,15 +43,15 @@ export default class SiteMapComponent extends Node<{},{}> {
         {
           splits.map((split)=>{
             return <section className="site-map link-set" key={split.key}>
-              <Fa icon="bar-chart"/>
+              {this.detectIcon(split.key)}
               <span className="site-map main-link">
                 <a href={`/bar/${table.key}/${split.key}/-`} onClick={link}>
-                  <span className="site-map split">{`${split.text}::`}</span>
+                  <span className="site-map split">{``}</span>
                   {`${table.text}`}
                 </a>
               </span>
               <span className="site-map sub-link">
-                (<a href={`/bar/${split.key}/${table.key}/-`} onClick={link}>{`${split.text}別表`}</a>)
+                <a href={`/bar/${split.key}/${table.key}/-`} onClick={link}>{`(${split.text}別表)`}</a>
               </span>
             </section>
             })

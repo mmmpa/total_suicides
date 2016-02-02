@@ -2,6 +2,7 @@ import * as React from 'react'
 import {render} from 'react-dom'
 import {Router, Route, browserHistory} from 'react-router'
 import * as CreateHistory from 'history/lib/createBrowserHistory'
+import * as _ from 'lodash'
 import {Root, Node} from './lib/eventer'
 import PresetGraph from "./contexts/preset-graph";
 import ChartContext from "./contexts/chart";
@@ -34,10 +35,10 @@ class App extends Root<{},{}> {
 
   componentWillReceiveProps(nextProps) {
     this.normalizeRouteParams(nextProps)
-    this.fetchData(nextProps);
+    this.fetchData(nextProps, this.props);
   }
 
-  fetchData(props) {
+  fetchData(props, preProps) {
     let {presetName} = props.params;
     if (!!presetName) {
       return fetchPreset(presetName, (state)=> {
@@ -60,11 +61,22 @@ class App extends Root<{},{}> {
     console.log(props)
   }
 
+  normalizeQuery(uri, props){
+    let {query} = props.location;
+    if(uri.indexOf('/area/') == -1){
+      delete query.area;
+    }
+    return query;
+  }
 
   listen(to) {
     to('link', (uri)=> {
       window.scrollTo(0, 0);
-      this.props.history.pushState(null, uri)
+      this.props.history.pushState(null, uri, this.normalizeQuery(uri, this.props))
+    });
+    to('link:navigator', ()=>{
+     console.log('link:nav')
+      window.scrollTo(0, window.innerHeight)
     });
   }
 }
@@ -84,6 +96,7 @@ render((
         </Route>
         <Route path="bar" component={ChartContext}>
           <Route path="" component={ChartController}>
+            <Route path=":table/:split/:filter" component={BarChart}/>
             <Route path=":table/:split/:filter" component={BarChart}/>
           </Route>
         </Route>
