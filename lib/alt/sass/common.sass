@@ -17,25 +17,28 @@ body
     color: #fff
     display: inline-block
     @extend .size-h5
+
 .main-content
   background: #fff
   h1
     @extend .size-h4
 
-
 .chart-list
   li
     display: inline-block
     vertical-align: top
+
 .pie-chart
   &.unsplitted-section
     display: inline-block
   &.splitted-section
 //
-.bar-chart
+.chart-list
   &.body
     padding: 20px
-  &.section
+  &.chart-section
+    margin: 40px 0
+  &.chart-block
     margin: 20px 20px 0 0
     display: inline-block
     font-size: 14px
@@ -45,13 +48,13 @@ body
 .global-wrapper
   position: relative
 
-
 span
   &.input-input,
   &.input-label
     @extend .size-h5
     display: inline-block
     vertical-align: middle
+
 input[type="checkbox"],
 input[type="radio"]
   width: $font-size-h4
@@ -123,6 +126,7 @@ input[type="radio"]
     @extend .size-h6
   a
     color: #333
+
 .global-footer
   @extend .size-h6
   color: #555

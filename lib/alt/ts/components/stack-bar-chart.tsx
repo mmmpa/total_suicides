@@ -51,11 +51,32 @@ export default class BarChartComponent extends Node<{},{}> {
     chartSeries.map((c, i)=> c.color = Constants.normalColor(i))
   }
 
+  writeChartSection(normalized) {
+    let {chartSeries, dataList, max} = normalized;
+    if (!dataList) {
+      return null;
+    }
+    this.detectColor(chartSeries, this.props);
+    return _.map(dataList, (chartData)=> {
+      return <section key={chartData.title} className="chart-list chart-section">
+        <h1>{chartData.title}</h1>
+        {this.writeCharts(chartSeries, chartData.chartList, max)}
+      </section>
+    });
+  }
+
+  writeCharts(chartSeries, chartList, max) {
+    return _.map(chartList, (chartData)=> {
+      return <section key={chartData.title} className="chart-list chart-block">
+        <h1>{chartData.name}</h1>
+        {this.writeChart(chartSeries, chartData.data, max)}
+      </section>
+    });
+  }
+
   writeChart(chartSeries, chartData, max = 10000) {
-    let {data} = chartData;
-    let dataList = _.map(data, (value)=> value);
     return <RD3.BarStackChart
-      data={dataList}
+      data={chartData}
       chartSeries={chartSeries}
       x={(d)=>d.sort.name}
       xScale='ordinal'
@@ -64,31 +85,14 @@ export default class BarChartComponent extends Node<{},{}> {
       xLabel={'平成年'}
       yDomain={this.domain(max)}
       yLabelPosition={"right"}
-      {...this.detectChartProp(dataList)}
+      {...this.detectChartProp(chartData)}
     />;
-  }
-
-
-  writeCharts(normalized) {
-    let {chartSeries, chart, max} = normalized;
-    if (!chart) {
-      return null;
-    }
-    this.detectColor(chartSeries, this.props);
-    return _.map(chart, (chartData)=> {
-      return <section key={chartData.title} className={this.sectionClass}>
-        <h1>{chartData.title}</h1>
-        {this.writeChart(chartSeries, chartData, max)}
-      </section>
-    });
   }
 
   render() {
     return <div>
-      <article className="bar-chart body">
-        <section className="bar-chart">
-          {this.writeCharts(this.state.normalized)}
-        </section>
+      <article className="chart-list body">
+        {this.writeChartSection(this.state.normalized)}
       </article>
     </div>
   }
