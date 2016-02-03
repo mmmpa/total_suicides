@@ -160,8 +160,13 @@ function normalizeRegularStackBarData(arranged, table, split, sort) {
     _.each(keyMaps, (keyMap)=> {
       let target = store[keyMap.key];
       target.data = _.map(target.data, (value)=>{
+        let maxStore = 0;
+        _.each(splitterMaps, (sp)=> {
+          maxStore += value[sp.key] || 0;
+        });
+        maxStore > chartData.max && (chartData.max = maxStore);
         return value;
-      })
+      });
     })
 
   } else {
@@ -204,19 +209,21 @@ function normalizeRegularStackBarData(arranged, table, split, sort) {
         //delete eachYearStore[keyMap.key];
       });
     });
+
+    _.each(chartData.dataList, (dataSet)=> {
+      _.each(keyMaps, (keyMap)=> {
+        let tableData = dataSet[keyMap.key];
+        _.each(tableData, (data)=> {
+          let maxStore = 0;
+          _.each(splitterMaps, (sp)=> {
+            maxStore += data[sp.key] || 0;
+          });
+          maxStore > chartData.max && (chartData.max = maxStore);
+        })
+      });
+    });
   }
 
-  _.each(chartData.dataList, (dataSet)=> {
-    _.each(dataSet, (tableData)=> {
-      _.each(tableData, (data)=> {
-        let maxStore = 0;
-        _.each(splitterMaps, (sp)=> {
-          maxStore += data[sp.key];
-        });
-        maxStore > chartData.max && (chartData.max = maxStore);
-      })
-    });
-  });
 
   console.log('normalized', chartData);
   return chartData;

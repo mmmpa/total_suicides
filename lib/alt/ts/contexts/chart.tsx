@@ -9,9 +9,10 @@ export default class ChartContext extends Root<{},{}> {
   }
 
   relay(props) {
-    let {data} = props;
+    //let {data} = props;
     let {table, split, sort} = props.params;
-    this.setState({data, table, split, sort});
+    this.setState({table, split, sort});
+    console.log('relay', this.state)
   }
 
   componentDidMount() {

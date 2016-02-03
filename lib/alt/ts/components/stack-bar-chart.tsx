@@ -19,10 +19,13 @@ export default class BarChartComponent extends Node<{},{}> {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.normalizeState(nextProps)
+    this.normalizeState(nextProps, this.props)
   }
 
-  normalizeState(props) {
+  normalizeState(props, preProps?) {
+    if(preProps && props.data == preProps.data){
+      return;
+    }
     let normalized = normalizeStackBarData(props);
     this.setState({normalized});
   }
