@@ -34,18 +34,30 @@ export default class ChartContext extends Root<{},{}> {
   }
 
   needFetch(props, preProps?) {
-    if(preProps && props.location.pathname == preProps.location.pathname){
-      return false;
-    }
-    return !!props.params.table;
+    if (!preProps) return true;
+    if (props.location.pathname != preProps.location.pathname) return true;
+
+    let different:boolean = false;
+    _.each(props.location.query, (value, key)=>{
+      if(key == 'autoScale'){
+        return;
+      }
+      let now = preProps.location.query[key];
+      if(!now || now != value){
+        return different = true;
+      }
+    });
+    console.log(props.location.query)
+
+    return different;
   }
 
   listen(to) {
     to('area:select', (key)=> {
       let {query} = this.props.location;
-      if(key && key.length){
+      if (key && key.length) {
         query.area = key.join(',');
-      }else{
+      } else {
         delete query.area;
       }
       this.props.history.pushState(null,
