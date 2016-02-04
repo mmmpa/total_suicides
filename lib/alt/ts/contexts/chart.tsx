@@ -3,16 +3,13 @@ import {fetchPreset, fetchWithParams} from '../services/fetcher'
 
 export default class ChartContext extends Root<{},{}> {
   initialState(props) {
-    let {data} = props;
     let {table, split, sort} = props.params;
-    return {data, table, split, sort}
+    return {table, split, sort}
   }
 
   relay(props) {
-    //let {data} = props;
     let {table, split, sort} = props.params;
     this.setState({table, split, sort});
-    console.log('relay', this.state)
   }
 
   componentDidMount() {
@@ -37,20 +34,10 @@ export default class ChartContext extends Root<{},{}> {
   needFetch(props, preProps?) {
     if (!preProps) return true;
     if (props.location.pathname != preProps.location.pathname) return true;
+    let reg = /autoScale=[a-z]+/;
+    if (props.location.search.replace(reg, '') != preProps.location.search.replace(reg, '')) return true;
 
-    let different:boolean = false;
-    _.each(props.location.query, (value, key)=>{
-      if(key == 'autoScale'){
-        return;
-      }
-      let now = preProps.location.query[key];
-      if(!now || now != value){
-        return different = true;
-      }
-    });
-    console.log(props.location.query)
-
-    return different;
+    return false;
   }
 
   listen(to) {

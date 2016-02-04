@@ -11,7 +11,7 @@ import PieChart from "./components/pie-chart";
 import BarChart from "./components/bar-chart";
 import StackBarChart from "./components/stack-bar-chart";
 import Common from "./components/common";
-import ChartController from "./components/chart-controller";
+import ChartController from "./components/chart-controller/chart-controller";
 
 class App extends Root<{},{}> {
   initialState(props) {
@@ -54,3 +54,4 @@ render((
     </Route>
   </Router>
 ), document.querySelector('#app'));
+

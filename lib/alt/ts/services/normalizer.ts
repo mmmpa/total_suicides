@@ -53,10 +53,12 @@ function arrangeData(data:any[], table:string):any {
     });
 
     // tableの各要素からsplitにアクセスできるようにする
+    let total = _.reduce(keyMaps, (a, keyMap)=> a + part[keyMap.key], 0);
     _.each(keyMaps, (keyMap)=> {
       part[keyMap.key] = {
         name: keyMap.name,
         content: part[keyMap.key],
+        par: par(part[keyMap.key], total),
         src: part,
         key: keyMap.key
       };
@@ -73,6 +75,10 @@ function arrangeData(data:any[], table:string):any {
 
   console.log('arranged', arranged);
   return arranged;
+}
+
+function par(n, total) {
+  return Math.round(n / total * 1000) / 10
 }
 
 function normalizeRotatedStackBarData(arranged, table, split, sort) {
@@ -94,15 +100,8 @@ function normalizeRotatedStackBarData(arranged, table, split, sort) {
   if (sort == 'year') {
   } else {
     _.each(arranged.year, (yearDataList, year:string)=> {
-      let eachYearStore = findOrCreate(chartData.dataList, year, {});
-      eachYearStore.title = yearDataList[0].year.name;
-      let remap = {};
-      _.each(yearDataList, (d)=> {
-        let store = findOrCreate(remap, d[sort].content, {})
-        store[d[split].content] = d;
-      });
-
-      console.log('1', chartData)
+      let eachYearStore = findOrCreate(chartData.dataList, year, {title: yearDataList[0].year.name});
+      let remap = remapArray(yearDataList, split, sort);
 
       _.each(sortMaps, (sortMap)=> {
         let sortElement = remap[sortMap.key];
@@ -110,52 +109,71 @@ function normalizeRotatedStackBarData(arranged, table, split, sort) {
           return;
         }
         _.each(sortElement, (splitValue, splitKey:string)=> {
-          // splitごとのchart全体のデータの入れ物
-          let dataList = findOrCreate(eachYearStore, splitKey, {});
-          //sortの順番にしたがって、チャートシリーズが全て入ったobjectを挿入する
           _.each(keyMaps, (keyMap)=> {
+            let dataList = findOrCreate(eachYearStore, splitKey, {});
             let data = findOrCreate(dataList, sortMap.key, {sort: sortMap});
             data[keyMap.key] = splitValue[keyMap.key].content;
+            data[keyMap.key + 'par'] = splitValue[keyMap.key].par;
           });
         });
       });
-      console.log('eachYearStore', eachYearStore)
 
-
-      _.each(splitterMaps, (spMap)=> {
-        let store = eachYearStore[spMap.key];
-        var chartList = findOrCreate(eachYearStore, 'chartList', []);
-        let array = [];
-        _.each(sortMaps, (sortMap)=> {
-          array.push(store[sortMap.key]);
-        });
-        chartList.push({
-          key: spMap.key,
-          name: spMap.name,
-          data: array
-        });
-        //delete eachYearStore[keyMap.key];
-      });
+      eachYearStore.chartList = convert(eachYearStore, splitterMaps, sortMaps);
     });
 
     // max処理
-    _.each(chartData.dataList, (dataSet)=> {
-      _.each(keyMaps, (keyMap)=> {
-        let tableData = dataSet[keyMap.key];
-        _.each(tableData, (data)=> {
-          let maxStore = 0;
-          _.each(splitterMaps, (sp)=> {
-            maxStore += data[sp.key] || 0;
-          });
-          maxStore > chartData.max && (chartData.max = maxStore);
-        })
-      });
-    });
-
+    chartData.max = getMax(chartData.dataList, splitterMaps, keyMaps);
   }
 
   console.log('normalized', chartData);
   return chartData;
+}
+
+function remapArray(dataList, series:string, sort:string) {
+  let result = {};
+  _.each(dataList, (d)=> {
+    let store = findOrCreate(result, d[sort].content, {})
+    store[d[series].content] = d;
+  });
+
+  return result;
+}
+
+function convert(eachYearStore, themeMap, sortMap) {
+  let result = [];
+
+  _.each(themeMap, (theme)=> {
+    let store = eachYearStore[theme.key];
+    let array = [];
+    _.each(sortMap, (sort)=> {
+      array.push(store[sort.key]);
+    });
+
+    result.push({
+      key: theme.key,
+      name: theme.name,
+      data: _.compact(array)
+    });
+  });
+
+  return result;
+}
+
+function getMax(dataList, themeMap, seriesMap) {
+  let max = 0;
+  _.each(dataList, (dataSet)=> {
+    _.each(themeMap, (theme)=> {
+      let tableData = dataSet[theme.key];
+      _.each(tableData, (data)=> {
+        let total = 0;
+        _.each(seriesMap, (series)=> {
+          total += data[series.key] || 0;
+        });
+        total > max && (max = total);
+      })
+    });
+  });
+  return max;
 }
 
 function normalizeRegularStackBarData(arranged, table, split, sort) {
@@ -167,7 +185,11 @@ function normalizeRegularStackBarData(arranged, table, split, sort) {
   let splitterMaps = detectSplitterMap(split);
   let sortMaps = detectSplitterMap(sort);
 
-  let chartSeries = splitterMaps.map((keyMap)=> ({field: keyMap.key, name: keyMap.name}));
+  let chartSeries = _.compact(splitterMaps.map((keyMap)=> {
+    if (arranged[split][keyMap.key]) {
+      return {field: keyMap.key, name: keyMap.name}
+    }
+  }));
 
   let chartData = {
     chartSeries,
@@ -189,6 +211,7 @@ function normalizeRegularStackBarData(arranged, table, split, sort) {
           let columnStore = findOrCreate(store, keyMap.key, {name: keyMap.name, data: {}});
           let yearStore = findOrCreate(columnStore.data, spData.year.content, {sort: spData.year});
           yearStore[key] = spData[keyMap.key].content
+          yearStore[key + 'par'] = spData[keyMap.key].par
         })
       })
     });
@@ -205,13 +228,8 @@ function normalizeRegularStackBarData(arranged, table, split, sort) {
     })
   } else {
     _.each(arranged.year, (yearDataList, year:string)=> {
-      let eachYearStore = findOrCreate(chartData.dataList, year, {});
-      eachYearStore.title = yearDataList[0].year.name;
-      let remap = {};
-      _.each(yearDataList, (d)=> {
-        let store = findOrCreate(remap, d[sort].content, {})
-        store[d[split].content] = d;
-      });
+      let eachYearStore = findOrCreate(chartData.dataList, year, {title: yearDataList[0].year.name});
+      let remap = remapArray(yearDataList, split, sort);
 
       _.each(sortMaps, (sortMap)=> {
         let sortElement = remap[sortMap.key];
@@ -223,39 +241,16 @@ function normalizeRegularStackBarData(arranged, table, split, sort) {
             var dataList = findOrCreate(eachYearStore, keyMap.key, {});
             var data = findOrCreate(dataList, sortMap.key, {sort: sortMap});
             data[splitKey] = splitValue[keyMap.key].content;
+            data[splitKey + 'par'] = splitValue[keyMap.key].par;
           });
         });
       });
 
 
-      _.each(keyMaps, (keyMap)=> {
-        let store = eachYearStore[keyMap.key];
-        var chartList = findOrCreate(eachYearStore, 'chartList', []);
-        let array = [];
-        _.each(sortMaps, (sortMap)=> {
-          array.push(store[sortMap.key]);
-        });
-        chartList.push({
-          key: keyMap.key,
-          name: keyMap.name,
-          data: array
-        });
-        //delete eachYearStore[keyMap.key];
-      });
+      eachYearStore.chartList = convert(eachYearStore, keyMaps, sortMaps);
     });
 
-    _.each(chartData.dataList, (dataSet)=> {
-      _.each(keyMaps, (keyMap)=> {
-        let tableData = dataSet[keyMap.key];
-        _.each(tableData, (data)=> {
-          let maxStore = 0;
-          _.each(splitterMaps, (sp)=> {
-            maxStore += data[sp.key] || 0;
-          });
-          maxStore > chartData.max && (chartData.max = maxStore);
-        })
-      });
-    });
+    chartData.max = getMax(chartData.dataList, keyMaps, splitterMaps);
   }
 
   console.log('normalized', chartData);

@@ -32,7 +32,7 @@ export default class BarChartComponent extends Node<{},{}> {
 
   detectChartProp(dataList) {
     let defaultProps = Constants.barProps;
-    let minWidth = dataList.length * 70;
+    let minWidth = dataList.length * 100;
     defaultProps.width < minWidth && (defaultProps.width = minWidth)
     return defaultProps;
   }
@@ -51,7 +51,17 @@ export default class BarChartComponent extends Node<{},{}> {
   }
 
   detectColor(chartSeries, props) {
-    chartSeries.map((c, i)=> c.color = Constants.normalColor(i))
+    chartSeries.map((c, i)=> c.color = Constants.normalColor(c.field - 1))
+  }
+
+  detectSeries(chartSeries, props) {
+    return chartSeries.map((c)=> {
+      let series = {}
+      _.each(c, (v, k)=>{
+        series[k] = k == 'field' ? v + 'par' : v;
+      })
+      return series;
+    });
   }
 
   writeChartSection(normalized) {
@@ -60,6 +70,7 @@ export default class BarChartComponent extends Node<{},{}> {
       return null;
     }
     this.detectColor(chartSeries, this.props);
+    //console.log(chartSeries = this.detectSeries(chartSeries, this.props));
     return _.map(dataList, (chartData)=> {
       return <section key={chartData.title} className="chart-list chart-section">
         <h1>{chartData.title}</h1>

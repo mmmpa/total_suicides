@@ -50,7 +50,7 @@ export default class Constants {
     return {
       colors: this.pieColors,
       width: 500,
-      height: 250,
+      height: 500,
       sectorBorderColor: 'white',
       fontSize: "14px"
     };
@@ -171,17 +171,22 @@ export default class Constants {
     {key: 'number', name: '自殺者数'},
   ];
 
-  static get splitters(){
+  static get splitters() {
     return {
       area: this.areas,
       gender: this.genders,
-      year: {},
-      total:[
+      year: this.years,
+      total: [
         {key: 0, name: '総数'}
       ]
     }
   }
 
+  static get years() {
+    return _.map([21, 22, 23, 24, 25, 26], (n)=> {
+      return {key: n, name: `平成${n}年`}
+    })
+  }
 
   static genders = [
     {key: 1, name: '女性'},

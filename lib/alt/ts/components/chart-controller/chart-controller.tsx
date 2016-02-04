@@ -1,17 +1,15 @@
 import * as React from 'react'
-import {Node} from '../lib/eventer'
-import * as d3 from 'd3'
-import Constants from "../initializers/constants";
+import {Node} from '../../lib/eventer'
+import Constants from "../../initializers/constants";
 import * as _ from 'lodash';
-import {normalizeBarData} from '../services/normalizer'
-import * as RD3 from 'react-d3-basic'
 import AreaSelector from './area-selector'
 import ChartConfiguration from './chart-configuration'
 
 export default class ChartControllerComponent extends Node<{},{}> {
   writeSelector(props) {
-    let {split, table} = props;
-    if (split == 'area' || table == 'area') {
+    let {split, table, sort} = props;
+    let used:string[] = [split, table, sort]
+    if (_.includes(used, 'area')) {
       return <AreaSelector {...props}/>
     }
     return null;
@@ -27,4 +25,3 @@ export default class ChartControllerComponent extends Node<{},{}> {
     </div>
   }
 }
-
