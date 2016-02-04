@@ -1,4 +1,5 @@
 import {scale} from 'd3';
+import * as _ from 'lodash'
 
 export default class Constants {
   static tables:string[] = ['age', 'housemate', 'job', 'location', 'way', 'hour', 'day', 'reason', 'attempted', 'total'];
@@ -73,6 +74,24 @@ export default class Constants {
   static wheelColors:string[] = ['#0086AB', '#0098A6', '#00A199', '#009C7F', '#009767', '#009250', '#059C30', '#0BA60B', '#3BB111', '#6FBB18', '#A4C520', '#B6D11B', '#CBDC15', '#E4E80F', '#F3EB08', '#FFE600', '#FBDA02', '#F8CF05', '#F4C107', '#F1B709', '#EDAD0B', '#E58611', '#DE6316', '#D6431B', '#CF2620', '#C7243A', '#C42245', '#C01F52', '#BD1D5D', '#B91B67', '#B61972', '#AF1C74', '#A81F76', '#A12275', '#9A2475', '#932674', '#953095', '#7F3B97', '#6C469A', '#5F519C', '#5D639E', '#4D5FA3', '#3B60A8', '#2962AD', '#156BB2', '#007AB7', '#007CB5', '#0080B2', '#0081B0', '#0085AD'];
 
   static colors:string[] = ['#1abc9c', '#3498db', '#f1c40f', '#e74c3c', '#2ecc71', '#9b59b6', '#e67e22', '#34495e', '#95a5a6', '#16a085', '#2980b9', '#f39c12', '#c0392b', '#27ae60', '#8e44ad', '#d35400', '#2c3e50', '#7f8c8d'];
+
+  static tables = [
+    {key: 'age', name: '年齢層'},
+    {key: 'housemate', name: '同居人の有無'},
+    {key: 'job', name: '職業'},
+    {key: 'location', name: '場所'},
+    {key: 'way', name: '手段'},
+    {key: 'hour', name: '時間帯'},
+    {key: 'day', name: '曜日'},
+    {key: 'reason', name: '原因・動機'},
+    {key: 'attempted', name: '未遂歴'},
+    {key: 'total', name: '総数'}
+  ];
+
+  static _tableKeys;
+  static get tableKeys() {
+    return this._tableKeys = this.tables.map((o)=> o.key);
+  }
 
   static ageProps = [
     {key: 'o0', name: '20歳未満'},
@@ -171,6 +190,10 @@ export default class Constants {
     {key: 'number', name: '自殺者数'},
   ];
 
+  static isIncludedTable(name){
+    return _.includes(this.tableKeys, name)
+  }
+
   static get splitters() {
     return {
       area: this.areas,
@@ -185,7 +208,7 @@ export default class Constants {
   static get years() {
     return _.map([21, 22, 23, 24, 25, 26], (n)=> {
       return {key: n, name: `平成${n}年`}
-    })
+    }).reverse();
   }
 
   static genders = [

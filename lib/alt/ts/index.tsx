@@ -45,9 +45,9 @@ render((
   <Router history={new CreateHistory()}>
     <Route path="/" component={App}>
       <Route path="" component={Common}>
-        <Route path="chart/stack" component={ChartContext}>
+        <Route path="chart" component={ChartContext}>
           <Route path="" component={ChartController}>
-            <Route path=":table/:split/:sort/:rotation" component={StackBarChart}/>
+            <Route path=":title/:column/:row" component={StackBarChart}/>
           </Route>
         </Route>
       </Route>

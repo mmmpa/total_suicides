@@ -1,5 +1,108 @@
 import Constants from "../initializers/constants";
 import * as _ from 'lodash';
+import Table from "../models/table";
+
+interface NormalizingParams {
+  title:string,
+  column:string,
+  row:string,
+  table:string,
+  data:any[]
+}
+
+export function normalize(params:NormalizingParams) {
+  let {title, column, row, table, data} = params;
+
+  let titleMap = detectKeyMap(title);
+  let columnMap = detectKeyMap(column);
+  let rowMap = detectKeyMap(row);
+
+  console.log({data})
+
+  let titleGrouped = {};
+  _.each(data, (d)=> {
+    _.each(titleMap, ({key, name})=> {
+      let content = d.number;
+      if(Constants.isIncludedTable(title)){
+        content = d[key]
+      }else{
+        if(d[title].content != key){
+          return;
+        }
+      }
+      let store = findOrCreate(titleGrouped, key, [])
+      let {year, gender, area} = d;
+      store.push({year, gender, area, data: d, content});
+    });
+  });
+
+  let rowGroped = {};
+  _.each(titleGrouped, (dataList, key)=> {
+    let store = findOrCreate(rowGroped, key, {})
+    _.each(dataList, (d)=> {
+      if(Constants.isIncludedTable(row)){
+        _.each(rowMap, ({key, name})=>{
+          let s = findOrCreate(store, key, [])
+          let {year, gender, area, data} = d;
+          let content = data[key];
+          s.push({year, gender, area, data, content});
+        });
+      }else{
+        let s = findOrCreate(store, d[row].content, [])
+        s.push(d);
+      }
+    });
+  });
+
+  let column
+  console.log({titleGrouped, rowGroped});
+
+  let grouped = rowGroped;
+
+  let chartDataListStore = {};
+
+  let columnNames = _.map(columnMap, ({name})=> name);
+
+  _.each(titleMap, ({key, name})=> {
+    let store = findOrCreate(chartDataListStore, key, {table: new Table(name, columnNames)});
+    let titleData = grouped[key];
+    //console.log({titleData})
+    if(!titleData){
+      return;
+    }
+    _.each(rowMap, ({key, name})=> {
+      let raw = titleData[key];
+      if (!raw) {
+        return;
+      }
+      let groupedRaw;
+      if(!Constants.isIncludedTable(column)){
+        groupedRaw = _.groupBy(raw, (r)=> r[column].content)
+      }
+
+      let rowData = []
+      _.each(columnMap, ({key, name})=> {
+        let content;
+        if(Constants.isIncludedTable(column)){
+          content = raw[0].data[key]
+        }else{
+          if(!groupedRaw[key]){
+            return;
+          }
+          content = groupedRaw[key][0].content;
+        }
+        rowData.push(content)
+      });
+      store.table.addRow(name, rowData);
+    });
+
+  });
+  chartDataListStore = _.map(chartDataListStore, (v, k)=> v);
+  _.map(chartDataListStore, (c)=> console.log(c));
+}
+function detectKeyMap(title) {
+  return detectTableKeyMap(title) || detectSplitterMap(title)
+}
 
 export function normalizeStackBarData(props) {
   let {data, split, table, rotation, sort} = props;
@@ -73,7 +176,6 @@ function arrangeData(data:any[], table:string):any {
     });
   });
 
-  console.log('arranged', arranged);
   return arranged;
 }
 

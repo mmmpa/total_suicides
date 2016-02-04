@@ -1,5 +1,7 @@
 import {Root} from '../lib/eventer'
-import {fetchPreset, fetchWithParams} from '../services/fetcher'
+import {fetch} from '../services/fetcher'
+import Constants from "../initializers/constants";
+import {normalize} from "../services/normalizer"
 
 export default class ChartContext extends Root<{},{}> {
   initialState(props) {
@@ -22,22 +24,54 @@ export default class ChartContext extends Root<{},{}> {
     this.relay(nextProps);
   }
 
-  fetchData(props, preProps?) {
-    if (this.needFetch(props, preProps)) {
-      fetchWithParams(props, (data)=> {
-        let {table, split, rotation} = props.params;
-        this.setState({table, split, rotation, data});
-      })
+  detectApiParam(props) {
+    let {title, column, row} = props.params;
+    let {yearFilter, areaFilter, genderFilter, itemFilter} = props.location.query;
+
+    let requires = [title, column, row];
+    let table = this.pickTable(requires);
+
+    let year = '-';
+    if (_.includes(requires, 'year')) {
+      year = yearFilter || Constants.years[0].key;
     }
+
+    let area = '0';
+    if (_.includes(requires, 'area')) {
+      area = areaFilter || '-';
+    }
+
+    let gender = '0';
+    if (_.includes(requires, 'gender')) {
+      gender = genderFilter || '-';
+    }
+
+    return {gender, area, year, table};
   }
 
-  needFetch(props, preProps?) {
-    if (!preProps) return true;
-    if (props.location.pathname != preProps.location.pathname) return true;
-    let reg = /autoScale=[a-z]+/;
-    if (props.location.search.replace(reg, '') != preProps.location.search.replace(reg, '')) return true;
+  pickTable(names:string[]) {
+    let table;
+    _.each(names, (name:string)=> {
+      if (_.includes(Constants.tableKeys, name)) {
+        if (table) {
+          throw 'Double table error';
+        }
+        table = name;
+      }
+    });
+    return table || 'total';
+  }
 
-    return false;
+  fetchData(props, preProps?) {
+    let params = this.detectApiParam(props);
+    console.log({params});
+    fetch(params, (result)=> {
+      let {title, column, row} = props.params;
+      let {data, table} = result;
+      let chartDataList = normalize({title, column, row, table, data});
+      console.log({chartDataList});
+      this.setState({chartDataList});
+    })
   }
 
   listen(to) {
