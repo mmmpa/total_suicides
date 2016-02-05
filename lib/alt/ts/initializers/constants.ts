@@ -53,7 +53,7 @@ export default class Constants {
       width: 500,
       height: 500,
       sectorBorderColor: 'white',
-      fontSize: "14px"
+      fontSize: "12px"
     };
   }
 
@@ -206,12 +206,17 @@ export default class Constants {
   }
 
   static get years() {
-    return _.map([21, 22, 23, 24, 25, 26], (n)=> {
+    return _.map([21, 22, 23, 24, 25, 26].reverse(), (n)=> {
       return {key: n, name: `平成${n}年`}
     }).reverse();
   }
 
+  static total = [
+    {key: 0, name: '総数'}
+    ]
+
   static genders = [
+    {key: 0, name: '総数'},
     {key: 1, name: '女性'},
     {key: 2, name: '男性'}
   ];

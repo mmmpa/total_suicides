@@ -60098,7 +60098,7 @@ var AreaSelectorComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AreaSelectorComponent;
 
-},{"../../initializers/constants":303,"../../lib/eventer":304,"lodash":79,"react":287}],294:[function(require,module,exports){
+},{"../../initializers/constants":304,"../../lib/eventer":305,"lodash":79,"react":287}],294:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60131,7 +60131,7 @@ var ChartConfigurationComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ChartConfigurationComponent;
 
-},{"../../lib/eventer":304,"react":287}],295:[function(require,module,exports){
+},{"../../lib/eventer":305,"react":287}],295:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60163,7 +60163,7 @@ var ChartControllerComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ChartControllerComponent;
 
-},{"../../lib/eventer":304,"./area-selector":293,"./chart-configuration":294,"lodash":79,"react":287}],296:[function(require,module,exports){
+},{"../../lib/eventer":305,"./area-selector":293,"./chart-configuration":294,"lodash":79,"react":287}],296:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60187,7 +60187,7 @@ var CommonComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CommonComponent;
 
-},{"../components/copyright":297,"../components/header":298,"../components/site-map":299,"../lib/eventer":304,"react":287}],297:[function(require,module,exports){
+},{"../components/copyright":297,"../components/header":299,"../components/site-map":300,"../lib/eventer":305,"react":287}],297:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60208,7 +60208,36 @@ var CopyrightComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CopyrightComponent;
 
-},{"../lib/eventer":304,"react":287}],298:[function(require,module,exports){
+},{"../lib/eventer":305,"react":287}],298:[function(require,module,exports){
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var React = require('react');
+var eventer_1 = require('../lib/eventer');
+var RotatedDataTable = (function (_super) {
+    __extends(RotatedDataTable, _super);
+    function RotatedDataTable() {
+        _super.apply(this, arguments);
+    }
+    RotatedDataTable.prototype.render = function () {
+        var _a = this.props, table = _a.table, par = _a.par;
+        var sortedKeys = _.map(table.column, function (_, key) { return key; });
+        return React.createElement("section", null, React.createElement("table", {"className": "data-table rotated-data-table"}, React.createElement("thead", null, React.createElement("tr", null, React.createElement("th", null, "-"), _.map(table.rowTitle, function (title, i) {
+            return React.createElement("th", {"className": "rotated-data-table row-title", "key": i}, title);
+        }))), React.createElement("tbody", null, _.map(sortedKeys.reverse(), function (key, i) {
+            return React.createElement("tr", {"key": table.column[key].key}, React.createElement("td", {"className": "rotated-data-table column-title", "key": -1}, table.column[key].name), _.map(table.row, function (row, i) {
+                return React.createElement("td", {"className": "rotated-data-table row-content", "key": i}, par ? row[key].par + '%' : row[key].number);
+            }));
+        }))));
+    };
+    return RotatedDataTable;
+})(eventer_1.Node);
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = RotatedDataTable;
+
+},{"../lib/eventer":305,"react":287}],299:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60231,7 +60260,7 @@ var HeaderComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = HeaderComponent;
 
-},{"../lib/eventer":304,"../lib/fa":305,"react":287}],299:[function(require,module,exports){
+},{"../lib/eventer":305,"../lib/fa":306,"react":287}],300:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60286,7 +60315,7 @@ var SiteMapComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SiteMapComponent;
 
-},{"../lib/eventer":304,"../lib/fa":305,"react":287}],300:[function(require,module,exports){
+},{"../lib/eventer":305,"../lib/fa":306,"react":287}],301:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60297,43 +60326,14 @@ var eventer_1 = require('../lib/eventer');
 var d3 = require('d3');
 var constants_1 = require("../initializers/constants");
 var _ = require('lodash');
-var normalizer_1 = require('../services/normalizer');
 var RD3 = require('react-d3-basic');
-var BarChartComponent = (function (_super) {
-    __extends(BarChartComponent, _super);
-    function BarChartComponent(props) {
-        _super.call(this, props);
-        this.state = {
-            normalized: []
-        };
+var data_table_1 = require("./data-table");
+var StackBarChartComponent = (function (_super) {
+    __extends(StackBarChartComponent, _super);
+    function StackBarChartComponent() {
+        _super.apply(this, arguments);
     }
-    BarChartComponent.prototype.componentDidMount = function () {
-        this.normalizeState(this.props);
-    };
-    BarChartComponent.prototype.componentWillReceiveProps = function (nextProps) {
-        this.normalizeState(nextProps, this.props);
-    };
-    BarChartComponent.prototype.normalizeState = function (props, preProps) {
-        if (preProps && props.data == preProps.data) {
-            return;
-        }
-        var normalized = normalizer_1.normalizeStackBarData(props);
-        this.setState({ normalized: normalized });
-    };
-    BarChartComponent.prototype.detectChartProp = function (dataList) {
-        var defaultProps = constants_1.default.barProps;
-        var minWidth = dataList.length * 100;
-        defaultProps.width < minWidth && (defaultProps.width = minWidth);
-        return defaultProps;
-    };
-    Object.defineProperty(BarChartComponent.prototype, "sectionClass", {
-        get: function () {
-            return 'bar-chart section';
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(BarChartComponent.prototype, "autoScale", {
+    Object.defineProperty(StackBarChartComponent.prototype, "autoScale", {
         get: function () {
             var autoScale = this.props.location.query.autoScale;
             return autoScale && autoScale != 'false';
@@ -60341,52 +60341,55 @@ var BarChartComponent = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    BarChartComponent.prototype.domain = function (max) {
-        return this.autoScale ? null : [0, max];
+    StackBarChartComponent.prototype.domain = function (max) {
+        return !max || this.autoScale ? null : [0, max];
     };
-    BarChartComponent.prototype.detectColor = function (chartSeries, props) {
-        chartSeries.map(function (c, i) { return c.color = constants_1.default.normalColor(c.field - 1); });
+    StackBarChartComponent.prototype.arrangeChartProp = function (data) {
+        var defaultProps = constants_1.default.barProps;
+        var minWidth = data.length * 100;
+        defaultProps.width < minWidth && (defaultProps.width = minWidth);
+        return defaultProps;
     };
-    BarChartComponent.prototype.detectSeries = function (chartSeries, props) {
-        return chartSeries.map(function (c) {
-            var series = {};
-            _.each(c, function (v, k) {
-                series[k] = k == 'field' ? v + 'par' : v;
-            });
-            return series;
+    StackBarChartComponent.prototype.arrangeSeries = function (series, parSeries) {
+        return _.map(series, function (_a) {
+            var field = _a.field, name = _a.name;
+            var color = constants_1.default.normalColor(field - 1);
+            return { field: field, name: name, color: color };
         });
     };
-    BarChartComponent.prototype.writeChartSection = function (normalized) {
+    StackBarChartComponent.prototype.writeChart = function (chartSet, max) {
+        var series = chartSet.series, parSeries = chartSet.parSeries, data = chartSet.data;
+        var usingSeries = this.arrangeSeries(series, parSeries);
+        return React.createElement("div", {"className": "chart-list stack-bar-chart"}, React.createElement(RD3.BarStackChart, React.__spread({"data": data, "chartSeries": usingSeries, x: function (d) { return d.sort; }, "xScale": 'ordinal', "yTickFormat": d3.format(".2s"), "yDomain": this.domain(max)}, this.arrangeChartProp(data))));
+    };
+    StackBarChartComponent.prototype.writeTable = function (table) {
+        return React.createElement("div", {"className": "chart-list data-table-container"}, React.createElement(data_table_1.default, React.__spread({}, { table: table })));
+    };
+    StackBarChartComponent.prototype.detectMax = function (dataList) {
+        var max = 0;
+        _.map(dataList, function (_a) {
+            var table = _a.table;
+            table.max > max && (max = table.max);
+        });
+        return max;
+    };
+    StackBarChartComponent.prototype.render = function () {
         var _this = this;
-        var chartSeries = normalized.chartSeries, dataList = normalized.dataList, max = normalized.max;
-        if (!dataList) {
-            return null;
+        var dataList = this.props.dataList;
+        if (!dataList || dataList.length == 0) {
+            return React.createElement("div", null, "null");
         }
-        this.detectColor(chartSeries, this.props);
-        //console.log(chartSeries = this.detectSeries(chartSeries, this.props));
-        return _.map(dataList, function (chartData) {
-            return React.createElement("section", {"key": chartData.title, "className": "chart-list chart-section"}, React.createElement("h1", null, chartData.title), _this.writeCharts(chartSeries, chartData.chartList, max));
-        });
+        var max = this.detectMax(dataList);
+        return React.createElement("div", null, React.createElement("article", {"className": "chart-list body"}, this.props.dataList.map(function (d) {
+            return React.createElement("section", {"className": "chart-list chart-block"}, React.createElement("h1", {"className": "chart-list chart-title"}, d.table.title), _this.writeChart(d.chartSet, max), _this.writeTable(d.table));
+        })));
     };
-    BarChartComponent.prototype.writeCharts = function (chartSeries, chartList, max) {
-        var _this = this;
-        return _.map(chartList, function (chartData) {
-            return React.createElement("section", {"key": chartData.title, "className": "chart-list chart-block"}, React.createElement("h1", null, chartData.name), _this.writeChart(chartSeries, chartData.data, max));
-        });
-    };
-    BarChartComponent.prototype.writeChart = function (chartSeries, chartData, max) {
-        if (max === void 0) { max = 10000; }
-        return React.createElement(RD3.BarStackChart, React.__spread({"data": chartData, "chartSeries": chartSeries, x: function (d) { return d.sort.name; }, "xScale": 'ordinal', "yTickFormat": d3.format(".2s"), "yLabel": '人数', "xLabel": '平成年', "yDomain": this.domain(max), "yLabelPosition": "right"}, this.detectChartProp(chartData)));
-    };
-    BarChartComponent.prototype.render = function () {
-        return React.createElement("div", null, React.createElement("article", {"className": "chart-list body"}, this.writeChartSection(this.state.normalized)));
-    };
-    return BarChartComponent;
+    return StackBarChartComponent;
 })(eventer_1.Node);
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = BarChartComponent;
+exports.default = StackBarChartComponent;
 
-},{"../initializers/constants":303,"../lib/eventer":304,"../services/normalizer":308,"d3":2,"lodash":79,"react":287,"react-d3-basic":95}],301:[function(require,module,exports){
+},{"../initializers/constants":304,"../lib/eventer":305,"./data-table":298,"d3":2,"lodash":79,"react":287,"react-d3-basic":95}],302:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60394,8 +60397,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var eventer_1 = require('../lib/eventer');
 var fetcher_1 = require('../services/fetcher');
-var constants_1 = require("../initializers/constants");
 var normalizer_1 = require("../services/normalizer");
+var chart_set_1 = require("../models/chart-set");
 var ChartContext = (function (_super) {
     __extends(ChartContext, _super);
     function ChartContext() {
@@ -60407,7 +60410,8 @@ var ChartContext = (function (_super) {
     };
     ChartContext.prototype.relay = function (props) {
         var _a = props.params, table = _a.table, split = _a.split, sort = _a.sort;
-        this.setState({ table: table, split: split, sort: sort });
+        var dataList = this.state.dataList;
+        this.setState({ table: table, split: split, sort: sort, dataList: dataList });
     };
     ChartContext.prototype.componentDidMount = function () {
         this.fetchData(this.props);
@@ -60417,47 +60421,17 @@ var ChartContext = (function (_super) {
         this.fetchData(nextProps, this.props);
         this.relay(nextProps);
     };
-    ChartContext.prototype.detectApiParam = function (props) {
-        var _a = props.params, title = _a.title, column = _a.column, row = _a.row;
-        var _b = props.location.query, yearFilter = _b.yearFilter, areaFilter = _b.areaFilter, genderFilter = _b.genderFilter, itemFilter = _b.itemFilter;
-        var requires = [title, column, row];
-        var table = this.pickTable(requires);
-        var year = '-';
-        if (_.includes(requires, 'year')) {
-            year = yearFilter || constants_1.default.years[0].key;
-        }
-        var area = '0';
-        if (_.includes(requires, 'area')) {
-            area = areaFilter || '-';
-        }
-        var gender = '0';
-        if (_.includes(requires, 'gender')) {
-            gender = genderFilter || '-';
-        }
-        return { gender: gender, area: area, year: year, table: table };
-    };
-    ChartContext.prototype.pickTable = function (names) {
-        var table;
-        _.each(names, function (name) {
-            if (_.includes(constants_1.default.tableKeys, name)) {
-                if (table) {
-                    throw 'Double table error';
-                }
-                table = name;
-            }
-        });
-        return table || 'total';
-    };
     ChartContext.prototype.fetchData = function (props, preProps) {
         var _this = this;
-        var params = this.detectApiParam(props);
-        console.log({ params: params });
-        fetcher_1.fetch(params, function (result) {
+        fetcher_1.fetch(props, function (result) {
             var _a = props.params, title = _a.title, column = _a.column, row = _a.row;
             var data = result.data, table = result.table;
-            var chartDataList = normalizer_1.normalize({ title: title, column: column, row: row, table: table, data: data });
-            console.log({ chartDataList: chartDataList });
-            _this.setState({ chartDataList: chartDataList });
+            var tableList = normalizer_1.normalize({ title: title, column: column, row: row, table: table, data: data });
+            var dataList = _.map(tableList, function (table) {
+                var chartSet = chart_set_1.default.fromTable(table);
+                return { chartSet: chartSet, table: table };
+            });
+            _this.setState({ dataList: dataList });
         });
     };
     ChartContext.prototype.listen = function (to) {
@@ -60483,7 +60457,7 @@ var ChartContext = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ChartContext;
 
-},{"../initializers/constants":303,"../lib/eventer":304,"../services/fetcher":307,"../services/normalizer":308}],302:[function(require,module,exports){
+},{"../lib/eventer":305,"../models/chart-set":307,"../services/fetcher":309,"../services/normalizer":310}],303:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60531,7 +60505,7 @@ var App = (function (_super) {
 })(eventer_1.Root);
 react_dom_1.render((React.createElement(react_router_1.Router, {"history": new CreateHistory()}, React.createElement(react_router_1.Route, {"path": "/", "component": App}, React.createElement(react_router_1.Route, {"path": "", "component": common_1.default}, React.createElement(react_router_1.Route, {"path": "chart", "component": chart_1.default}, React.createElement(react_router_1.Route, {"path": "", "component": chart_controller_1.default}, React.createElement(react_router_1.Route, {"path": ":title/:column/:row", "component": stack_bar_chart_1.default}))))))), document.querySelector('#app'));
 
-},{"./components/chart-controller/chart-controller":295,"./components/common":296,"./components/stack-bar-chart":300,"./contexts/chart":301,"./lib/eventer":304,"history/lib/createBrowserHistory":39,"react":287,"react-dom":131,"react-router":154}],303:[function(require,module,exports){
+},{"./components/chart-controller/chart-controller":295,"./components/common":296,"./components/stack-bar-chart":301,"./contexts/chart":302,"./lib/eventer":305,"history/lib/createBrowserHistory":39,"react":287,"react-dom":131,"react-router":154}],304:[function(require,module,exports){
 var d3_1 = require('d3');
 var _ = require('lodash');
 var Constants = (function () {
@@ -60593,7 +60567,7 @@ var Constants = (function () {
                 width: 500,
                 height: 500,
                 sectorBorderColor: 'white',
-                fontSize: "14px"
+                fontSize: "12px"
             };
         },
         enumerable: true,
@@ -60642,7 +60616,7 @@ var Constants = (function () {
     });
     Object.defineProperty(Constants, "years", {
         get: function () {
-            return _.map([21, 22, 23, 24, 25, 26], function (n) {
+            return _.map([21, 22, 23, 24, 25, 26].reverse(), function (n) {
                 return { key: n, name: "\u5E73\u6210" + n + "\u5E74" };
             }).reverse();
         },
@@ -60772,7 +60746,11 @@ var Constants = (function () {
     Constants.totalProps = [
         { key: 'number', name: '自殺者数' },
     ];
+    Constants.total = [
+        { key: 0, name: '総数' }
+    ];
     Constants.genders = [
+        { key: 0, name: '総数' },
         { key: 1, name: '女性' },
         { key: 2, name: '男性' }
     ];
@@ -60876,7 +60854,7 @@ var Constants = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Constants;
 
-},{"d3":2,"lodash":79}],304:[function(require,module,exports){
+},{"d3":2,"lodash":79}],305:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60938,7 +60916,7 @@ var Root = (function (_super) {
 })(Node);
 exports.Root = Root;
 
-},{"events":6,"react":287}],305:[function(require,module,exports){
+},{"events":6,"react":287}],306:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60970,7 +60948,48 @@ var Fa = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Fa;
 
-},{"react":287}],306:[function(require,module,exports){
+},{"react":287}],307:[function(require,module,exports){
+var _ = require('lodash');
+var ChartSet = (function () {
+    function ChartSet(series, parSeries, data) {
+        if (series === void 0) { series = []; }
+        if (parSeries === void 0) { parSeries = []; }
+        if (data === void 0) { data = []; }
+        this.series = series;
+        this.parSeries = parSeries;
+        this.data = data;
+    }
+    ChartSet.fromTable = function (table) {
+        var series = _.map(table.column, function (v, k) {
+            return { field: v.key, name: v.name };
+        });
+        var parSeries = _.map(table.column, function (v, k) {
+            return { field: v.key + 'par', name: v.name };
+        });
+        var data = _.map(table.rowTitle, function (title, i) {
+            var result = { sort: title };
+            _.each(table.row[i], function (v, k) {
+                result[k] = v.number;
+                result[k + 'par'] = v.par;
+            });
+            return result;
+        });
+        return new ChartSet(series, parSeries, data);
+    };
+    Object.defineProperty(ChartSet.prototype, "configuration", {
+        get: function () {
+            return {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return ChartSet;
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = ChartSet;
+
+},{"lodash":79}],308:[function(require,module,exports){
+var _ = require('lodash');
 var Table = (function () {
     function Table(title, column) {
         if (column === void 0) { column = []; }
@@ -60986,19 +61005,36 @@ var Table = (function () {
         this.rowTitle.push(title);
         this.row.push(row);
     };
+    Object.defineProperty(Table.prototype, "max", {
+        get: function () {
+            var m = 0;
+            _.each(this.row, function (r) {
+                var total = _.reduce(r, function (a, _a) {
+                    var number = _a.number;
+                    return a + number;
+                }, 0);
+                total > m && (m = total);
+            });
+            return m;
+        },
+        enumerable: true,
+        configurable: true
+    });
     return Table;
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Table;
 
-},{}],307:[function(require,module,exports){
+},{"lodash":79}],309:[function(require,module,exports){
+var constants_1 = require("../initializers/constants");
 var request = require('superagent');
 var Fetcher = (function () {
     function Fetcher() {
         this.store = {};
     }
-    Fetcher.prototype.fetch = function (params, callback) {
+    Fetcher.prototype.fetch = function (props, callback) {
         var _this = this;
+        var params = this.detectApiParam(props);
         var gender = params.gender, area = params.area, year = params.year, table = params.table;
         var uri = ['/api', gender, year, area, table].join('/');
         if (this.pre == uri || this.store[uri]) {
@@ -61021,6 +61057,38 @@ var Fetcher = (function () {
             }
         });
     };
+    Fetcher.prototype.detectApiParam = function (props) {
+        var _a = props.params, title = _a.title, column = _a.column, row = _a.row;
+        var _b = props.location.query, yearFilter = _b.yearFilter, areaFilter = _b.areaFilter, genderFilter = _b.genderFilter, itemFilter = _b.itemFilter;
+        var requires = [title, column, row];
+        var table = this.pickTable(requires);
+        var year = '-';
+        if (_.includes(requires, 'year')) {
+            year = yearFilter || constants_1.default.years[0].key;
+        }
+        var area = '0';
+        if (_.includes(requires, 'area')) {
+            area = areaFilter || '-';
+        }
+        var gender = '0';
+        if (_.includes(requires, 'gender')) {
+            gender = genderFilter || '1,2';
+        }
+        return { gender: gender, area: area, year: year, table: table };
+    };
+    Fetcher.prototype.pickTable = function (names) {
+        var table;
+        _.each(names, function (name) {
+            if (_.includes(constants_1.default.tableKeys, name)) {
+                if (table && name == 'total') {
+                }
+                else {
+                    table = name;
+                }
+            }
+        });
+        return table || 'total';
+    };
     return Fetcher;
 })();
 var f = new Fetcher();
@@ -61029,16 +61097,38 @@ function fetch(params, callback) {
 }
 exports.fetch = fetch;
 
-},{"superagent":291}],308:[function(require,module,exports){
+},{"../initializers/constants":304,"superagent":291}],310:[function(require,module,exports){
 var constants_1 = require("../initializers/constants");
 var _ = require('lodash');
 var table_1 = require("../models/table");
-function normalize(params) {
+//
+// 生のデータをtitle, row, columnの指定によって階層化する。
+// メタデータyear, area, gender以外の生テーブル名時に、
+// 動作がかわる。
+// 生テーブルは同時に2つ指定できない（お互いにつながりをもたないため）
+//
+function group(params) {
     var title = params.title, column = params.column, row = params.row, table = params.table, data = params.data;
     var titleMap = detectKeyMap(title);
     var columnMap = detectKeyMap(column);
     var rowMap = detectKeyMap(row);
-    console.log({ data: data });
+    var tableMap = detectKeyMap(table);
+    // 率の計算と、値をオブジェクト化
+    _.each(data, function (raw) {
+        var total = _.reduce(tableMap, function (a, _a) {
+            var key = _a.key;
+            return a + raw[key];
+        }, 0);
+        _.each(tableMap, function (_a) {
+            var key = _a.key;
+            raw[key] = {
+                src: raw,
+                number: raw[key],
+                par: par(raw[key], total)
+            };
+        });
+    });
+    // タイトルごとにまとめる
     var titleGrouped = {};
     _.each(data, function (d) {
         _.each(titleMap, function (_a) {
@@ -61057,6 +61147,7 @@ function normalize(params) {
             store.push({ year: year, gender: gender, area: area, data: d, content: content });
         });
     });
+    // タイトルごとにまとめられたデータを、rowごちのまとめる。
     var rowGroped = {};
     _.each(titleGrouped, function (dataList, key) {
         var store = findOrCreate(rowGroped, key, {});
@@ -61076,22 +61167,32 @@ function normalize(params) {
             }
         });
     });
-    var column;
-    console.log({ titleGrouped: titleGrouped, rowGroped: rowGroped });
-    var grouped = rowGroped;
+    console.log({ rowGroped: rowGroped });
+    return rowGroped;
+}
+//
+// 生のデータをTable[]形式に変換
+//
+function normalize(params) {
+    var title = params.title, column = params.column, row = params.row, table = params.table, data = params.data;
+    if (!data || !data.length) {
+        return [];
+    }
+    var grouped = group(params);
+    var titleMap = detectKeyMap(title);
+    var columnMap = detectKeyMap(column);
+    var rowMap = detectKeyMap(row);
+    var tableMap = detectKeyMap(table);
     var chartDataListStore = {};
-    var columnNames = _.map(columnMap, function (_a) {
-        var name = _a.name;
-        return name;
-    });
     _.each(titleMap, function (_a) {
         var key = _a.key, name = _a.name;
-        var store = findOrCreate(chartDataListStore, key, { table: new table_1.default(name, columnNames) });
+        var store = findOrCreate(chartDataListStore, key, { table: new table_1.default(name) });
         var titleData = grouped[key];
         //console.log({titleData})
         if (!titleData) {
             return;
         }
+        var existColumn = {};
         _.each(rowMap, function (_a) {
             var key = _a.key, name = _a.name;
             var raw = titleData[key];
@@ -61102,248 +61203,66 @@ function normalize(params) {
             if (!constants_1.default.isIncludedTable(column)) {
                 groupedRaw = _.groupBy(raw, function (r) { return r[column].content; });
             }
-            var rowData = [];
+            var rowData = {};
             _.each(columnMap, function (_a) {
                 var key = _a.key, name = _a.name;
                 var content;
                 if (constants_1.default.isIncludedTable(column)) {
+                    existColumn[key] = true;
                     content = raw[0].data[key];
                 }
                 else {
                     if (!groupedRaw[key]) {
                         return;
                     }
+                    existColumn[key] = true;
                     content = groupedRaw[key][0].content;
                 }
-                rowData.push(content);
+                rowData[key] = content;
             });
             store.table.addRow(name, rowData);
         });
+        var columnNames = {};
+        _.each(columnMap, function (_a) {
+            var key = _a.key, name = _a.name;
+            if (existColumn[key]) {
+                columnNames[key] = { key: key, name: name };
+            }
+        });
+        store.table.column = columnNames;
     });
-    chartDataListStore = _.map(chartDataListStore, function (v, k) { return v; });
-    _.map(chartDataListStore, function (c) { return console.log(c); });
+    //chartDataListStore = _.map(chartDataListStore, (v, k)=> v);
+    //_.map(chartDataListStore, (c)=> console.log(c));
+    return _.map(chartDataListStore, function (v, k) { return v.table; });
 }
 exports.normalize = normalize;
+//
+// dataのkeyとname対応を取得する
+//
 function detectKeyMap(title) {
     return detectTableKeyMap(title) || detectSplitterMap(title);
 }
-function normalizeStackBarData(props) {
-    var data = props.data, split = props.split, table = props.table, rotation = props.rotation, sort = props.sort;
-    var arranged = arrangeData(data, table);
-    if (rotation == 'true') {
-        return normalizeRotatedStackBarData(arranged, table, split, sort);
-    }
-    else {
-        return normalizeRegularStackBarData(arranged, table, split, sort);
-    }
-}
-exports.normalizeStackBarData = normalizeStackBarData;
 function detectTableKeyMap(table) {
     return constants_1.default[(table + "Props")];
 }
 function detectSplitterMap(split) {
     return constants_1.default.splitters[split];
 }
+//
+// オブジェクト内にkeyプロパティが存在する場合はそれを、
+// 存在しない場合はinitialを挿入してそれを返す。
+//
 function findOrCreate(hash, key, initial) {
     if (!hash[key]) {
         hash[key.toString()] = initial;
     }
     return hash[key];
 }
-function arrangeData(data, table) {
-    if (!_.isArray(data)) {
-        return null;
-    }
-    var keyMaps = detectTableKeyMap(table);
-    var splitters = constants_1.default.splitters;
-    var arranged = {};
-    data.map(function (part) {
-        part.total = part.gender;
-        // 各splitのkeyでアクセスできるようにする
-        _.each(splitters, function (keys, name) {
-            if (!part[name]) {
-                return;
-            }
-            //項目のstore
-            var splitStore = findOrCreate(arranged, name, {});
-            var dataArray = findOrCreate(splitStore, part[name].content, []);
-            dataArray.push(part);
-        });
-        // tableの各要素からsplitにアクセスできるようにする
-        var total = _.reduce(keyMaps, function (a, keyMap) { return a + part[keyMap.key]; }, 0);
-        _.each(keyMaps, function (keyMap) {
-            part[keyMap.key] = {
-                name: keyMap.name,
-                content: part[keyMap.key],
-                par: par(part[keyMap.key], total),
-                src: part,
-                key: keyMap.key
-            };
-        });
-        // 各項目の属性ごとに値を割り当て
-        _.each(keyMaps, function (keyMap) {
-            var partStore = findOrCreate(arranged, keyMap.key, {});
-            _.each(splitters, function (keys, name) {
-                partStore[name] = arranged[name];
-            });
-        });
-    });
-    return arranged;
-}
+//
+// 率の計算
+//
 function par(n, total) {
     return Math.round(n / total * 1000) / 10;
 }
-function normalizeRotatedStackBarData(arranged, table, split, sort) {
-    console.log('rotated');
-    console.log(arranged);
-    var keyMaps = detectTableKeyMap(table);
-    var splitterMaps = detectSplitterMap(split);
-    var sortMaps = detectSplitterMap(sort);
-    var chartSeries = keyMaps.map(function (keyMap) { return ({ field: keyMap.key, name: keyMap.name }); });
-    var chartData = {
-        chartSeries: chartSeries,
-        dataList: {},
-        max: 0
-    };
-    if (sort == 'year') {
-    }
-    else {
-        _.each(arranged.year, function (yearDataList, year) {
-            var eachYearStore = findOrCreate(chartData.dataList, year, { title: yearDataList[0].year.name });
-            var remap = remapArray(yearDataList, split, sort);
-            _.each(sortMaps, function (sortMap) {
-                var sortElement = remap[sortMap.key];
-                if (!sortElement) {
-                    return;
-                }
-                _.each(sortElement, function (splitValue, splitKey) {
-                    _.each(keyMaps, function (keyMap) {
-                        var dataList = findOrCreate(eachYearStore, splitKey, {});
-                        var data = findOrCreate(dataList, sortMap.key, { sort: sortMap });
-                        data[keyMap.key] = splitValue[keyMap.key].content;
-                        data[keyMap.key + 'par'] = splitValue[keyMap.key].par;
-                    });
-                });
-            });
-            eachYearStore.chartList = convert(eachYearStore, splitterMaps, sortMaps);
-        });
-        // max処理
-        chartData.max = getMax(chartData.dataList, splitterMaps, keyMaps);
-    }
-    console.log('normalized', chartData);
-    return chartData;
-}
-function remapArray(dataList, series, sort) {
-    var result = {};
-    _.each(dataList, function (d) {
-        var store = findOrCreate(result, d[sort].content, {});
-        store[d[series].content] = d;
-    });
-    return result;
-}
-function convert(eachYearStore, themeMap, sortMap) {
-    var result = [];
-    _.each(themeMap, function (theme) {
-        var store = eachYearStore[theme.key];
-        var array = [];
-        _.each(sortMap, function (sort) {
-            array.push(store[sort.key]);
-        });
-        result.push({
-            key: theme.key,
-            name: theme.name,
-            data: _.compact(array)
-        });
-    });
-    return result;
-}
-function getMax(dataList, themeMap, seriesMap) {
-    var max = 0;
-    _.each(dataList, function (dataSet) {
-        _.each(themeMap, function (theme) {
-            var tableData = dataSet[theme.key];
-            _.each(tableData, function (data) {
-                var total = 0;
-                _.each(seriesMap, function (series) {
-                    total += data[series.key] || 0;
-                });
-                total > max && (max = total);
-            });
-        });
-    });
-    return max;
-}
-function normalizeRegularStackBarData(arranged, table, split, sort) {
-    if (!_.isObject(arranged)) {
-        return [];
-    }
-    var keyMaps = detectTableKeyMap(table);
-    var splitterMaps = detectSplitterMap(split);
-    var sortMaps = detectSplitterMap(sort);
-    var chartSeries = _.compact(splitterMaps.map(function (keyMap) {
-        if (arranged[split][keyMap.key]) {
-            return { field: keyMap.key, name: keyMap.name };
-        }
-    }));
-    var chartData = {
-        chartSeries: chartSeries,
-        dataList: {},
-        max: 0
-    };
-    if (sort == 'year') {
-        chartData.dataList = {
-            _: {
-                title: '年ごとの遷移',
-                chartList: {}
-            }
-        };
-        var store = chartData.dataList._.chartList;
-        _.each(arranged[split], function (splitData, key) {
-            _.each(splitData, function (spData) {
-                _.each(keyMaps, function (keyMap) {
-                    var columnStore = findOrCreate(store, keyMap.key, { name: keyMap.name, data: {} });
-                    var yearStore = findOrCreate(columnStore.data, spData.year.content, { sort: spData.year });
-                    yearStore[key] = spData[keyMap.key].content;
-                    yearStore[key + 'par'] = spData[keyMap.key].par;
-                });
-            });
-        });
-        _.each(keyMaps, function (keyMap) {
-            var target = store[keyMap.key];
-            target.data = _.map(target.data, function (value) {
-                var maxStore = 0;
-                _.each(splitterMaps, function (sp) {
-                    maxStore += value[sp.key] || 0;
-                });
-                maxStore > chartData.max && (chartData.max = maxStore);
-                return value;
-            });
-        });
-    }
-    else {
-        _.each(arranged.year, function (yearDataList, year) {
-            var eachYearStore = findOrCreate(chartData.dataList, year, { title: yearDataList[0].year.name });
-            var remap = remapArray(yearDataList, split, sort);
-            _.each(sortMaps, function (sortMap) {
-                var sortElement = remap[sortMap.key];
-                if (!sortElement) {
-                    return;
-                }
-                _.each(sortElement, function (splitValue, splitKey) {
-                    _.each(keyMaps, function (keyMap) {
-                        var dataList = findOrCreate(eachYearStore, keyMap.key, {});
-                        var data = findOrCreate(dataList, sortMap.key, { sort: sortMap });
-                        data[splitKey] = splitValue[keyMap.key].content;
-                        data[splitKey + 'par'] = splitValue[keyMap.key].par;
-                    });
-                });
-            });
-            eachYearStore.chartList = convert(eachYearStore, keyMaps, sortMaps);
-        });
-        chartData.max = getMax(chartData.dataList, keyMaps, splitterMaps);
-    }
-    console.log('normalized', chartData);
-    return chartData;
-}
 
-},{"../initializers/constants":303,"../models/table":306,"lodash":79}]},{},[302]);
+},{"../initializers/constants":304,"../models/table":308,"lodash":79}]},{},[303]);

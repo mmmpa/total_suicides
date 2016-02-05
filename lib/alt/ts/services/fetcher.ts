@@ -9,7 +9,8 @@ class Fetcher {
 
   }
 
-  fetch(params, callback:Function) {
+  fetch(props, callback:Function) {
+    let params = this.detectApiParam(props);
     let {gender, area, year, table} = params;
     let uri = ['/api', gender, year, area, table].join('/');
 
@@ -33,6 +34,45 @@ class Fetcher {
           callback({gender, area, year, table, data})
         }
       });
+  }
+
+  detectApiParam(props) {
+    let {title, column, row} = props.params;
+    let {yearFilter, areaFilter, genderFilter, itemFilter} = props.location.query;
+
+    let requires = [title, column, row];
+    let table = this.pickTable(requires);
+
+    let year = '-';
+    if (_.includes(requires, 'year')) {
+      year = yearFilter || Constants.years[0].key;
+    }
+
+    let area = '0';
+    if (_.includes(requires, 'area')) {
+      area = areaFilter || '-';
+    }
+
+    let gender = '0';
+    if (_.includes(requires, 'gender')) {
+      gender = genderFilter || '1,2';
+    }
+
+    return {gender, area, year, table};
+  }
+
+  pickTable(names:string[]) {
+    let table;
+    _.each(names, (name:string)=> {
+      if (_.includes(Constants.tableKeys, name)) {
+        if (table && name == 'total') {
+          //throw 'Double table error';
+        }else{
+          table = name;
+        }
+      }
+    });
+    return table || 'total';
   }
 }
 

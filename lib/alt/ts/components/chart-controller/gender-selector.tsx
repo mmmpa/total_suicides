@@ -3,7 +3,6 @@ import {Node} from '../../lib/eventer'
 import Constants from "../../initializers/constants";
 import * as d3 from 'd3'
 import * as _ from 'lodash';
-import {normalizeBarData} from '../services/normalizer'
 import * as RD3 from 'react-d3-basic'
 
 export default class YearSelectorComponent extends Node<{},{}> {

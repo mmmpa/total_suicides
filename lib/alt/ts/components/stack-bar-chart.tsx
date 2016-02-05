@@ -3,112 +3,81 @@ import {Node} from '../lib/eventer'
 import * as d3 from 'd3'
 import Constants from "../initializers/constants";
 import * as _ from 'lodash';
-import {normalizeStackBarData} from '../services/normalizer'
 import * as RD3 from 'react-d3-basic'
+import RotatedDataTable from "./data-table";
+import ChartSet from "../models/chart-set";
 
-export default class BarChartComponent extends Node<{},{}> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      normalized: []
-    }
-  }
-
-  componentDidMount() {
-    this.normalizeState(this.props)
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.normalizeState(nextProps, this.props)
-  }
-
-  normalizeState(props, preProps?) {
-    if(preProps && props.data == preProps.data){
-      return;
-    }
-    let normalized = normalizeStackBarData(props);
-    this.setState({normalized});
-  }
-
-  detectChartProp(dataList) {
-    let defaultProps = Constants.barProps;
-    let minWidth = dataList.length * 100;
-    defaultProps.width < minWidth && (defaultProps.width = minWidth)
-    return defaultProps;
-  }
-
-  get sectionClass() {
-    return 'bar-chart section'
-  }
-
+export default class StackBarChartComponent extends Node<{},{}> {
   get autoScale():boolean {
     let {autoScale} = this.props.location.query;
     return autoScale && autoScale != 'false'
   }
 
-  domain(max) {
-    return this.autoScale ? null : [0, max];
+  domain(max?:number) {
+    return !max || this.autoScale ? null : [0, max];
   }
 
-  detectColor(chartSeries, props) {
-    chartSeries.map((c, i)=> c.color = Constants.normalColor(c.field - 1))
+  arrangeChartProp(data) {
+    let defaultProps = Constants.barProps;
+    let minWidth = data.length * 100;
+    defaultProps.width < minWidth && (defaultProps.width = minWidth)
+    return defaultProps;
   }
 
-  detectSeries(chartSeries, props) {
-    return chartSeries.map((c)=> {
-      let series = {}
-      _.each(c, (v, k)=>{
-        series[k] = k == 'field' ? v + 'par' : v;
-      })
-      return series;
+  arrangeSeries(series, parSeries) {
+    return _.map(series, ({field, name})=> {
+      let color = Constants.normalColor(field - 1);
+      return {field, name, color};
+    })
+  }
+
+  writeChart(chartSet:ChartSet, max?:number) {
+    let {series, parSeries, data} = chartSet;
+    let usingSeries = this.arrangeSeries(series, parSeries);
+    return <div className="chart-list stack-bar-chart">
+      <RD3.BarStackChart
+        data={data}
+        chartSeries={usingSeries}
+        x={(d)=> d.sort}
+        xScale='ordinal'
+        yTickFormat={d3.format(".2s")}
+        yDomain={this.domain(max)}
+        {...this.arrangeChartProp(data)}
+      />
+    </div>;
+  }
+
+  writeTable(table) {
+    return <div className="chart-list data-table-container">
+      <RotatedDataTable {...{table}} />
+    </div>
+  }
+
+  detectMax(dataList) {
+    let max = 0;
+    _.map(dataList, ({table})=> {
+      table.max > max && (max = table.max);
     });
-  }
-
-  writeChartSection(normalized) {
-    let {chartSeries, dataList, max} = normalized;
-    if (!dataList) {
-      return null;
-    }
-    this.detectColor(chartSeries, this.props);
-    //console.log(chartSeries = this.detectSeries(chartSeries, this.props));
-    return _.map(dataList, (chartData)=> {
-      return <section key={chartData.title} className="chart-list chart-section">
-        <h1>{chartData.title}</h1>
-        {this.writeCharts(chartSeries, chartData.chartList, max)}
-      </section>
-    });
-  }
-
-  writeCharts(chartSeries, chartList, max) {
-    return _.map(chartList, (chartData)=> {
-      return <section key={chartData.title} className="chart-list chart-block">
-        <h1>{chartData.name}</h1>
-        {this.writeChart(chartSeries, chartData.data, max)}
-      </section>
-    });
-  }
-
-  writeChart(chartSeries, chartData, max = 10000) {
-    return <RD3.BarStackChart
-      data={chartData}
-      chartSeries={chartSeries}
-      x={(d)=>d.sort.name}
-      xScale='ordinal'
-      yTickFormat={d3.format(".2s")}
-      yLabel={'人数'}
-      xLabel={'平成年'}
-      yDomain={this.domain(max)}
-      yLabelPosition={"right"}
-      {...this.detectChartProp(chartData)}
-    />;
+    return max;
   }
 
   render() {
+    let {dataList} = this.props;
+    if (!dataList || dataList.length == 0) {
+      return <div>null</div>
+    }
+    let max = this.detectMax(dataList);
     return <div>
       <article className="chart-list body">
-        {this.writeChartSection(this.state.normalized)}
+        {this.props.dataList.map((d)=> {
+          return <section className="chart-list chart-block">
+            <h1 className="chart-list chart-title">{d.table.title}</h1>
+            {this.writeChart(d.chartSet, max)}
+            {this.writeTable(d.table)}
+          </section>
+          })
+          }
       </article>
     </div>
   }
 }
-

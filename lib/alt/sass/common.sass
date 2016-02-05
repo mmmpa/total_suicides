@@ -42,8 +42,16 @@ body
     margin: 20px 20px 0 0
     display: inline-block
     font-size: 14px
-    overflow: auto
     max-width: 100%
+  &.stack-bar-chart
+    font-size: 12px
+    overflow: auto
+  &.data-table-container
+    padding: 20px 0
+    font-size: 12px
+    overflow: auto
+  .data-table
+    margin: 0 auto
 
 .global-wrapper
   position: relative
@@ -147,3 +155,24 @@ input[type="radio"]
       display: block
     a
       color: #000
+
+.data-table
+  border-collapse: collapse
+  tbody
+    tr:nth-child(2n-1)
+      background: $gray1
+  td,
+  th
+    border: 1px solid $gray3
+    padding: 3px 5px
+    font-weight: 300
+    font-size: 14px
+  thead
+    th
+      border-bottom-width: 2px
+  .row-title,
+  .column-title,
+  .row-content
+    @extend %min-cell
+  .row-content
+    text-align: right
