@@ -26,7 +26,7 @@ module Tagged
 
     def as_json(options = {})
       options.merge!(except: [:id, :gender_id, :area_id, :year_id])
-      super.merge!(tagged_data)
+      super.merge!(tagged_data).deep_symbolize_keys!
     end
   end
 end

@@ -12,6 +12,10 @@ Rails.application.routes.draw do
     get 'total', to: 'api#total', as: :api_total
   end
 
+  scope 'api/table' do
+    get ':base/:table/:x/:y', to: 'api#table', as: :api_table
+  end
+
   get '', to: 'portal#portal', as: :portal
   get '*path', to: 'portal#portal'
 end

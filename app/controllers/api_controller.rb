@@ -8,6 +8,11 @@ class ApiController < ApplicationController
     EOS
   end
 
+  def table
+    TableCreator.(params)
+    render plain: ''
+  end
+
   private
 
   def detect_scope_param(klass)

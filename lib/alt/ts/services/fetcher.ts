@@ -43,9 +43,9 @@ class Fetcher {
     let requires = [title, column, row];
     let table = this.pickTable(requires);
 
-    let year = '-';
+    let year =  yearFilter || Constants.years[0].key;
     if (_.includes(requires, 'year')) {
-      year = yearFilter || Constants.years[0].key;
+      year = '-';
     }
 
     let area = '0';
