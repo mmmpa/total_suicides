@@ -47,7 +47,7 @@ render((
       <Route path="" component={Common}>
         <Route path="chart" component={ChartContext}>
           <Route path="" component={ChartController}>
-            <Route path=":title/:column/:row" component={StackBarChart}/>
+            <Route path=":base/:table/:x/:y" component={StackBarChart}/>
           </Route>
         </Route>
       </Route>

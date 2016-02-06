@@ -7,36 +7,23 @@ import ChartSet from "../models/chart-set";
 
 export default class ChartContext extends Root<{},{}> {
   initialState(props) {
-    let {table, split, sort} = props.params;
-    return {table, split, sort}
-  }
-
-  relay(props) {
-    let {table, split, sort} = props.params;
-    let {dataList} = this.state;
-    this.setState({table, split, sort, dataList});
+    return {}
   }
 
   componentDidMount() {
     this.fetchData(this.props);
-    this.relay(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
     this.fetchData(nextProps, this.props);
-    this.relay(nextProps);
   }
 
   fetchData(props, preProps?) {
     fetch(props, (result)=> {
-      let {title, column, row} = props.params;
-      let {data, table} = result;
-      let tableList = normalize({title, column, row, table, data});
-      let dataList = _.map(tableList, (table)=> {
-        let chartSet = ChartSet.fromTable(table);
-        return {chartSet, table};
-      });
-      this.setState({dataList});
+      let {base, table, x, y} = props.params;
+      let {data} = result;
+      let tableListList = normalize(data)
+      this.setState({tableListList, base, table, x, y})
     })
   }
 

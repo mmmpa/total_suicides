@@ -9,8 +9,8 @@ class ApiController < ApplicationController
   end
 
   def table
-    TableCreator.(params)
-    render plain: ''
+
+    render json: TableCreator.(params)
   end
 
   private

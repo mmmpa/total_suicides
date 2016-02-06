@@ -10,7 +10,7 @@ interface P {
 export default class RotatedDataTable extends Node<P,{}> {
   render() {
     let {table, par} = this.props;
-    let sortedKeys = _.map(table.column, (_, key)=> key);
+    let sortedKeys = table.column;
     return <section>
       <table className="data-table rotated-data-table">
         <thead>
@@ -26,8 +26,8 @@ export default class RotatedDataTable extends Node<P,{}> {
         <tbody>
           {
             _.map(sortedKeys.reverse(), (key, i)=>{
-              return <tr key={table.column[key].key}>
-                <td className="rotated-data-table column-title" key={-1}>{table.column[key].name}</td>
+              return <tr key={table.column[i]}>
+                <td className="rotated-data-table column-title" key={-1}>{table.column[i]}</td>
                 {
                   _.map(table.row, (row, i)=>{
                     return <td className="rotated-data-table row-content" key={i}>{par ? row[key].par + '%' : row[key].number}</td>

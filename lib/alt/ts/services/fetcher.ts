@@ -11,13 +11,13 @@ class Fetcher {
 
   fetch(props, callback:Function) {
     let params = this.detectApiParam(props);
-    let {gender, area, year, table} = params;
-    let uri = ['/api', gender, year, area, table].join('/');
+    let {base, table, x, y} = props.params;
+    let uri = ['/api/table', base, table, x, y].join('/');
 
     if (this.pre == uri || this.store[uri]) {
       console.log(this.pre == uri ? 'double request ${uri}' : `retrieve from store ${uri}`);
       let data = this.store[uri] || [];
-      callback({gender, area, year, table, data})
+      callback({base, table, x, y, data})
       return;
     }
     this.pre = uri;
@@ -28,10 +28,10 @@ class Fetcher {
         if (!!err) {
           //
         } else {
-          console.log(`fetched from ${uri}`);
+          console.log(`fetched from ${uri}`, res.body);
           let data = res.body;
           this.store[uri] = data;
-          callback({gender, area, year, table, data})
+          callback({base, table, x, y, data})
         }
       });
   }

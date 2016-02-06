@@ -3,7 +3,7 @@ class TableCreator
 
   class << self
     def call(params)
-      new(params).raw
+      pp JSON.generate(new(params).raw)
     end
 
     def detect(*args)
@@ -134,7 +134,7 @@ class TableCreator
   #
   def filter_data(base, filters)
     used_base = base || :total
-    result = detect_table(used_base)
+    result = detect_table(used_base).includes{[:year, :area, :gender]}
     filters.each_pair do |k, v|
       next unless v.present?
       case
@@ -148,12 +148,12 @@ class TableCreator
           nil
       end
     end
-    result.to_a.map!(&:as_json).map! do |row|
+    result.all.to_a.map!(&:as_json).map! do |row|
       total = columns(used_base).inject(0) { |a, column| a + row[column[:key]] }.to_f
       columns(used_base).each do |column|
         row[column[:key]] = {
           number: row[column[:key]],
-          par: row[column[:key]] / total
+          par: (row[column[:key]] / total).round(2)
         }
       end
       row

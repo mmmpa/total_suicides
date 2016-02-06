@@ -53,27 +53,38 @@ export default class StackBarChartComponent extends Node<{},{}> {
     </div>
   }
 
-  detectMax(dataList) {
+  detectMax(tableListList) {
     let max = 0;
-    _.map(dataList, ({table})=> {
-      table.max > max && (max = table.max);
+    _.each(tableListList, ({tables})=> {
+      _.each(tables, (table)=> {
+        table.max > max && (max = table.max);
+      });
     });
     return max;
   }
 
+  writeTables(tableList) {
+    return _.map(tableList, (table)=>{
+      return <section>
+        <h1>{table.title}</h1>
+        {this.writeTable(table)}
+      </section>
+    });
+      //this.writeChart(d.chartSet, max)
+  }
+
   render() {
-    let {dataList} = this.props;
-    if (!dataList || dataList.length == 0) {
+    let {tableListList} = this.props;
+    if (!tableListList || tableListList.length == 0) {
       return <div>null</div>
     }
-    let max = this.detectMax(dataList);
+    let max = this.detectMax(tableListList);
     return <div>
       <article className="chart-list body">
-        {this.props.dataList.map((d)=> {
+        {tableListList.map(({title, tables})=> {
           return <section className="chart-list chart-block">
-            <h1 className="chart-list chart-title">{d.table.title}</h1>
-            {this.writeChart(d.chartSet, max)}
-            {this.writeTable(d.table)}
+            <h1 className="chart-list chart-title">{title}</h1>
+            {this.writeTables(tables)}
           </section>
           })
           }
