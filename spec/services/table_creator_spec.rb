@@ -13,15 +13,31 @@ describe TableCreator do
 
   describe 'detect' do
     it do
-      expect(TableCreator.detect(:year, :area, :gender)).to eq(Total)
+      expect(TableCreator.detect(:year, :area, :gender)).to eq(nil)
     end
 
     it do
-      expect(TableCreator.detect(:year, :way)).to eq(Way)
+      expect(TableCreator.detect(:year, :way)).to eq(:way)
     end
   end
 
   describe do
+    context 'no_year' do
+      let(:params){
+        {
+          'base' => 'way',
+          'table' => 'area',
+          'x' => 'gender',
+          'y' => 'none',
+          'area' => '1,2,3'
+        }
+      }
+
+      it do
+        pp TableCreator.(params)
+      end
+    end
+
     context do
       let(:params){
         {
@@ -29,6 +45,22 @@ describe TableCreator do
           'table' => 'area',
           'x' => 'gender',
           'y' => 'way',
+          'area' => '1,2,3'
+        }
+      }
+
+      it do
+        TableCreator.(params)
+      end
+    end
+
+    context do
+      let(:params){
+        {
+          'base' => 'year',
+          'table' => 'gender',
+          'x' => 'way',
+          'y' => 'area',
           'area' => '1,2,3'
         }
       }
@@ -50,7 +82,7 @@ describe TableCreator do
       }
 
       it do
-        pp TableCreator.(params)
+        TableCreator.(params)
       end
     end
 
@@ -66,7 +98,7 @@ describe TableCreator do
       }
 
       it do
-        pp TableCreator.(params)
+        TableCreator.(params)
       end
     end
 
@@ -75,6 +107,21 @@ describe TableCreator do
         {
           'base' => 'year',
           'table' => 'way',
+          'x' => 'gender',
+          'y' => 'area',
+          'area' => '1,2,3'
+        }
+      }
+
+      it do
+        TableCreator.(params)
+      end
+    end
+    context do
+      let(:params){
+        {
+          'base' => 'year',
+          'table' => 'total',
           'x' => 'gender',
           'y' => 'area',
           'area' => '1,2,3'

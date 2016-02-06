@@ -18,9 +18,9 @@ module Tagged
 
     def tagged_data
       {
-        year: year,
-        area: area,
-        gender: gender
+        year: year.as_json,
+        area: area.as_json,
+        gender: gender.as_json
       }
     end
 
