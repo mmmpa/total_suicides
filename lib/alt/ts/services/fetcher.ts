@@ -12,6 +12,7 @@ class Fetcher {
   fetch(props, callback:Function) {
     let params = this.detectApiParam(props);
     let {base, table, x, y} = props.params;
+    let {year, area, gender, item} = props.location.query;
     let uri = ['/api/table', base, table, x, y].join('/');
 
     if (this.pre == uri || this.store[uri]) {
@@ -24,6 +25,7 @@ class Fetcher {
 
     request
       .get(uri)
+      .query({year, area, gender, item})
       .end((err, res)=> {
         if (!!err) {
           //

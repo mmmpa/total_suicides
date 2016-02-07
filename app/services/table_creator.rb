@@ -3,11 +3,11 @@ class TableCreator
 
   class << self
     def call(params)
-      pp JSON.generate(new(params).raw)
+      new(params).raw
     end
 
     def detect(*args)
-      table = args.find do |name|
+      args.find do |name|
         TABLE.include?(name)
       end
     end
@@ -38,7 +38,7 @@ class TableCreator
 
     grouped = data
 
-    self.raw = grouped
+    pp self.raw = grouped
   end
 
   def group(src, base, table, x, y)
@@ -46,7 +46,19 @@ class TableCreator
     data = group_by_base(data, base)
     data = group_by_table(data, table)
     data = group_by_x(data, x)
-    finish_by_y(data, y)
+    data = finish_by_y(data, y)
+    to_array(data)
+  end
+
+  def to_array(data)
+    to_array_support(data, 3)
+  end
+
+  def to_array_support(data, level, now = 0)
+    data.each_pair.inject([]) do |a, (key, value)|
+      detected = now != level ? to_array_support(value, level, now + 1) : value
+      a << {key: key, value: detected}
+    end
   end
 
   def group_by_base(data, name)
@@ -57,6 +69,7 @@ class TableCreator
     data.each_pair do |key, value|
       data[key] = group_table(value, name)
     end
+    data
   end
 
   def group_by_x(data, name)
@@ -134,21 +147,23 @@ class TableCreator
   #
   def filter_data(base, filters)
     used_base = base || :total
-    result = detect_table(used_base).includes{[:year, :area, :gender]}
+    result = detect_table(used_base).includes { [:year, :area, :gender] }
+
     filters.each_pair do |k, v|
       next unless v.present?
-      case
-        when 'area'
+      case k
+        when :area
           result = result.joins { :area }.where { area.content.in v }
-        when 'year'
+        when :year
           result = result.joins { :year }.where { year.content.in v }
-        when 'gender'
+        when :gender
           result = result.joins { :gender }.where { gender.content.in v }
         else
           nil
       end
     end
-    result.all.to_a.map!(&:as_json).map! do |row|
+
+    result.to_a.map!(&:as_json).map! do |row|
       total = columns(used_base).inject(0) { |a, column| a + row[column[:key]] }.to_f
       columns(used_base).each do |column|
         row[column[:key]] = {
@@ -162,9 +177,9 @@ class TableCreator
 
   def remap_table_hash(array, table)
     array.inject({}) do |a, data|
-      columns(table).each do |column|
-        a[column[:name]] ||= []
-        a[column[:name]].push(transform_table_data(data, column[:key]))
+      columns(table).each_with_index do |column, i|
+        store = a[column[:name]] ||= []
+        store.push(transform_table_data(data, column[:key]))
       end
       a
     end
@@ -183,7 +198,17 @@ class TableCreator
     if TABLE.include?(table)
       remap_table_hash(base, table)
     else
-      base.group_by { |data| data[table][:name] }
+      base.sort_by { |data|
+        if table == :year
+          -data[table][:content]
+        else
+          data[table][:content]
+        end
+      }.inject({}) { |a, data|
+        store = a[data[table][:name]] ||= []
+        store.push(data)
+        a
+      }
     end
   end
 
@@ -314,7 +339,7 @@ class TableCreator
       {key: :no, name: 'なし'},
       {key: :unknown, name: '不詳'},
     ],
-    total:[
+    total: [
       {key: :number, name: '総数'}
     ]
   }

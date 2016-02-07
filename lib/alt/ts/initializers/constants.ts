@@ -194,6 +194,14 @@ export default class Constants {
     return _.includes(this.tableKeys, name)
   }
 
+  static _keyMap;
+  static get keyMap(){
+    if(this._keyMap){
+      return this._keyMap;
+    }
+    _.flatten([this.areas, this.genders])
+  }
+
   static get splitters() {
     return {
       area: this.areas,

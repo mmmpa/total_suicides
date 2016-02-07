@@ -65,7 +65,7 @@ export default class StackBarChartComponent extends Node<{},{}> {
 
   writeTables(tableList) {
     return _.map(tableList, (table)=>{
-      return <section>
+      return <section key={table.title}>
         <h1>{table.title}</h1>
         {this.writeTable(table)}
       </section>
@@ -82,7 +82,7 @@ export default class StackBarChartComponent extends Node<{},{}> {
     return <div>
       <article className="chart-list body">
         {tableListList.map(({title, tables})=> {
-          return <section className="chart-list chart-block">
+          return <section className="chart-list chart-block" key={title}>
             <h1 className="chart-list chart-title">{title}</h1>
             {this.writeTables(tables)}
           </section>

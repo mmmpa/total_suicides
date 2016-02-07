@@ -7,14 +7,15 @@ export function normalize(data) {
   _.each(data, (container)=> {
     _.each(container, (value, key)=> {
       let titleHeader = key != '結果' ? key + '::' : '';
-      _.each(value, (value, key)=> {
-        let title = titleHeader + key;
+      _.each(value, (value)=> {
+        let title = titleHeader + value.key;
         result.push({
           title,
-          tables: _.map(value, (value, key)=> {
-            let table = new Table(key);
-            _.each(value, (value, key)=> {
-              table.addRow(key, value);
+          tables: _.map(value.value, (value)=> {
+            let table = new Table(value.key);
+            _.each(value.value, (value)=> {
+
+              table.addRow(value.key, value.value);
             });
             table.finish();
             return table;
@@ -23,5 +24,5 @@ export function normalize(data) {
       });
     })
   });
-  return _.sortBy(result, (r)=> r.title).reverse();
+  return result;
 }

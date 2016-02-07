@@ -82,7 +82,7 @@ describe TableCreator do
       }
 
       it do
-        TableCreator.(params)
+        pp TableCreator.(params)
       end
     end
 
@@ -98,7 +98,7 @@ describe TableCreator do
       }
 
       it do
-        TableCreator.(params)
+        pp TableCreator.(params)
       end
     end
 

@@ -24,7 +24,7 @@ export default class Table {
   }
 
   getColumn() {
-    return _.map(this.row[0], (value, key)=>key);
+    return _.map(this.row[0], (value)=> value.key);
   }
 
   getMax():number {
