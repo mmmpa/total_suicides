@@ -22,7 +22,7 @@ class TableCreator
     base, table, x, y = pick_key_name(params)
     filters = pick_filters(params)
 
-    arranged_filters = arrange_filters(filters, base, table, x, y)
+    pp arranged_filters = arrange_filters(filters, base, table, x, y)
     base_table = detect(base, table, x, y)
 
     data = filter_data(base_table, arranged_filters)
@@ -47,7 +47,7 @@ class TableCreator
     data = group_by_table(data, table)
     data = group_by_x(data, x)
     data = finish_by_y(data, y)
-    pp to_array(data)
+    to_array(data)
   end
 
   def to_array(data)
@@ -86,7 +86,6 @@ class TableCreator
         value2.each_pair do |key3, value3|
           case
             when name == :none
-              pp value3
               sorted = value3.sort_by { |v| v[:gender][:content] }
               value2[key3] = {'総数' => sorted.first[:content] || sorted.first[:number]}
             when TABLE.include?(name)
@@ -131,11 +130,12 @@ class TableCreator
     FILTER_DEFAULT.each do |set|
       key = set[:key]
       value = set[:value]
+      p [used, key]
       unless used.include?(key)
         if Proc === value
-          filters[key] = value.()
+          arranged[key] = value.()
         else
-          filters[key] = value
+          arranged[key] = value
         end
       end
     end
@@ -170,7 +170,7 @@ class TableCreator
       columns(used_base).each do |column|
         row[column[:key]] = {
           number: row[column[:key]],
-          par: (row[column[:key]] / total).round(2)
+          par: (row[column[:key]] / total * 100).round(2)
         }
       end
       row
@@ -205,7 +205,7 @@ class TableCreator
       }.inject({}) { |a, data|
         store = a[data[table][:name]] ||= []
         store.push(data)
-        pp a
+        a
       }
     end
   end

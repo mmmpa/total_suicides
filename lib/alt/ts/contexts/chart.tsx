@@ -5,6 +5,11 @@ import {normalize} from "../services/normalizer"
 import ChartSet from "../models/chart-set";
 
 export default class ChartContext extends Root<{},{}> {
+  constructor(props) {
+    super(props)
+    console.log('chart', this)
+  }
+
   initialState(props) {
     return {}
   }
@@ -27,26 +32,67 @@ export default class ChartContext extends Root<{},{}> {
   }
 
   listen(to) {
-    to('area:select', (key)=> {
-      let {query} = this.props.location;
-      if (key && key.length) {
-        query.area = key.join(',');
-      } else {
-        delete query.area;
-      }
-      this.props.history.pushState(null,
-        this.props.location.pathname,
-        query
-      )
+
+    to('area:select', (areas:number[])=> {
+      let query = this.setToQuery('area', areas);
+      this.changeQuery(query);
     });
+
     to('chart:autoScale', (autoScale)=> {
       let {query} = this.props.location;
       query.autoScale = autoScale;
-      this.props.history.pushState(null,
-        this.props.location.pathname,
-        query
-      )
+      this.changeQuery(query);
+    });
+
+    to('chart:par', (par)=> {
+      let {query} = this.props.location;
+      query.par = par;
+      this.changeQuery(query);
+    });
+
+    to('chart:year', (years)=> {
+      let query = this.setToQuery('year', years);
+      this.changeQuery(query);
+    });
+
+    to('chart:gender', (genders)=> {
+      let query = this.setToQuery('gender', genders);
+      this.changeQuery(query);
     });
   }
+
+  setToQuery(key:string, value:any[]){
+    let {query} = this.props.location;
+    if (value && value.length) {
+      query[key] = value.join(',');
+    } else {
+      delete query[key];
+    }
+    return query;
+  }
+
+  changeQuery(query) {
+    this.props.history.pushState(null,
+      this.props.location.pathname,
+      query
+    )
+  }
+
+  queryToArray(key){
+    let target = this.props.location.query[key];
+    if (!target) {
+      return [];
+    }
+    return target.split(',');
+  }
+
+  get years() {
+    return this.queryToArray('year');
+  }
+
+  get genders() {
+    return this.queryToArray('year');
+  }
+
 }
 

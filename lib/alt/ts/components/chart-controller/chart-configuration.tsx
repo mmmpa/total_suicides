@@ -11,26 +11,48 @@ export default class ChartConfigurationComponent extends Node<{},{}> {
     return autoScale && autoScale != 'false'
   }
 
-  toggle(autoScale:boolean){
+  get par():boolean{
+    let {par} = this.props.location.query;
+    return par && par != 'false'
+  }
+
+  toggleScale(autoScale:boolean){
     this.dispatch('chart:autoScale', autoScale)
+  }
+
+  togglePar(par:boolean){
+    this.dispatch('chart:par', par)
   }
 
   render() {
     return <div>
       <section className="chart-config body">
-        <h1 className="chart-config title">チャート表示設定</h1>
         <section className="chart-config auto-scale">
           <label>
             <span className="input-input">
-              <input type="radio" name="auto-scale" checked={!this.autoScale} onClick={()=> this.toggle(false)}/>
+              <input type="radio" name="auto-scale" checked={!this.autoScale} onClick={()=> this.toggleScale(false)}/>
             </span>
             <span className="input-label">Y軸最大値を統一する</span>
           </label>
           <label>
             <span className="input-input">
-              <input type="radio" name="auto-scale" checked={this.autoScale} onClick={()=> this.toggle(true)}/>
+              <input type="radio" name="auto-scale" checked={this.autoScale} onClick={()=> this.toggleScale(true)}/>
             </span>
             <span className="input-label">Y軸を自動調整する</span>
+          </label>
+        </section>
+        <section className="chart-config auto-scale">
+          <label>
+            <span className="input-input">
+              <input type="radio" name="par" checked={!this.par} onClick={()=> this.togglePar(false)}/>
+            </span>
+            <span className="input-label">人数で表示する</span>
+          </label>
+          <label>
+            <span className="input-input">
+              <input type="radio" name="par" checked={this.par} onClick={()=> this.togglePar(true)}/>
+            </span>
+            <span className="input-label">率で表示する</span>
           </label>
         </section>
       </section>

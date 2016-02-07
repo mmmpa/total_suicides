@@ -38,7 +38,8 @@ body
     padding: 20px
   &.chart-section
     margin: 40px 0
-  &.chart-block
+  &.chart-block,
+  &.chart-line
     margin: 20px 20px 0 0
     display: inline-block
     font-size: 14px
@@ -65,8 +66,8 @@ span
 
 input[type="checkbox"],
 input[type="radio"]
-  width: $font-size-h4
-  height: $font-size-h4
+  width: $font-size-h5
+  height: $font-size-h5
 
 .chart-config
   &.body
@@ -80,6 +81,8 @@ input[type="radio"]
     vertical-align: middle
     label
       padding: 0 10px
+.selector-area
+  @extend .size-h6
 
 .area-selector
   &.body
@@ -106,7 +109,7 @@ input[type="radio"]
     white-space: nowrap
     padding-right: 20px
     span
-      @extend .size-h5
+      @extend .size-h6
       display: inline-block
       vertical-align: top
 

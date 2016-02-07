@@ -1,58 +1,44 @@
 import * as React from 'react'
 import {Node} from '../../lib/eventer'
 import Constants from "../../initializers/constants";
-import * as d3 from 'd3'
 import * as _ from 'lodash';
-import * as RD3 from 'react-d3-basic'
 
-export default class YearSelectorComponent extends Node<{},{}> {
-  get selected(){
-    let {area} = this.props.location.query;
-    if(!area){
+export default class GenderSelectorComponent extends Node<{},{}> {
+  isChecked(key:number):boolean {
+    return _.includes(this.selected, key);
+  }
+
+  get selected() {
+    let {gender} = this.props.location.query;
+    if (!gender) {
       return [];
     }
-    return area.split(',').map((n)=> +n)
+    return gender.split(',').map((n)=> +n)
   }
 
-  get separated(){
-
-  }
-
-  toggle(e){
-    let key = +e.target.value;
-    if(_.includes(this.selected, key)){
-      this.dispatch('area:select', _.without(this.selected, key));
+  toggle(key:number) {
+    let now = this.selected;
+    if(this.isChecked(key)){
+      now = _.without(now, key);
     }else{
-      this.dispatch('area:select', this.selected.concat([key]))
+      now.push(key)
     }
-  }
-
-  writeSelector(props) {
-    let selected = (props.location.query.area || '').split(',').map((n)=> +n);
-    let {areas} = Constants;
-    return areas.map((area)=> {
-      let {key, text} = area;
-      return <li className="area-selector selector" key={key}>
-        <label>
-          <span className="input-input">
-            <input type="checkbox" value={key} checked={_.includes(selected, key)}
-                   onChange={this.toggle.bind(this)}/>
-          </span>
-          <span className="input-label">
-            {text}
-          </span>
-        </label>
-      </li>
-    });
+    this.dispatch('chart:gender', now);
   }
 
   render() {
     return <div>
-      <section className="area-selector body">
-        <h1 className="area-selector title">地域で絞り込み</h1>
-        <ul className="area-selector area-list">
-          {this.writeSelector(this.props)}
-        </ul>
+      <section className="selector-area gender-selector body">
+        <section className="gender-selector gender-list">
+          {_.map(Constants.genders, ({key, name})=>{
+            return <label key={key}>
+              <span className="input-input">
+                <input type="checkbox" name="year" checked={this.isChecked(key)} onClick={()=> this.toggle(key)}/>
+              </span>
+              <span className="input-label">{name}</span>
+            </label>
+            })}
+        </section>
       </section>
     </div>
   }

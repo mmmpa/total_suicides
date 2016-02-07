@@ -245,6 +245,12 @@ export default class Constants {
 
   static separatedAreas = [
     {
+      name: '全国',
+      areas: [
+        {key: 0, name: '全国'}
+      ]
+    },
+    {
       name: '北海道',
       areas: [
         {key: 1, name: '北海道'}

@@ -32,10 +32,13 @@ export abstract class Root<P, S> extends Node<P, S> {
   }
 
   componentWillMount(){
-    this.emitter = this.context.emitter || new EventEmitter();
-    this.listen((eventname:string, callback:Function) => {
-      this.emitter.on(eventname, callback);
-    });
+    if(!this.emitter){
+      this.emitter = this.context.emitter || new EventEmitter();
+      this.listen((eventname:string, callback:Function) => {
+        this.emitter.removeAllListeners(eventname);
+        this.emitter.on(eventname, callback);
+      });
+    }
   }
 
   constructor(props) {

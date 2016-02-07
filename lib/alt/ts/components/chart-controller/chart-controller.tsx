@@ -3,6 +3,8 @@ import {Node} from '../../lib/eventer'
 import Constants from "../../initializers/constants";
 import * as _ from 'lodash';
 import AreaSelector from './area-selector'
+import YearSelector from './year-selector'
+import GenderSelector from './gender-selector'
 import ChartConfiguration from './chart-configuration'
 
 export default class ChartControllerComponent extends Node<{},{}> {
@@ -18,7 +20,9 @@ export default class ChartControllerComponent extends Node<{},{}> {
   render() {
     return <div>
       <ChartConfiguration {...this.props}/>
-      {this.writeSelector(this.props)}
+      <YearSelector {...this.props}/>
+      <GenderSelector {...this.props}/>
+      <AreaSelector {...this.props}/>
       <article className="chart-content">
         {React.cloneElement(this.props.children || <div>blank</div>, this.props || {})}
       </article>

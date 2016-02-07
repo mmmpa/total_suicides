@@ -55,7 +55,7 @@ export default class AreaSelectorComponent extends Node<{},{}> {
   render() {
     let {separatedAreas} = Constants;
     return <div>
-      <section className="area-selector body">
+      <section className="selector-area area-selector body">
         {this.writeWideArea(separatedAreas, this.props)}
       </section>
     </div>

@@ -4,9 +4,30 @@ const request = require('superagent');
 class Fetcher {
   store = {};
   pre:string;
+  preQuery:any;
 
   constructor() {
 
+  }
+
+  isSameQuery(query){
+    if(!this.preQuery){
+      return false;
+    }
+
+    let different = true;
+    _.each(query, (v,k)=>{
+      if(this.preQuery[k] != v){
+        different = false;
+      }
+    });
+    return different;
+  }
+
+  stringifyQuery(query){
+    return _.reduce(query, (a, v, k)=>{
+      return a + k + v;
+    }, '')
   }
 
   fetch(props, callback:Function) {
@@ -14,25 +35,29 @@ class Fetcher {
     let {base, table, x, y} = props.params;
     let {year, area, gender, item} = props.location.query;
     let uri = ['/api/table', base, table, x, y].join('/');
+    let pickedQuery = {year, area, gender, item};
+    let uriStore = uri + this.stringifyQuery(pickedQuery);
 
-    if (this.pre == uri || this.store[uri]) {
-      console.log(this.pre == uri ? 'double request ${uri}' : `retrieve from store ${uri}`);
-      let data = this.store[uri] || [];
+    if (this.isSameQuery(pickedQuery) && (this.pre == uriStore || this.store[uriStore])) {
+      console.log(this.pre == uriStore ? `double request ${uri}` : `retrieve from store ${uri}`);
+      let data = this.store[uriStore] || [];
       callback({base, table, x, y, data})
       return;
     }
-    this.pre = uri;
+    this.preQuery = pickedQuery;
+    this.pre = uriStore;
 
     request
       .get(uri)
-      .query({year, area, gender, item})
+      .query(pickedQuery)
       .end((err, res)=> {
+        this.pre = null;
         if (!!err) {
           //
         } else {
           console.log(`fetched from ${uri}`, res.body);
           let data = res.body;
-          this.store[uri] = data;
+          this.store[uriStore] = data;
           callback({base, table, x, y, data})
         }
       });

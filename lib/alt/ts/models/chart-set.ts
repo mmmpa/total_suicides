@@ -16,9 +16,14 @@ export default class ChartSet {
       return {field: k, name: k}
     }));
 
-    let parSeries = _.map(table.column, (k)=> {
+    let parSeries = _.compact(_.map(table.column, (k)=> {
+      if (table.column.length >= 2) {
+        if (_.includes(['総計', '総数', '全国'], k)) {
+          return null
+        }
+      }
       return {field: k + 'par', name: k}
-    });
+    }));
 
     let data = _.compact(_.map(table.rowTitle, (title, i)=> {
       if (_.includes(['総計', '総数', '全国'], title)) {

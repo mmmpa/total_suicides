@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import * as RD3 from 'react-d3-basic'
 import RotatedDataTable from "./data-table";
 import ChartSet from "../models/chart-set";
+import Fa from '../lib/fa'
 
 export default class StackBarChartComponent extends Node<{},{}> {
   get autoScale():boolean {
@@ -13,7 +14,16 @@ export default class StackBarChartComponent extends Node<{},{}> {
     return autoScale && autoScale != 'false'
   }
 
+  get par():boolean {
+    let {par} = this.props.location.query;
+    return par && par != 'false'
+  }
+
   domain(max?:number) {
+    if (this.par) {
+      return this.autoScale ? null : [0, 100];
+    }
+
     return !max || this.autoScale ? null : [0, max];
   }
 
@@ -25,7 +35,8 @@ export default class StackBarChartComponent extends Node<{},{}> {
   }
 
   arrangeSeries(series, parSeries) {
-    return _.map(series, ({field, name})=> {
+    let using = this.par ? parSeries : series;
+    return _.map(using, ({field, name})=> {
       let color = Constants.normalColor(field - 1);
       return {field, name, color};
     })
@@ -64,8 +75,8 @@ export default class StackBarChartComponent extends Node<{},{}> {
   }
 
   writeTables(tableList, max) {
-    return _.map(tableList, ({table, chart})=>{
-      return <section key={table.title}>
+    return _.map(tableList, ({table, chart})=> {
+      return <section className="chart-list chart-block" key={table.title}>
         <h1>{table.title}</h1>
         {this.writeChart(chart, max)}
         {this.writeTable(table)}
@@ -75,15 +86,19 @@ export default class StackBarChartComponent extends Node<{},{}> {
 
   render() {
     let {tableListList} = this.props;
-    if (!tableListList || tableListList.length == 0) {
-      return <div>null</div>
+    if (!tableListList || !tableListList.length || _.isString(tableListList)) {
+      return <article className="chart-list body">
+        <div className="loading">
+          <Fa icon="spinner" pulse={true}/>
+          loading...
+        </div>
+      </article>
     }
     let max = this.detectMax(tableListList);
-    console.log({max})
     return <div>
       <article className="chart-list body">
         {tableListList.map(({title, tables})=> {
-          return <section className="chart-list chart-block" key={title}>
+          return <section className="chart-list chart-line" key={title}>
             <h1 className="chart-list chart-title">{title}</h1>
             {this.writeTables(tables, max)}
           </section>
