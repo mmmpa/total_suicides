@@ -60226,12 +60226,12 @@ var RotatedDataTable = (function (_super) {
         var sortedKeys = table.column;
         return React.createElement("section", {"key": table.title}, React.createElement("table", {"className": "data-table rotated-data-table"}, React.createElement("thead", null, React.createElement("tr", null, React.createElement("th", {"key": -1}, "-"), _.map(table.rowTitle, function (title, i) {
             return React.createElement("th", {"className": "rotated-data-table row-title", "key": i}, title);
-        }))), React.createElement("tbody", null, _.map(sortedKeys.reverse(), function (key, i) {
+        }))), React.createElement("tbody", null, _.map(sortedKeys, function (key, i) {
             return React.createElement("tr", {"key": table.column[i]}, React.createElement("td", {"className": "rotated-data-table column-title", "key": -1}, table.column[i]), _.map(table.row, function (row, ii) {
                 var value = row[i].value;
                 return React.createElement("td", {"className": "rotated-data-table row-content", "key": ii}, par ? value.par + '%' : value.number);
             }));
-        }))));
+        }).reverse())));
     };
     return RotatedDataTable;
 })(eventer_1.Node);
@@ -60370,18 +60370,19 @@ var StackBarChartComponent = (function (_super) {
         var max = 0;
         _.each(tableListList, function (_a) {
             var tables = _a.tables;
-            _.each(tables, function (table) {
+            _.each(tables, function (_a) {
+                var table = _a.table;
                 table.max > max && (max = table.max);
             });
         });
         return max;
     };
-    StackBarChartComponent.prototype.writeTables = function (tableList) {
+    StackBarChartComponent.prototype.writeTables = function (tableList, max) {
         var _this = this;
-        return _.map(tableList, function (table) {
-            return React.createElement("section", {"key": table.title}, React.createElement("h1", null, table.title), _this.writeTable(table));
+        return _.map(tableList, function (_a) {
+            var table = _a.table, chart = _a.chart;
+            return React.createElement("section", {"key": table.title}, React.createElement("h1", null, table.title), _this.writeChart(chart, max), _this.writeTable(table));
         });
-        //this.writeChart(d.chartSet, max)
     };
     StackBarChartComponent.prototype.render = function () {
         var _this = this;
@@ -60390,9 +60391,10 @@ var StackBarChartComponent = (function (_super) {
             return React.createElement("div", null, "null");
         }
         var max = this.detectMax(tableListList);
+        console.log({ max: max });
         return React.createElement("div", null, React.createElement("article", {"className": "chart-list body"}, tableListList.map(function (_a) {
             var title = _a.title, tables = _a.tables;
-            return React.createElement("section", {"className": "chart-list chart-block", "key": title}, React.createElement("h1", {"className": "chart-list chart-title"}, title), _this.writeTables(tables));
+            return React.createElement("section", {"className": "chart-list chart-block", "key": title}, React.createElement("h1", {"className": "chart-list chart-title"}, title), _this.writeTables(tables, max));
         })));
     };
     return StackBarChartComponent;
@@ -60455,7 +60457,7 @@ var ChartContext = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ChartContext;
 
-},{"../lib/eventer":305,"../services/fetcher":308,"../services/normalizer":309}],303:[function(require,module,exports){
+},{"../lib/eventer":305,"../services/fetcher":309,"../services/normalizer":310}],303:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60918,7 +60920,7 @@ var Root = (function (_super) {
         return { emitter: this.context.emitter || this.emitter };
     };
     Root.prototype.render = function () {
-        var props = _.merge(_.cloneDeep(this.props), this.state);
+        var props = _.merge(_.clone(this.props), this.state);
         console.log(props);
         delete props.children;
         return React.cloneElement(this.props.children || React.createElement("div", null, "blank"), props);
@@ -60961,6 +60963,54 @@ exports.default = Fa;
 
 },{"react":287}],307:[function(require,module,exports){
 var _ = require('lodash');
+var ChartSet = (function () {
+    function ChartSet(series, parSeries, data) {
+        if (series === void 0) { series = []; }
+        if (parSeries === void 0) { parSeries = []; }
+        if (data === void 0) { data = []; }
+        this.series = series;
+        this.parSeries = parSeries;
+        this.data = data;
+    }
+    ChartSet.fromTable = function (table) {
+        var series = _.compact(_.map(table.column, function (k) {
+            if (table.column.length >= 2) {
+                if (_.includes(['総計', '総数', '全国'], k)) {
+                    return null;
+                }
+            }
+            return { field: k, name: k };
+        }));
+        var parSeries = _.map(table.column, function (k) {
+            return { field: k + 'par', name: k };
+        });
+        var data = _.compact(_.map(table.rowTitle, function (title, i) {
+            if (_.includes(['総計', '総数', '全国'], title)) {
+                return null;
+            }
+            var result = { sort: title };
+            _.each(table.row[i], function (row) {
+                result[row.key] = row.value.number;
+                result[row.key + 'par'] = row.value.par;
+            });
+            return result;
+        }));
+        return new ChartSet(series, parSeries, data);
+    };
+    Object.defineProperty(ChartSet.prototype, "configuration", {
+        get: function () {
+            return {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return ChartSet;
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = ChartSet;
+
+},{"lodash":79}],308:[function(require,module,exports){
+var _ = require('lodash');
 var Table = (function () {
     function Table(title, column) {
         if (column === void 0) { column = []; }
@@ -60985,11 +61035,20 @@ var Table = (function () {
         return _.map(this.row[0], function (value) { return value.key; });
     };
     Table.prototype.getMax = function () {
+        var _this = this;
         var m = 0;
-        _.each(this.row, function (r) {
-            var total = _.reduce(r, function (a, _a) {
-                var number = _a.number;
-                return a + number;
+        _.each(this.row, function (row, i) {
+            if (_.includes(['総計', '総数', '全国'], _this.rowTitle[i])) {
+                return;
+            }
+            var total = _.reduce(row, function (a, _a) {
+                var key = _a.key, value = _a.value;
+                if (row.length >= 2) {
+                    if (_.includes(['総計', '総数', '全国'], key)) {
+                        return null;
+                    }
+                }
+                return a + value.number;
             }, 0);
             total > m && (m = total);
         });
@@ -61000,7 +61059,7 @@ var Table = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Table;
 
-},{"lodash":79}],308:[function(require,module,exports){
+},{"lodash":79}],309:[function(require,module,exports){
 var constants_1 = require("../initializers/constants");
 var request = require('superagent');
 var Fetcher = (function () {
@@ -61074,10 +61133,18 @@ function fetch(params, callback) {
 }
 exports.fetch = fetch;
 
-},{"../initializers/constants":304,"superagent":291}],309:[function(require,module,exports){
+},{"../initializers/constants":304,"superagent":291}],310:[function(require,module,exports){
 var _ = require('lodash');
 var table_1 = require("../models/table");
+var chart_set_1 = require("../models/chart-set");
+var preData = null;
+var preResult = null;
 function normalize(data) {
+    if (data == preData && preResult) {
+        console.log('same data');
+        return preResult;
+    }
+    preData = data;
     var result = [];
     _.each(data, function (container) {
         _.each(container, function (value, key) {
@@ -61092,14 +61159,19 @@ function normalize(data) {
                             table.addRow(value.key, value.value);
                         });
                         table.finish();
-                        return table;
+                        var chart = tableToChart(table);
+                        return { table: table, chart: chart };
                     })
                 });
             });
         });
     });
-    return result;
+    return preResult = result;
 }
 exports.normalize = normalize;
+function tableToChart(table) {
+    return chart_set_1.default.fromTable(table);
+}
+exports.tableToChart = tableToChart;
 
-},{"../models/table":307,"lodash":79}]},{},[303]);
+},{"../models/chart-set":307,"../models/table":308,"lodash":79}]},{},[303]);

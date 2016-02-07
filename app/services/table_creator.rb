@@ -30,7 +30,7 @@ class TableCreator
     if [base, table, x, y].include?(:year)
       data = [{'結果' => group(data, base, table, x, y)}]
     else
-      years = data.group_by { |d| d[:year][:name] }
+      years = data.sort_by { |d| d[:year][:content] }.group_by { |d| d[:year][:name] }
       data = years.each_pair.inject([]) do |a, (key, year_data)|
         a << {key => group(year_data, base, table, x, y)}
       end
@@ -38,7 +38,7 @@ class TableCreator
 
     grouped = data
 
-    pp self.raw = grouped
+    self.raw = grouped
   end
 
   def group(src, base, table, x, y)
@@ -47,7 +47,7 @@ class TableCreator
     data = group_by_table(data, table)
     data = group_by_x(data, x)
     data = finish_by_y(data, y)
-    to_array(data)
+    pp to_array(data)
   end
 
   def to_array(data)
@@ -86,13 +86,15 @@ class TableCreator
         value2.each_pair do |key3, value3|
           case
             when name == :none
-              value2[key3] = {'総数' => value3.first[:content] || value3.first[:number]}
+              pp value3
+              sorted = value3.sort_by { |v| v[:gender][:content] }
+              value2[key3] = {'総数' => sorted.first[:content] || sorted.first[:number]}
             when TABLE.include?(name)
               value2[key3] = columns(name).inject({}) do |a, column|
                 a.update(column[:name] => value3.first[column[:key]])
               end
             else
-              value2[key3] = value3.inject({}) do |a, series|
+              value2[key3] = value3.sort_by { |v| v[name][:content] }.inject({}) do |a, series|
                 a.update(series[name][:name] => series[:content])
               end
           end
@@ -199,15 +201,11 @@ class TableCreator
       remap_table_hash(base, table)
     else
       base.sort_by { |data|
-        if table == :year
-          -data[table][:content]
-        else
-          data[table][:content]
-        end
+        data[table][:content]
       }.inject({}) { |a, data|
         store = a[data[table][:name]] ||= []
         store.push(data)
-        a
+        pp a
       }
     end
   end

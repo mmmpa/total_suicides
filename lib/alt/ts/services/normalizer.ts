@@ -1,8 +1,18 @@
 import Constants from "../initializers/constants";
 import * as _ from 'lodash';
 import Table from "../models/table";
+import ChartSet from "../models/chart-set";
+
+let preData = null;
+let preResult = null;
 
 export function normalize(data) {
+  if(data == preData && preResult){
+    console.log('same data');
+    return preResult;
+  }
+  preData = data;
+
   let result = [];
   _.each(data, (container)=> {
     _.each(container, (value, key)=> {
@@ -18,11 +28,16 @@ export function normalize(data) {
               table.addRow(value.key, value.value);
             });
             table.finish();
-            return table;
+            let chart = tableToChart(table);
+            return {table, chart};
           })
         })
       });
     })
   });
-  return result;
+  return preResult = result;
+}
+
+export function tableToChart(table):ChartSet{
+  return ChartSet.fromTable(table);
 }

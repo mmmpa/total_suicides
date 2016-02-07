@@ -56,21 +56,21 @@ export default class StackBarChartComponent extends Node<{},{}> {
   detectMax(tableListList) {
     let max = 0;
     _.each(tableListList, ({tables})=> {
-      _.each(tables, (table)=> {
+      _.each(tables, ({table})=> {
         table.max > max && (max = table.max);
       });
     });
     return max;
   }
 
-  writeTables(tableList) {
-    return _.map(tableList, (table)=>{
+  writeTables(tableList, max) {
+    return _.map(tableList, ({table, chart})=>{
       return <section key={table.title}>
         <h1>{table.title}</h1>
+        {this.writeChart(chart, max)}
         {this.writeTable(table)}
       </section>
     });
-      //this.writeChart(d.chartSet, max)
   }
 
   render() {
@@ -79,12 +79,13 @@ export default class StackBarChartComponent extends Node<{},{}> {
       return <div>null</div>
     }
     let max = this.detectMax(tableListList);
+    console.log({max})
     return <div>
       <article className="chart-list body">
         {tableListList.map(({title, tables})=> {
           return <section className="chart-list chart-block" key={title}>
             <h1 className="chart-list chart-title">{title}</h1>
-            {this.writeTables(tables)}
+            {this.writeTables(tables, max)}
           </section>
           })
           }

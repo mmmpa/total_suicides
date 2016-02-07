@@ -2,7 +2,6 @@ import {Root} from '../lib/eventer'
 import {fetch} from '../services/fetcher'
 import Constants from "../initializers/constants";
 import {normalize} from "../services/normalizer"
-import {convertTableToChart} from "../services/converter"
 import ChartSet from "../models/chart-set";
 
 export default class ChartContext extends Root<{},{}> {
@@ -22,7 +21,7 @@ export default class ChartContext extends Root<{},{}> {
     fetch(props, (result)=> {
       let {base, table, x, y} = props.params;
       let {data} = result;
-      let tableListList = normalize(data)
+      let tableListList = normalize(data);
       this.setState({tableListList, base, table, x, y})
     })
   }

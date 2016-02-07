@@ -29,9 +29,19 @@ export default class Table {
 
   getMax():number {
     let m = 0;
-    _.each(this.row, (r)=> {
-      let total = _.reduce(r, (a, {number})=> {
-        return a + number
+    _.each(this.row, (row, i)=> {
+      if (_.includes(['総計', '総数', '全国'], this.rowTitle[i])) {
+        return;
+      }
+
+      let total = _.reduce(row, (a, {key, value})=> {
+        if (row.length >= 2) {
+          if (_.includes(['総計', '総数', '全国'], key)) {
+            return null
+          }
+        }
+
+        return a + value.number
       }, 0);
       total > m && (m = total);
     });

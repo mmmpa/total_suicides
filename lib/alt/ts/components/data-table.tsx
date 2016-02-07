@@ -25,7 +25,7 @@ export default class RotatedDataTable extends Node<P,{}> {
         </thead>
         <tbody>
           {
-            _.map(sortedKeys.reverse(), (key, i)=>{
+            _.map(sortedKeys, (key, i)=>{
               return <tr key={table.column[i]}>
                 <td className="rotated-data-table column-title" key={-1}>{table.column[i]}</td>
                 {
@@ -35,7 +35,7 @@ export default class RotatedDataTable extends Node<P,{}> {
                     })
                   }
               </tr>
-              })
+              }).reverse()
             }
         </tbody>
       </table>
