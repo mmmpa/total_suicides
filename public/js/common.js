@@ -60080,13 +60080,13 @@ var AreaSelectorComponent = (function (_super) {
     AreaSelectorComponent.prototype.writeWideArea = function (separatedAreas, props) {
         var _this = this;
         return separatedAreas.map(function (wideArea) {
-            return React.createElement("secsion", {"className": "area-selector wide-area-section"}, React.createElement("h1", {"className": "area-selector wide-area-title"}, wideArea.name), _this.writeSmallArea(wideArea.areas, props));
+            return React.createElement("secsion", {"className": "area-selector wide-area-section", "key": "wide-area-selector-" + wideArea.name}, _this.writeSmallArea(wideArea.areas, props));
         });
     };
     AreaSelectorComponent.prototype.writeSmallArea = function (areas, props) {
         var _this = this;
         return React.createElement("ul", {"className": "area-selector area-list"}, _.map(areas, function (area) {
-            return React.createElement("li", {"className": "area-selector selector", "key": area.key}, React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "checkbox", "value": area.key, "checked": _.includes(_this.selected, area.key), "onChange": _this.toggle.bind(_this)})), React.createElement("span", {"className": "input-label"}, area.name)));
+            return React.createElement("li", {"className": "area-selector selector", "key": "small-area-selector-" + area.key}, React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "checkbox", "value": area.key, "checked": _.includes(_this.selected, area.key), "onChange": _this.toggle.bind(_this)})), React.createElement("span", {"className": "input-label"}, area.name)));
         }));
     };
     AreaSelectorComponent.prototype.render = function () {
@@ -60098,7 +60098,7 @@ var AreaSelectorComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AreaSelectorComponent;
 
-},{"../../initializers/constants":306,"../../lib/eventer":307,"lodash":79,"react":287}],294:[function(require,module,exports){
+},{"../../initializers/constants":307,"../../lib/eventer":308,"lodash":79,"react":287}],294:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60142,7 +60142,7 @@ var ChartConfigurationComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ChartConfigurationComponent;
 
-},{"../../lib/eventer":307,"react":287}],295:[function(require,module,exports){
+},{"../../lib/eventer":308,"react":287}],295:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60169,14 +60169,14 @@ var ChartControllerComponent = (function (_super) {
         return null;
     };
     ChartControllerComponent.prototype.render = function () {
-        return React.createElement("div", null, React.createElement(chart_configuration_1.default, React.__spread({}, this.props)), React.createElement(year_selector_1.default, React.__spread({}, this.props)), React.createElement(gender_selector_1.default, React.__spread({}, this.props)), React.createElement(area_selector_1.default, React.__spread({}, this.props)), React.createElement("article", {"className": "chart-content"}, React.cloneElement(this.props.children || React.createElement("div", null, "blank"), this.props || {})));
+        return React.createElement("div", null, React.createElement("section", {"className": "chart-controller"}, React.createElement("h1", {"className": "chart-controller title"}, "表示内容の絞りこみ", React.createElement("em", null, "（チェックがない場合は、すべて選択されているあつかいになります）")), React.createElement(year_selector_1.default, React.__spread({}, this.props)), React.createElement(gender_selector_1.default, React.__spread({}, this.props)), React.createElement(area_selector_1.default, React.__spread({}, this.props))), React.createElement(chart_configuration_1.default, React.__spread({}, this.props)), React.createElement("article", {"className": "chart-content"}, React.cloneElement(this.props.children || React.createElement("div", null, "blank"), this.props || {})));
     };
     return ChartControllerComponent;
 })(eventer_1.Node);
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ChartControllerComponent;
 
-},{"../../lib/eventer":307,"./area-selector":293,"./chart-configuration":294,"./gender-selector":296,"./year-selector":297,"lodash":79,"react":287}],296:[function(require,module,exports){
+},{"../../lib/eventer":308,"./area-selector":293,"./chart-configuration":294,"./gender-selector":296,"./year-selector":297,"lodash":79,"react":287}],296:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60219,7 +60219,7 @@ var GenderSelectorComponent = (function (_super) {
         var _this = this;
         return React.createElement("div", null, React.createElement("section", {"className": "selector-area gender-selector body"}, React.createElement("section", {"className": "gender-selector gender-list"}, _.map(constants_1.default.genders, function (_a) {
             var key = _a.key, name = _a.name;
-            return React.createElement("label", {"key": key}, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "checkbox", "name": "year", "checked": _this.isChecked(key), "onClick": function () { return _this.toggle(key); }})), React.createElement("span", {"className": "input-label"}, name));
+            return React.createElement("div", {"key": "gender-selector-" + key}, React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "checkbox", "name": "year", "checked": _this.isChecked(key), "onClick": function () { return _this.toggle(key); }})), React.createElement("span", {"className": "input-label"}, name)));
         }))));
     };
     return GenderSelectorComponent;
@@ -60227,7 +60227,7 @@ var GenderSelectorComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GenderSelectorComponent;
 
-},{"../../initializers/constants":306,"../../lib/eventer":307,"lodash":79,"react":287}],297:[function(require,module,exports){
+},{"../../initializers/constants":307,"../../lib/eventer":308,"lodash":79,"react":287}],297:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60270,7 +60270,7 @@ var YearSelectorComponent = (function (_super) {
         var _this = this;
         return React.createElement("div", null, React.createElement("section", {"className": "selector-area year-selector body"}, React.createElement("section", {"className": "year-selector year-list"}, _.map(constants_1.default.years, function (_a) {
             var key = _a.key, name = _a.name;
-            return React.createElement("label", {"key": key}, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "checkbox", "name": "year", "checked": _this.isChecked(key), "onClick": function () { return _this.toggle(key); }})), React.createElement("span", {"className": "input-label"}, name));
+            return React.createElement("div", {"key": "year-selector-" + key}, React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "checkbox", "name": "year", "checked": _this.isChecked(key), "onClick": function () { return _this.toggle(key); }})), React.createElement("span", {"className": "input-label"}, name)));
         }))));
     };
     return YearSelectorComponent;
@@ -60278,7 +60278,56 @@ var YearSelectorComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = YearSelectorComponent;
 
-},{"../../initializers/constants":306,"../../lib/eventer":307,"lodash":79,"react":287}],298:[function(require,module,exports){
+},{"../../initializers/constants":307,"../../lib/eventer":308,"lodash":79,"react":287}],298:[function(require,module,exports){
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var React = require('react');
+var eventer_1 = require('../lib/eventer');
+var constants_1 = require("../initializers/constants");
+var _ = require('lodash');
+var fa_1 = require('../lib/fa');
+var SiteMapComponent = (function (_super) {
+    __extends(SiteMapComponent, _super);
+    function SiteMapComponent() {
+        _super.apply(this, arguments);
+    }
+    SiteMapComponent.prototype.link = function (e) {
+        e.preventDefault();
+        this.dispatch('link', e.currentTarget.getAttribute('href'));
+    };
+    SiteMapComponent.prototype.detectIcon = function (split) {
+        return split == 'gender' ? React.createElement(fa_1.default, {"icon": "venus-mars"}) : React.createElement(fa_1.default, {"icon": "globe"});
+    };
+    SiteMapComponent.prototype.writeAllSelector = function (target, placeholder, used) {
+        if (used === void 0) { used = []; }
+        var all = [].concat(constants_1.default.metas, constants_1.default.tables);
+        return React.createElement("select", {"className": "chart-finder selector", "key": target + "list"}, React.createElement("option", {"name": target, "value": null, "key": target + "-default", "className": "placeholder"}, placeholder), _.map(all, function (_a) {
+            var key = _a.key, name = _a.name;
+            return React.createElement("option", {"name": target, "value": key, "key": target + "-" + key}, name);
+        }));
+    };
+    SiteMapComponent.prototype.writeYSelector = function (state) {
+        return this.writeAllSelector('y', '（表の縦軸）');
+    };
+    SiteMapComponent.prototype.writeXSelector = function (state) {
+        return this.writeAllSelector('x', '（表の横軸）');
+    };
+    SiteMapComponent.prototype.writeYSplitter = function (state) {
+        return this.writeAllSelector('splitter', '（縦軸の分割 - オプション）');
+    };
+    SiteMapComponent.prototype.render = function () {
+        var link = this.link.bind(this);
+        return React.createElement("div", null, React.createElement("article", {"className": "chart-finder body"}, React.createElement("section", {"className": "chart-finder section"}, React.createElement(fa_1.default, {"icon": "arrows-v"}), React.createElement("div", {"className": "chart-finder section-input"}, this.writeYSelector(this.state)), React.createElement("div", {"className": "chart-finder section-suffix"}, "の自殺者数を")), React.createElement("section", {"className": "chart-finder section"}, React.createElement(fa_1.default, {"icon": "arrows-h"}), React.createElement("div", {"className": "chart-finder section-input"}, this.writeXSelector(this.state)), React.createElement("div", {"className": "chart-finder section-suffix"}, "で並べて")), React.createElement("section", {"className": "chart-finder section"}, React.createElement("div", {"className": "chart-finder section-input"}, React.createElement("button", {"className": "chart-finder submit"}, React.createElement(fa_1.default, {"icon": "bar-chart"}), "表示する"))), React.createElement("section", {"className": "chart-finder section"}, React.createElement(fa_1.default, {"icon": "ellipsis-v"}), React.createElement("div", {"className": "chart-finder section-input"}, this.writeYSplitter(this.state)))));
+    };
+    return SiteMapComponent;
+})(eventer_1.Node);
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = SiteMapComponent;
+
+},{"../initializers/constants":307,"../lib/eventer":308,"../lib/fa":309,"lodash":79,"react":287}],299:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60289,20 +60338,21 @@ var eventer_1 = require('../lib/eventer');
 var site_map_1 = require('../components/site-map');
 var header_1 = require('../components/header');
 var copyright_1 = require('../components/copyright');
+var chart_finder_1 = require('../components/chart-finder');
 var CommonComponent = (function (_super) {
     __extends(CommonComponent, _super);
     function CommonComponent() {
         _super.apply(this, arguments);
     }
     CommonComponent.prototype.render = function () {
-        return React.createElement("div", {"className": "global-wrapper"}, React.createElement("header", {"className": "global-header"}, React.createElement(header_1.default, null)), React.createElement("article", {"className": "main-content"}, React.cloneElement(this.props.children || React.createElement("div", null, "blank"), this.props || {})), React.createElement("footer", {"className": "global-footer"}, React.createElement(site_map_1.default, null), React.createElement(copyright_1.default, null)));
+        return React.createElement("div", {"className": "global-wrapper"}, React.createElement("header", {"className": "global-header"}, React.createElement(header_1.default, null)), React.createElement(chart_finder_1.default, null), React.createElement("article", {"className": "main-content"}, React.cloneElement(this.props.children || React.createElement("div", null, "blank"), this.props || {})), React.createElement(site_map_1.default, null), React.createElement(chart_finder_1.default, null), React.createElement(copyright_1.default, null));
     };
     return CommonComponent;
 })(eventer_1.Node);
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CommonComponent;
 
-},{"../components/copyright":299,"../components/header":301,"../components/site-map":302,"../lib/eventer":307,"react":287}],299:[function(require,module,exports){
+},{"../components/chart-finder":298,"../components/copyright":300,"../components/header":302,"../components/site-map":303,"../lib/eventer":308,"react":287}],300:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60323,7 +60373,7 @@ var CopyrightComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CopyrightComponent;
 
-},{"../lib/eventer":307,"react":287}],300:[function(require,module,exports){
+},{"../lib/eventer":308,"react":287}],301:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60353,7 +60403,7 @@ var RotatedDataTable = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = RotatedDataTable;
 
-},{"../lib/eventer":307,"react":287}],301:[function(require,module,exports){
+},{"../lib/eventer":308,"react":287}],302:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60369,14 +60419,14 @@ var HeaderComponent = (function (_super) {
     }
     HeaderComponent.prototype.render = function () {
         var _this = this;
-        return React.createElement("div", null, React.createElement("section", {"className": "header body"}, React.createElement("h1", {"className": "header title"}, "自殺を知る、自殺を考える"), React.createElement("h2", {"className": "header navigator"}, React.createElement(fa_1.default, {"icon": "navicon"}), React.createElement("a", {"onClick": function () { return _this.dispatch('link:navigator'); }}, "チャート一覧"))));
+        return React.createElement("div", null, React.createElement("section", {"className": "header body"}, React.createElement("h1", {"className": "header title"}, React.createElement("a", {"onClick": function () { return _this.dispatch('link:navigator'); }}, React.createElement(fa_1.default, {"icon": "heart"}), "自殺を知る、自殺を考える"))));
     };
     return HeaderComponent;
 })(eventer_1.Node);
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = HeaderComponent;
 
-},{"../lib/eventer":307,"../lib/fa":308,"react":287}],302:[function(require,module,exports){
+},{"../lib/eventer":308,"../lib/fa":309,"react":287}],303:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60424,14 +60474,14 @@ var SiteMapComponent = (function (_super) {
     };
     SiteMapComponent.prototype.render = function () {
         var link = this.link.bind(this);
-        return React.createElement("div", null, React.createElement("article", {"className": "site-map body"}, React.createElement("section", {"className": "site-map section"}, React.createElement("h1", {"className": "site-map section-title"}, "年ごとの遷移"), this.writeLinks())));
+        return React.createElement("div", null);
     };
     return SiteMapComponent;
 })(eventer_1.Node);
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SiteMapComponent;
 
-},{"../lib/eventer":307,"../lib/fa":308,"react":287}],303:[function(require,module,exports){
+},{"../lib/eventer":308,"../lib/fa":309,"react":287}],304:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60529,7 +60579,7 @@ var StackBarChartComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = StackBarChartComponent;
 
-},{"../initializers/constants":306,"../lib/eventer":307,"../lib/fa":308,"./data-table":300,"d3":2,"lodash":79,"react":287,"react-d3-basic":95}],304:[function(require,module,exports){
+},{"../initializers/constants":307,"../lib/eventer":308,"../lib/fa":309,"./data-table":301,"d3":2,"lodash":79,"react":287,"react-d3-basic":95}],305:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60626,7 +60676,7 @@ var ChartContext = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ChartContext;
 
-},{"../lib/eventer":307,"../services/fetcher":311,"../services/normalizer":312}],305:[function(require,module,exports){
+},{"../lib/eventer":308,"../services/fetcher":312,"../services/normalizer":313}],306:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60673,7 +60723,7 @@ var App = (function (_super) {
 })(eventer_1.Root);
 react_dom_1.render((React.createElement(react_router_1.Router, {"history": new CreateHistory()}, React.createElement(react_router_1.Route, {"path": "/", "component": App}, React.createElement(react_router_1.Route, {"path": "", "component": common_1.default}, React.createElement(react_router_1.Route, {"path": "chart", "component": chart_1.default}, React.createElement(react_router_1.Route, {"path": "", "component": chart_controller_1.default}, React.createElement(react_router_1.Route, {"path": ":base/:table/:x/:y", "component": stack_bar_chart_1.default}))))))), document.querySelector('#app'));
 
-},{"./components/chart-controller/chart-controller":295,"./components/common":298,"./components/stack-bar-chart":303,"./contexts/chart":304,"./lib/eventer":307,"history/lib/createBrowserHistory":39,"react":287,"react-dom":131,"react-router":154}],306:[function(require,module,exports){
+},{"./components/chart-controller/chart-controller":295,"./components/common":299,"./components/stack-bar-chart":304,"./contexts/chart":305,"./lib/eventer":308,"history/lib/createBrowserHistory":39,"react":287,"react-dom":131,"react-router":154}],307:[function(require,module,exports){
 var d3_1 = require('d3');
 var _ = require('lodash');
 var Constants = (function () {
@@ -60816,7 +60866,6 @@ var Constants = (function () {
         enumerable: true,
         configurable: true
     });
-    Constants.tables = ['age', 'housemate', 'job', 'location', 'way', 'hour', 'day', 'reason', 'attempted', 'total'];
     Constants.horizontals = ['year', 'gender', 'area'];
     Constants.pieSize = 800;
     Constants.pieWidth = 1000;
@@ -60836,6 +60885,11 @@ var Constants = (function () {
         { key: 'reason', name: '原因・動機' },
         { key: 'attempted', name: '未遂歴' },
         { key: 'total', name: '総数' }
+    ];
+    Constants.metas = [
+        { key: 'area', name: '都道府県' },
+        { key: 'gender', name: '性別' },
+        { key: 'year', name: '年度' },
     ];
     Constants.ageProps = [
         { key: 'o0', name: '20歳未満' },
@@ -61038,7 +61092,7 @@ var Constants = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Constants;
 
-},{"d3":2,"lodash":79}],307:[function(require,module,exports){
+},{"d3":2,"lodash":79}],308:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -61106,7 +61160,7 @@ var Root = (function (_super) {
 })(Node);
 exports.Root = Root;
 
-},{"events":6,"react":287}],308:[function(require,module,exports){
+},{"events":6,"react":287}],309:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -61138,7 +61192,7 @@ var Fa = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Fa;
 
-},{"react":287}],309:[function(require,module,exports){
+},{"react":287}],310:[function(require,module,exports){
 var _ = require('lodash');
 var ChartSet = (function () {
     function ChartSet(series, parSeries, data) {
@@ -61191,7 +61245,7 @@ var ChartSet = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ChartSet;
 
-},{"lodash":79}],310:[function(require,module,exports){
+},{"lodash":79}],311:[function(require,module,exports){
 var _ = require('lodash');
 var Table = (function () {
     function Table(title, column) {
@@ -61241,7 +61295,7 @@ var Table = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Table;
 
-},{"lodash":79}],311:[function(require,module,exports){
+},{"lodash":79}],312:[function(require,module,exports){
 var constants_1 = require("../initializers/constants");
 var request = require('superagent');
 var Fetcher = (function () {
@@ -61337,7 +61391,7 @@ function fetch(params, callback) {
 }
 exports.fetch = fetch;
 
-},{"../initializers/constants":306,"superagent":291}],312:[function(require,module,exports){
+},{"../initializers/constants":307,"superagent":291}],313:[function(require,module,exports){
 var _ = require('lodash');
 var table_1 = require("../models/table");
 var chart_set_1 = require("../models/chart-set");
@@ -61378,4 +61432,4 @@ function tableToChart(table) {
 }
 exports.tableToChart = tableToChart;
 
-},{"../models/chart-set":309,"../models/table":310,"lodash":79}]},{},[305]);
+},{"../models/chart-set":310,"../models/table":311,"lodash":79}]},{},[306]);

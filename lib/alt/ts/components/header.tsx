@@ -9,13 +9,15 @@ import AreaSelector from './area-selector'
 import Fa from '../lib/fa'
 
 export default class HeaderComponent extends Node<{},{}> {
-  render(){
+  render() {
     return <div>
       <section className="header body">
-        <h1 className="header title">自殺を知る、自殺を考える</h1>
-        <h2 className="header navigator">
-          <Fa icon="navicon"/>
-          <a onClick={()=> this.dispatch('link:navigator')}>チャート一覧</a></h2>
+        <h1 className="header title">
+          <a onClick={()=> this.dispatch('link:navigator')}>
+            <Fa icon="heart"/>
+            自殺を知る、自殺を考える
+          </a>
+        </h1>
       </section>
     </div>
   }

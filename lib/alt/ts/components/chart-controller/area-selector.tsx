@@ -27,8 +27,7 @@ export default class AreaSelectorComponent extends Node<{},{}> {
 
   writeWideArea(separatedAreas, props) {
     return separatedAreas.map((wideArea)=> {
-      return <secsion className="area-selector wide-area-section">
-        <h1 className="area-selector wide-area-title">{wideArea.name}</h1>
+      return <secsion className="area-selector wide-area-section" key={`wide-area-selector-${wideArea.name}`}>
         {this.writeSmallArea(wideArea.areas, props)}
       </secsion>
     });
@@ -37,7 +36,7 @@ export default class AreaSelectorComponent extends Node<{},{}> {
   writeSmallArea(areas, props) {
     return <ul className="area-selector area-list">
       {_.map(areas, (area)=>{
-        return <li className="area-selector selector" key={area.key}>
+        return <li className="area-selector selector" key={`small-area-selector-${area.key}`}>
           <label>
             <span className="input-input">
               <input type="checkbox" value={area.key} checked={_.includes(this.selected, area.key)}

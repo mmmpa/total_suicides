@@ -9,20 +9,21 @@ import AreaSelector from './area-selector'
 import SiteMap from '../components/site-map'
 import Header from '../components/header'
 import Copyright from '../components/copyright'
+import ChartFinder from '../components/chart-finder'
 
 export default class CommonComponent extends Node<{},{}> {
-  render(){
+  render() {
     return <div className="global-wrapper">
       <header className="global-header">
         <Header />
       </header>
+      <ChartFinder />
       <article className="main-content">
         {React.cloneElement(this.props.children || <div>blank</div>, this.props || {})}
       </article>
-      <footer className="global-footer">
-        <SiteMap />
-        <Copyright />
-      </footer>
+      <SiteMap />
+      <ChartFinder />
+      <Copyright />
     </div>
   }
 }

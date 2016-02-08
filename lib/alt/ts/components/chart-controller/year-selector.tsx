@@ -18,9 +18,9 @@ export default class YearSelectorComponent extends Node<{},{}> {
 
   toggle(key:number) {
     let now = this.selected;
-    if(this.isChecked(key)){
+    if (this.isChecked(key)) {
       now = _.without(now, key);
-    }else{
+    } else {
       now.push(key)
     }
     this.dispatch('chart:year', now);
@@ -31,12 +31,14 @@ export default class YearSelectorComponent extends Node<{},{}> {
       <section className="selector-area year-selector body">
         <section className="year-selector year-list">
           {_.map(Constants.years, ({key, name})=>{
-            return <label key={key}>
-              <span className="input-input">
-                <input type="checkbox" name="year" checked={this.isChecked(key)} onClick={()=> this.toggle(key)}/>
-              </span>
-              <span className="input-label">{name}</span>
-            </label>
+            return <div key={`year-selector-${key}`}>
+              <label>
+                <span className="input-input">
+                  <input type="checkbox" name="year" checked={this.isChecked(key)} onClick={()=> this.toggle(key)}/>
+                </span>
+                <span className="input-label">{name}</span>
+              </label>
+            </div>
             })}
         </section>
       </section>

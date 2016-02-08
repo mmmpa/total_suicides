@@ -2,7 +2,6 @@ import {scale} from 'd3';
 import * as _ from 'lodash'
 
 export default class Constants {
-  static tables:string[] = ['age', 'housemate', 'job', 'location', 'way', 'hour', 'day', 'reason', 'attempted', 'total'];
   static horizontals:string[] = ['year', 'gender', 'area'];
 
   static pieSize:number = 800;
@@ -87,6 +86,12 @@ export default class Constants {
     {key: 'attempted', name: '未遂歴'},
     {key: 'total', name: '総数'}
   ];
+
+  static metas = [
+    {key: 'area', name: '都道府県'},
+    {key: 'gender', name: '性別'},
+    {key: 'year', name: '年度'},
+  ]
 
   static _tableKeys;
   static get tableKeys() {

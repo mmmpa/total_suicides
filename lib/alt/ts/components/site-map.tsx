@@ -63,12 +63,6 @@ export default class SiteMapComponent extends Node<{},{}> {
   render() {
     let link = this.link.bind(this);
     return <div>
-      <article className="site-map body">
-        <section className="site-map section">
-          <h1 className="site-map section-title">年ごとの遷移</h1>
-          {this.writeLinks()}
-        </section>
-      </article>
     </div>
   }
 }

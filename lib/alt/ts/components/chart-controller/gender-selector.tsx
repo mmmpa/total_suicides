@@ -18,9 +18,9 @@ export default class GenderSelectorComponent extends Node<{},{}> {
 
   toggle(key:number) {
     let now = this.selected;
-    if(this.isChecked(key)){
+    if (this.isChecked(key)) {
       now = _.without(now, key);
-    }else{
+    } else {
       now.push(key)
     }
     this.dispatch('chart:gender', now);
@@ -31,12 +31,14 @@ export default class GenderSelectorComponent extends Node<{},{}> {
       <section className="selector-area gender-selector body">
         <section className="gender-selector gender-list">
           {_.map(Constants.genders, ({key, name})=>{
-            return <label key={key}>
-              <span className="input-input">
-                <input type="checkbox" name="year" checked={this.isChecked(key)} onClick={()=> this.toggle(key)}/>
-              </span>
-              <span className="input-label">{name}</span>
-            </label>
+            return <div key={`gender-selector-${key}`}>
+              <label>
+                <span className="input-input">
+                  <input type="checkbox" name="year" checked={this.isChecked(key)} onClick={()=> this.toggle(key)}/>
+                </span>
+                <span className="input-label">{name}</span>
+              </label>
+            </div>
             })}
         </section>
       </section>

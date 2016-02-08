@@ -1,3 +1,5 @@
+@import "./bootstrap/bootstrap"
+@import "./bootstrap/bootswatch"
 @import "./font-awesome/font-awesome"
 @import "./default"
 
@@ -5,10 +7,11 @@ body
   background: #000
   overflow: scroll
   padding: 0 40px
+
 .header
   &.body
     background: #000
-    padding: 20px
+    padding: 20px 0 0
   &.title
     color: #fff
     display: inline-block
@@ -61,18 +64,14 @@ span
   &.input-input,
   &.input-label
     @extend .size-h5
-    display: inline-block
+    display: table-cell
     vertical-align: middle
-
-input[type="checkbox"],
-input[type="radio"]
-  width: $font-size-h5
-  height: $font-size-h5
+    line-height: 100%
 
 .chart-config
   &.body
     padding: 20px
-    background: $gray2
+    background: #fff
   &.title
     display: table-cell
     vertical-align: middle
@@ -81,37 +80,80 @@ input[type="radio"]
     vertical-align: middle
     label
       padding: 0 10px
+
+.chart-finder
+  &.body
+    color: #fff
+    background: #000
+    padding: 10px 0
+  &.section
+    display: inline-block
+    vertical-align: bottom
+    padding-right: 5px
+    @extend .size-h6
+  &.section-input,
+  &.section-suffix
+    display: inline-block
+    vertical-align: middle
+    padding-right: 10px
+    white-space: nowrap
+  &.section-title
+    margin-bottom: 5px
+  &.selector
+    color: #fff
+    font-weight: 600
+    @extend .form-control, .size-h5
+    background: #000
+  &.submit
+    @extend .btn, .btn-primary, .size-h6
+    box-shadow: 0 0 0
+    font-weight: 600
+    background: #0e5f9c
+
+.chart-controller
+  background: $gray1
+  &.title
+    padding: 10px 20px 0
+    @extend .size-h5
+    em
+      @extend .size-h6
+  div
+    display: inline-block
+    vertical-align: top
 .selector-area
   @extend .size-h6
-
+  label
+    margin: 0
+  @extend .size-h6
+  &.year-selector,
+  &.gender-selector
+    padding: 20px
+    div
+      display: block
+      span
+        @extend .size-h6
 .area-selector
+  @extend .size-h6
+  label
+    margin: 0
+  ul
+    margin: 0
+    padding: 0
   &.body
     padding: 20px
     background: $gray1
-  &.wide-area-section
-    display: table-row
-  &.wide-area-title
-    display: table-cell
-    text-align: right
-    padding-right: 20px
-  &.title
-    vertical-align: top
-    display: table-cell
-    white-space: nowrap
-    padding-right: 20px
   &.area-list
     vertical-align: top
-    display: table-cell
+    display: block
     margin: 0
     padding: 0
   &.selector
     display: inline-block
     white-space: nowrap
     padding-right: 20px
+    margin: 0
     span
       @extend .size-h6
-      display: inline-block
-      vertical-align: top
 
 .site-map
   &.body
@@ -151,13 +193,11 @@ input[type="radio"]
 
 .copyright
   &.body
-    background: $gray2
-    padding: 20px
+    background: #000
+    padding: 10px 0
     address
       font-style: normal
       display: block
-    a
-      color: #000
 
 .data-table
   border-collapse: collapse

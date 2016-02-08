@@ -19,10 +19,16 @@ export default class ChartControllerComponent extends Node<{},{}> {
 
   render() {
     return <div>
+      <section className="chart-controller">
+        <h1 className="chart-controller title">
+          表示内容の絞りこみ
+          <em>（チェックがない場合は、すべて選択されているあつかいになります）</em>
+        </h1>
+        <YearSelector {...this.props}/>
+        <GenderSelector {...this.props}/>
+        <AreaSelector {...this.props}/>
+      </section>
       <ChartConfiguration {...this.props}/>
-      <YearSelector {...this.props}/>
-      <GenderSelector {...this.props}/>
-      <AreaSelector {...this.props}/>
       <article className="chart-content">
         {React.cloneElement(this.props.children || <div>blank</div>, this.props || {})}
       </article>
