@@ -14,6 +14,7 @@ export default class SiteMapComponent extends Node<{},{}> {
     this.dispatch('link', e.currentTarget.getAttribute('href'));
   }
 
+
   detectIcon(split){
     return split == 'gender' ? <Fa icon="venus-mars"/> : <Fa icon="globe"/>
   }

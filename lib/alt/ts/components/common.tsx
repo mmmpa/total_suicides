@@ -17,12 +17,12 @@ export default class CommonComponent extends Node<{},{}> {
       <header className="global-header">
         <Header />
       </header>
-      <ChartFinder />
+      <ChartFinder {...this.props}/>
       <article className="main-content">
         {React.cloneElement(this.props.children || <div>blank</div>, this.props || {})}
       </article>
-      <SiteMap />
-      <ChartFinder />
+      <SiteMap {...this.props} />
+      <ChartFinder {...this.props} />
       <Copyright />
     </div>
   }

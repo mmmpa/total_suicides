@@ -8,7 +8,13 @@ import * as RD3 from 'react-d3-basic'
 import AreaSelector from './area-selector'
 import Fa from '../lib/fa'
 
-export default class SiteMapComponent extends Node<{},{}> {
+export default class ChartFinderComponent extends Node<{},{}> {
+  constructor(props) {
+    console.log(props)
+    let {base, table, x, y} = props.params;
+    this.state = {base, table, x, y};
+  }
+
   link(e:any) {
     e.preventDefault();
     this.dispatch('link', e.currentTarget.getAttribute('href'));
@@ -20,7 +26,7 @@ export default class SiteMapComponent extends Node<{},{}> {
 
   writeAllSelector(target:string, placeholder:string, used:string[] = []) {
     let all = [].concat(Constants.metas, Constants.tables);
-    return <select className="chart-finder selector" key={`${target}list`}>
+    return <select className="chart-finder selector" key={`${target}list`} defaultValue={this.state[target]}>
       <option name={target} value={null} key={`${target}-default`} className="placeholder">{placeholder}</option>
       {
         _.map(all, ({key, name})=>{
@@ -30,16 +36,17 @@ export default class SiteMapComponent extends Node<{},{}> {
     </select>
   }
 
-  writeYSelector(state) {
-    return this.writeAllSelector('y', '（表の縦軸）');
+
+  writeYSelector() {
+    return this.writeAllSelector('table', '（表の縦軸）');
   }
 
-  writeXSelector(state) {
+  writeXSelector() {
     return this.writeAllSelector('x', '（表の横軸）');
   }
 
-  writeYSplitter(state) {
-    return this.writeAllSelector('splitter', '（縦軸の分割 - オプション）');
+  writeYSplitter() {
+    return this.writeAllSelector('y', '（縦軸の分割 - オプション）');
   }
 
   render() {
@@ -49,14 +56,14 @@ export default class SiteMapComponent extends Node<{},{}> {
         <section className="chart-finder section">
           <Fa icon="arrows-v"/>
           <div className="chart-finder section-input">
-            {this.writeYSelector(this.state)}
+            {this.writeYSelector()}
           </div>
           <div className="chart-finder section-suffix">の自殺者数を</div>
         </section>
         <section className="chart-finder section">
           <Fa icon="arrows-h"/>
           <div className="chart-finder section-input">
-            {this.writeXSelector(this.state)}
+            {this.writeXSelector()}
           </div>
           <div className="chart-finder section-suffix">で並べて</div>
         </section>
@@ -71,7 +78,7 @@ export default class SiteMapComponent extends Node<{},{}> {
         <section className="chart-finder section">
           <Fa icon="ellipsis-v"/>
           <div className="chart-finder section-input">
-            {this.writeYSplitter(this.state)}
+            {this.writeYSplitter()}
           </div>
         </section>
       </article>
