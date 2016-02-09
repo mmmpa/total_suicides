@@ -22,7 +22,7 @@ class TableCreator
     base, table, x, y = pick_key_name(params)
     filters = pick_filters(params)
 
-    pp arranged_filters = arrange_filters(filters, base, table, x, y)
+    arranged_filters = arrange_filters(filters, base, table, x, y)
     base_table = detect(base, table, x, y)
 
     data = filter_data(base_table, arranged_filters)

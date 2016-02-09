@@ -28,7 +28,7 @@ export default class ChartContext extends Root<{},{}> {
 
   listen(to) {
 
-    to('area:select', (areas:number[])=> {
+    to('chart:area', (areas:number[])=> {
       let query = this.setToQuery('area', areas);
       this.changeQuery(query);
     });

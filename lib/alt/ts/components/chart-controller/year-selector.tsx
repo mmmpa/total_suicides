@@ -2,6 +2,7 @@ import * as React from 'react'
 import {Node} from '../../lib/eventer'
 import Constants from "../../initializers/constants";
 import * as _ from 'lodash';
+import Fa from "../../lib/fa";
 
 export default class YearSelectorComponent extends Node<{},{}> {
   isChecked(key:number):boolean {
@@ -26,10 +27,32 @@ export default class YearSelectorComponent extends Node<{},{}> {
     this.dispatch('chart:year', now);
   }
 
+  selectAll() {
+    this.dispatch('chart:year', _.map(Constants.years, ({key})=> key));
+  }
+
+  deselectAll() {
+    this.dispatch('chart:year', []);
+  }
+
   render() {
     return <div>
       <section className="selector-area year-selector body">
-        <section className="year-selector year-list">
+        <h1 className="selector-area title">
+          <Fa icon="calendar"/>
+          年度
+        </h1>
+        <div className="selector-area select-all">
+          <p>
+            <Fa icon="check"/>
+            <a onClick={()=> this.selectAll()}>選択</a>
+          </p>
+          <p>
+            <Fa icon="trash"/>
+            <a onClick={()=> this.deselectAll()}>解除</a>
+          </p>
+        </div>
+        <section className="selector-area selector-list">
           {_.map(Constants.years, ({key, name})=>{
             return <div key={`year-selector-${key}`}>
               <label>
@@ -45,4 +68,3 @@ export default class YearSelectorComponent extends Node<{},{}> {
     </div>
   }
 }
-

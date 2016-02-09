@@ -28,16 +28,23 @@ export default class ChartFinderComponent extends Node<{},{}> {
 
   selectableKeys(target) {
     let {table, x, y} = this.state;
-    let all = [Constants.metas, Constants.tables];
+    let {metas, tables} = Constants;
+    let all = [metas, tables];
     switch (target) {
       case 'table':
         return all;
       case 'x':
-        let selectable = this.isTable(table) ? [Constants.metas, []] : all;
-        return _.filter(selectable, ({key})=> key != table)
+        if (this.isTable(table)) {
+          return [metas, []]
+        } else {
+          return [_.filter(metas, ({key})=> key != table), tables]
+        }
       case `y`:
-        let selectable = this.isTable(table) || this.isTable(x) ? [Constants.metas, []]  : all;
-        return [_.filter(selectable, ({key})=> key != table && key != x)],
+        if (this.isTable(table) || this.isTable(x)) {
+          return [metas, []]
+        } else {
+          return [_.filter(metas, ({key})=> key != table && key != x), tables]
+        }
       default:
         return all;
     }
@@ -99,11 +106,17 @@ export default class ChartFinderComponent extends Node<{},{}> {
 
   writeAllSelector(target:string, placeholder:string, suffix = '') {
     let selectable = this.selectableKeys(target);
+    let labels = ['大分類', '詳細'];
     return <select className="chart-finder selector" ref={target} key={`${target}list`} defaultValue={this.state[target]} onChange={(e)=> this.change(target, e.target.value)}>
       <option name={target} value={'none'} key={`${target}-default`} className="placeholder">{placeholder}</option>
       {
-        _.map(selectable, ({key, name})=>{
-          return <option name={target} value={key} key={`${target}-${key}`}>{name}{suffix}</option>
+        _.map(selectable, (group, i)=>{
+          return <optgroup key={`finder-group-${i}`} label={labels[i]}>
+            {_.map(group, ({key, name})=>{
+              return <option name={target} value={key} key={`${target}-${key}`}>{name}{suffix}</option>
+              })
+              }
+          </optgroup>
           })
         }
     </select>

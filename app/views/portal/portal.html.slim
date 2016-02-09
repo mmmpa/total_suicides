@@ -19,6 +19,12 @@ article#index
         ul.portal.chart-link-list
           li.portal.chart-link
             i.fa.fa-bar-chart.fa-fw
+            = link_to '平成21年と26年の、自殺原因', '/chart/area/year/reason/gender?area=0&autoScale=false&gender=0&par=false&year=26%2C21'
+          li.portal.chart-link
+            i.fa.fa-bar-chart.fa-fw
+            = link_to '平成21年と26年の、自殺年齢層', '/chart/area/year/age/none?area=0&year=21%2C26'
+          li.portal.chart-link
+            i.fa.fa-bar-chart.fa-fw
             = link_to '曜日別の自殺者数', '/chart/year/gender/day/none?autoScale=false&gender=0&par=false&year=26%2C25%2C24%2C23%2C22%2C21'
           li.portal.chart-link
             i.fa.fa-bar-chart.fa-fw

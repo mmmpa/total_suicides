@@ -167,6 +167,16 @@ span
       display: block
       span
         @extend .size-h6
+  &.selector-list
+    margin-top: 10px
+  &.title
+    @extend .size-h5
+    margin-bottom: 10px
+  .select-all
+    p
+      display: inline-block
+      margin: 0
+    line-height: 100%
 .area-selector
   @extend .size-h6
   label
@@ -174,18 +184,27 @@ span
   ul
     margin: 0
     padding: 0
+    position: relative
+    top: -4px
+
   &.body
     padding: 20px
     background: $gray1
   &.area-list
+    line-height: 100%
+    display: inline-block
     vertical-align: top
-    display: block
     margin: 0
     padding: 0
+  &.select-all
+    display: inline-block
+    line-height: 100%
+    vertical-align: top
+    padding-right: 10px
   &.selector
     display: inline-block
     white-space: nowrap
-    padding-right: 20px
+    padding-right: 10px
     margin: 0
     span
       @extend .size-h6

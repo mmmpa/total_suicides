@@ -8,11 +8,14 @@ import * as RD3 from 'react-d3-basic'
 import AreaSelector from './area-selector'
 
 export default class CopyrightComponent extends Node<{},{}> {
-  render(){
+  render() {
     return <div>
       <section className="copyright body">
         <address>
-          <a href="http://twitter.com/o296sm">@o296sm</a></address>
+          ご質問、ご要望などは
+          <a href="http://twitter.com/o296sm">@o296sm</a>
+          まで
+        </address>
       </section>
     </div>
   }

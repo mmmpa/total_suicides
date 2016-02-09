@@ -2,6 +2,7 @@ import * as React from 'react'
 import {Node} from '../../lib/eventer'
 import Constants from "../../initializers/constants";
 import * as _ from 'lodash';
+import Fa from "../../lib/fa";
 
 export default class GenderSelectorComponent extends Node<{},{}> {
   isChecked(key:number):boolean {
@@ -26,10 +27,33 @@ export default class GenderSelectorComponent extends Node<{},{}> {
     this.dispatch('chart:gender', now);
   }
 
+  selectAll() {
+    this.dispatch('chart:gender', [1, 2]);
+  }
+
+  deselectAll() {
+    this.dispatch('chart:gender', []);
+  }
+
+
   render() {
     return <div>
       <section className="selector-area gender-selector body">
-        <section className="gender-selector gender-list">
+        <h1 className="selector-area title">
+          <Fa icon="venus-mars"/>
+          性別
+        </h1>
+        <div className="selector-area select-all">
+          <p>
+            <Fa icon="check"/>
+            <a onClick={()=> this.selectAll()}>選択</a>
+          </p>
+          <p>
+            <Fa icon="trash"/>
+            <a onClick={()=> this.deselectAll()}>解除</a>
+          </p>
+        </div>
+        <section className="selector-area selector-list">
           {_.map(Constants.genders, ({key, name})=>{
             return <div key={`gender-selector-${key}`}>
               <label>
@@ -41,6 +65,7 @@ export default class GenderSelectorComponent extends Node<{},{}> {
             </div>
             })}
         </section>
+
       </section>
     </div>
   }
