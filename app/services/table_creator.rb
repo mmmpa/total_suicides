@@ -30,7 +30,7 @@ class TableCreator
     if [base, table, x, y].include?(:year)
       data = [{'結果' => group(data, base, table, x, y)}]
     else
-      years = data.sort_by { |d| d[:year][:content] }.group_by { |d| d[:year][:name] }
+      years = data.sort_by { |d| -d[:year][:content] }.group_by { |d| d[:year][:name] }
       data = years.each_pair.inject([]) do |a, (key, year_data)|
         a << {key => group(year_data, base, table, x, y)}
       end
@@ -235,7 +235,7 @@ class TableCreator
   BASE = %w(base table x y).map(&:to_sym)
   FILTER = %w(year area gender column).map(&:to_sym)
   FILTER_DEFAULT = [
-    {key: :year, value: -> { Year.order { content.desc }.first.content }},
+    {key: :year, value: -> { pp Year.pluck(:content) }},
     {key: :gender, value: 0},
     {key: :area, value: 0}
   ]

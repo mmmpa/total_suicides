@@ -10,27 +10,81 @@ import Fa from '../lib/fa'
 
 export default class ChartFinderComponent extends Node<{},{}> {
   constructor(props) {
-    console.log(props)
     let {base, table, x, y} = props.params;
-    this.state = {base, table, x, y};
-  }
-
-  link(e:any) {
-    e.preventDefault();
-    this.dispatch('link', e.currentTarget.getAttribute('href'));
+    let tableKeys = _.map(Constants.tables, ({key})=> key);
+    let metaKeys = _.map(Constants.metas, ({key})=> key);
+    this.state = {base, table, x, y, tableKeys, metaKeys};
   }
 
   detectIcon(split) {
     return split == 'gender' ? <Fa icon="venus-mars"/> : <Fa icon="globe"/>
   }
 
-  writeAllSelector(target:string, placeholder:string, used:string[] = []) {
+  isTable(target) {
+    return _.includes(this.state.tableKeys, target);
+  }
+
+  selectableKeys(target) {
+    let {table, x, y} = this.state;
     let all = [].concat(Constants.metas, Constants.tables);
-    return <select className="chart-finder selector" key={`${target}list`} defaultValue={this.state[target]}>
-      <option name={target} value={null} key={`${target}-default`} className="placeholder">{placeholder}</option>
+    switch (target) {
+      case 'table':
+        return all;
+      case 'x':
+        let selectable = this.isTable(table) ? Constants.metas : all;
+        return _.filter(selectable, ({key})=> key != table)
+      case `y`:
+        let selectable = this.isTable(table) || this.isTable(x) ? Constants.metas : all;
+        return _.filter(selectable, ({key})=> key != table && key != x)
+      default:
+        return all;
+    }
+  }
+
+  change(target, key) {
+    let {state} = this;
+    state[target] = key;
+    this.setState(state);
+  }
+
+  find() {
+    let {table, x, y, metaKeys} = this.state;
+    let meta = _.without(metaKeys, table, x, y);
+    let base = !meta.length ? 'total' : meta[0];
+    let query = {};
+
+    switch (base) {
+      case 'year':
+        query.year = 26;
+        break;
+      case 'area':
+        query.area = 0;
+        break;
+      case 'gender':
+        query.gender = 0;
+        break;
+    }
+
+    switch (table) {
+      case 'year':
+        query.year = 26;
+        break;
+      case 'gender':
+        query.gender = '1,2';
+        break;
+    }
+
+    let uri = ['/chart', base, table, x, y].join('/');
+    this.dispatch('link', uri, query);
+  }
+
+  writeAllSelector(target:string, placeholder:string, suffix = '') {
+    let selectable = this.selectableKeys(target);
+    return <select className="chart-finder selector" key={`${target}list`} defaultValue={this.state[target]} onChange={(e)=> this.change(target, e.target.value)}>
+      <option name={target} value={'none'} key={`${target}-default`} className="placeholder">{placeholder}</option>
       {
-        _.map(all, ({key, name})=>{
-          return <option name={target} value={key} key={`${target}-${key}`}>{name}</option>
+        _.map(selectable, ({key, name})=>{
+          return <option name={target} value={key} key={`${target}-${key}`}>{name}{suffix}</option>
           })
         }
     </select>
@@ -46,11 +100,10 @@ export default class ChartFinderComponent extends Node<{},{}> {
   }
 
   writeYSplitter() {
-    return this.writeAllSelector('y', '（縦軸の分割 - オプション）');
+    return this.writeAllSelector('y', '分割しない', 'で分割');
   }
 
   render() {
-    let link = this.link.bind(this);
     return <div>
       <article className="chart-finder body">
         <section className="chart-finder section">
@@ -69,7 +122,7 @@ export default class ChartFinderComponent extends Node<{},{}> {
         </section>
         <section className="chart-finder section">
           <div className="chart-finder section-input">
-            <button className="chart-finder submit">
+            <button className="chart-finder submit" onClick={()=>this.find()}>
               <Fa icon="bar-chart"/>
               表示する
             </button>

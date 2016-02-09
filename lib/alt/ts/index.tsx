@@ -30,10 +30,11 @@ class App extends Root<{},{}> {
   }
 
   listen(to) {
-    to('link', (uri)=> {
+    to('link', (uri, query?)=> {
       window.scrollTo(0, 0);
-      this.props.history.pushState(null, uri, this.normalizeQuery(uri, this.props))
+      this.props.history.pushState(null, uri, query)
     });
+
     to('link:navigator', ()=>{
       window.scrollTo(0, window.innerHeight)
     });

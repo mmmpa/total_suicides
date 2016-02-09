@@ -60292,23 +60292,84 @@ var fa_1 = require('../lib/fa');
 var ChartFinderComponent = (function (_super) {
     __extends(ChartFinderComponent, _super);
     function ChartFinderComponent(props) {
-        console.log(props);
         var _a = props.params, base = _a.base, table = _a.table, x = _a.x, y = _a.y;
-        this.state = { base: base, table: table, x: x, y: y };
+        var tableKeys = _.map(constants_1.default.tables, function (_a) {
+            var key = _a.key;
+            return key;
+        });
+        var metaKeys = _.map(constants_1.default.metas, function (_a) {
+            var key = _a.key;
+            return key;
+        });
+        this.state = { base: base, table: table, x: x, y: y, tableKeys: tableKeys, metaKeys: metaKeys };
     }
-    ChartFinderComponent.prototype.link = function (e) {
-        e.preventDefault();
-        this.dispatch('link', e.currentTarget.getAttribute('href'));
-    };
     ChartFinderComponent.prototype.detectIcon = function (split) {
         return split == 'gender' ? React.createElement(fa_1.default, {"icon": "venus-mars"}) : React.createElement(fa_1.default, {"icon": "globe"});
     };
-    ChartFinderComponent.prototype.writeAllSelector = function (target, placeholder, used) {
-        if (used === void 0) { used = []; }
+    ChartFinderComponent.prototype.isTable = function (target) {
+        return _.includes(this.state.tableKeys, target);
+    };
+    ChartFinderComponent.prototype.selectableKeys = function (target) {
+        var _a = this.state, table = _a.table, x = _a.x, y = _a.y;
         var all = [].concat(constants_1.default.metas, constants_1.default.tables);
-        return React.createElement("select", {"className": "chart-finder selector", "key": target + "list", "defaultValue": this.state[target]}, React.createElement("option", {"name": target, "value": null, "key": target + "-default", "className": "placeholder"}, placeholder), _.map(all, function (_a) {
+        switch (target) {
+            case 'table':
+                return all;
+            case 'x':
+                var selectable = this.isTable(table) ? constants_1.default.metas : all;
+                return _.filter(selectable, function (_a) {
+                    var key = _a.key;
+                    return key != table;
+                });
+            case "y":
+                var selectable = this.isTable(table) || this.isTable(x) ? constants_1.default.metas : all;
+                return _.filter(selectable, function (_a) {
+                    var key = _a.key;
+                    return key != table && key != x;
+                });
+            default:
+                return all;
+        }
+    };
+    ChartFinderComponent.prototype.change = function (target, key) {
+        var state = this.state;
+        state[target] = key;
+        this.setState(state);
+    };
+    ChartFinderComponent.prototype.find = function () {
+        var _a = this.state, table = _a.table, x = _a.x, y = _a.y, metaKeys = _a.metaKeys;
+        var meta = _.without(metaKeys, table, x, y);
+        var base = !meta.length ? 'total' : meta[0];
+        var query = {};
+        switch (base) {
+            case 'year':
+                query.year = 26;
+                break;
+            case 'area':
+                query.area = 0;
+                break;
+            case 'gender':
+                query.gender = 0;
+                break;
+        }
+        switch (table) {
+            case 'year':
+                query.year = 26;
+                break;
+            case 'gender':
+                query.gender = '1,2';
+                break;
+        }
+        var uri = ['/chart', base, table, x, y].join('/');
+        this.dispatch('link', uri, query);
+    };
+    ChartFinderComponent.prototype.writeAllSelector = function (target, placeholder, suffix) {
+        var _this = this;
+        if (suffix === void 0) { suffix = ''; }
+        var selectable = this.selectableKeys(target);
+        return React.createElement("select", {"className": "chart-finder selector", "key": target + "list", "defaultValue": this.state[target], "onChange": function (e) { return _this.change(target, e.target.value); }}, React.createElement("option", {"name": target, "value": 'none', "key": target + "-default", "className": "placeholder"}, placeholder), _.map(selectable, function (_a) {
             var key = _a.key, name = _a.name;
-            return React.createElement("option", {"name": target, "value": key, "key": target + "-" + key}, name);
+            return React.createElement("option", {"name": target, "value": key, "key": target + "-" + key}, name, suffix);
         }));
     };
     ChartFinderComponent.prototype.writeYSelector = function () {
@@ -60318,11 +60379,11 @@ var ChartFinderComponent = (function (_super) {
         return this.writeAllSelector('x', '（表の横軸）');
     };
     ChartFinderComponent.prototype.writeYSplitter = function () {
-        return this.writeAllSelector('y', '（縦軸の分割 - オプション）');
+        return this.writeAllSelector('y', '分割しない', 'で分割');
     };
     ChartFinderComponent.prototype.render = function () {
-        var link = this.link.bind(this);
-        return React.createElement("div", null, React.createElement("article", {"className": "chart-finder body"}, React.createElement("section", {"className": "chart-finder section"}, React.createElement(fa_1.default, {"icon": "arrows-v"}), React.createElement("div", {"className": "chart-finder section-input"}, this.writeYSelector()), React.createElement("div", {"className": "chart-finder section-suffix"}, "の自殺者数を")), React.createElement("section", {"className": "chart-finder section"}, React.createElement(fa_1.default, {"icon": "arrows-h"}), React.createElement("div", {"className": "chart-finder section-input"}, this.writeXSelector()), React.createElement("div", {"className": "chart-finder section-suffix"}, "で並べて")), React.createElement("section", {"className": "chart-finder section"}, React.createElement("div", {"className": "chart-finder section-input"}, React.createElement("button", {"className": "chart-finder submit"}, React.createElement(fa_1.default, {"icon": "bar-chart"}), "表示する"))), React.createElement("section", {"className": "chart-finder section"}, React.createElement(fa_1.default, {"icon": "ellipsis-v"}), React.createElement("div", {"className": "chart-finder section-input"}, this.writeYSplitter()))));
+        var _this = this;
+        return React.createElement("div", null, React.createElement("article", {"className": "chart-finder body"}, React.createElement("section", {"className": "chart-finder section"}, React.createElement(fa_1.default, {"icon": "arrows-v"}), React.createElement("div", {"className": "chart-finder section-input"}, this.writeYSelector()), React.createElement("div", {"className": "chart-finder section-suffix"}, "の自殺者数を")), React.createElement("section", {"className": "chart-finder section"}, React.createElement(fa_1.default, {"icon": "arrows-h"}), React.createElement("div", {"className": "chart-finder section-input"}, this.writeXSelector()), React.createElement("div", {"className": "chart-finder section-suffix"}, "で並べて")), React.createElement("section", {"className": "chart-finder section"}, React.createElement("div", {"className": "chart-finder section-input"}, React.createElement("button", {"className": "chart-finder submit", "onClick": function () { return _this.find(); }}, React.createElement(fa_1.default, {"icon": "bar-chart"}), "表示する"))), React.createElement("section", {"className": "chart-finder section"}, React.createElement(fa_1.default, {"icon": "ellipsis-v"}), React.createElement("div", {"className": "chart-finder section-input"}, this.writeYSplitter()))));
     };
     return ChartFinderComponent;
 })(eventer_1.Node);
@@ -60713,9 +60774,9 @@ var App = (function (_super) {
     };
     App.prototype.listen = function (to) {
         var _this = this;
-        to('link', function (uri) {
+        to('link', function (uri, query) {
             window.scrollTo(0, 0);
-            _this.props.history.pushState(null, uri, _this.normalizeQuery(uri, _this.props));
+            _this.props.history.pushState(null, uri, query);
         });
         to('link:navigator', function () {
             window.scrollTo(0, window.innerHeight);
