@@ -8,6 +8,13 @@ body
   overflow: scroll
   padding: 0 40px
 
+a,
+label
+  cursor: pointer
+
+a:hover
+  text-decoration: none
+
 .header
   &.body
     background: #000
@@ -60,6 +67,34 @@ body
 .global-wrapper
   position: relative
 
+.portal
+  &.chart-link-list
+    margin: 0 0 20px 0
+    padding: 0
+  &.chart-link
+    list-style: none
+  &.reason
+    background: $gray3
+  &.src
+    background: $gray2
+  &.interest
+    background: $gray1
+  &.body
+    background: #fff
+    color: #333
+  &.section
+    padding: 20px 0 0 0
+  &.title
+    @extend .size-h5
+    margin: 0 0 20px
+  &.sub-title
+    @extend .size-h6
+    margin: 20px 0
+  &.block
+    max-width: 800px
+    padding: 20px
+    p
+      @extend .size-h6
 span
   &.input-input,
   &.input-label

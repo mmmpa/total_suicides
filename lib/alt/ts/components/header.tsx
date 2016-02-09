@@ -13,7 +13,7 @@ export default class HeaderComponent extends Node<{},{}> {
     return <div>
       <section className="header body">
         <h1 className="header title">
-          <a onClick={()=> this.dispatch('link:navigator')}>
+          <a onClick={()=> this.dispatch('link', '/')}>
             <Fa icon="heart"/>
             自殺を知る、自殺を考える
           </a>

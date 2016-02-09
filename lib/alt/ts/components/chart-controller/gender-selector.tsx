@@ -34,7 +34,7 @@ export default class GenderSelectorComponent extends Node<{},{}> {
             return <div key={`gender-selector-${key}`}>
               <label>
                 <span className="input-input">
-                  <input type="checkbox" name="year" checked={this.isChecked(key)} onClick={()=> this.toggle(key)}/>
+                  <input type="checkbox" name="year" checked={this.isChecked(key)} onChange={()=> this.toggle(key)}/>
                 </span>
                 <span className="input-label">{name}</span>
               </label>

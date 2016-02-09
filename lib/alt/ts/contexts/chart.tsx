@@ -5,11 +5,6 @@ import {normalize} from "../services/normalizer"
 import ChartSet from "../models/chart-set";
 
 export default class ChartContext extends Root<{},{}> {
-  constructor(props) {
-    super(props)
-    console.log('chart', this)
-  }
-
   initialState(props) {
     return {}
   }
@@ -27,7 +22,7 @@ export default class ChartContext extends Root<{},{}> {
       let {base, table, x, y} = props.params;
       let {data} = result;
       let tableListList = normalize(data);
-      this.setState({tableListList, base, table, x, y})
+      setTimeout(()=>this.setState({tableListList, base, table, x, y}), 1)
     })
   }
 
@@ -61,7 +56,7 @@ export default class ChartContext extends Root<{},{}> {
     });
   }
 
-  setToQuery(key:string, value:any[]){
+  setToQuery(key:string, value:any[]) {
     let {query} = this.props.location;
     if (value && value.length) {
       query[key] = value.join(',');
@@ -78,7 +73,7 @@ export default class ChartContext extends Root<{},{}> {
     )
   }
 
-  queryToArray(key){
+  queryToArray(key) {
     let target = this.props.location.query[key];
     if (!target) {
       return [];

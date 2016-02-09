@@ -29,7 +29,7 @@ export default class StackBarChartComponent extends Node<{},{}> {
 
   arrangeChartProp(data) {
     let defaultProps = Constants.barProps;
-    let minWidth = data.length * 100;
+    let minWidth = data.length * 90;
     defaultProps.width < minWidth && (defaultProps.width = minWidth)
     return defaultProps;
   }
@@ -76,7 +76,7 @@ export default class StackBarChartComponent extends Node<{},{}> {
 
   writeTables(tableList, max) {
     return _.map(tableList, ({table, chart})=> {
-      return <section className="chart-list chart-block" key={table.title}>
+      return <section className="chart-list chart-block" key={`block-${table.title}`}>
         <h1>{table.title}</h1>
         {this.writeChart(chart, max)}
         {this.writeTable(table)}
@@ -89,7 +89,7 @@ export default class StackBarChartComponent extends Node<{},{}> {
     if (!tableListList || !tableListList.length || _.isString(tableListList)) {
       return <article className="chart-list body">
         <div className="loading">
-          <Fa icon="spinner" pulse={true}/>
+          <Fa icon="spinner" animation='pulse'/>
           loading...
         </div>
       </article>
@@ -98,7 +98,7 @@ export default class StackBarChartComponent extends Node<{},{}> {
     return <div>
       <article className="chart-list body">
         {tableListList.map(({title, tables})=> {
-          return <section className="chart-list chart-line" key={title}>
+          return <section className="chart-list chart-line" key={`line-${title}`}>
             <h1 className="chart-list chart-title">{title}</h1>
             {this.writeTables(tables, max)}
           </section>

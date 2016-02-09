@@ -34,7 +34,7 @@ export default class YearSelectorComponent extends Node<{},{}> {
             return <div key={`year-selector-${key}`}>
               <label>
                 <span className="input-input">
-                  <input type="checkbox" name="year" checked={this.isChecked(key)} onClick={()=> this.toggle(key)}/>
+                  <input type="checkbox" name="year" checked={this.isChecked(key)} onChange={()=> this.toggle(key)}/>
                 </span>
                 <span className="input-label">{name}</span>
               </label>

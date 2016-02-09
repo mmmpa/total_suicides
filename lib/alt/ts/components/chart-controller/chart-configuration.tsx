@@ -30,13 +30,13 @@ export default class ChartConfigurationComponent extends Node<{},{}> {
         <section className="chart-config auto-scale">
           <label>
             <span className="input-input">
-              <input type="radio" name="auto-scale" checked={!this.autoScale} onClick={()=> this.toggleScale(false)}/>
+              <input type="radio" name="auto-scale" defaultChecked={!this.autoScale} onClick={()=> this.toggleScale(false)}/>
             </span>
             <span className="input-label">Y軸最大値を統一する</span>
           </label>
           <label>
             <span className="input-input">
-              <input type="radio" name="auto-scale" checked={this.autoScale} onClick={()=> this.toggleScale(true)}/>
+              <input type="radio" name="auto-scale" defaultChecked={this.autoScale} onClick={()=> this.toggleScale(true)}/>
             </span>
             <span className="input-label">Y軸を自動調整する</span>
           </label>
@@ -44,13 +44,13 @@ export default class ChartConfigurationComponent extends Node<{},{}> {
         <section className="chart-config auto-scale">
           <label>
             <span className="input-input">
-              <input type="radio" name="par" checked={!this.par} onClick={()=> this.togglePar(false)}/>
+              <input type="radio" name="par" defaultChecked={!this.par} onClick={()=> this.togglePar(false)}/>
             </span>
             <span className="input-label">人数で表示する</span>
           </label>
           <label>
             <span className="input-input">
-              <input type="radio" name="par" checked={this.par} onClick={()=> this.togglePar(true)}/>
+              <input type="radio" name="par" defaultChecked={this.par} onClick={()=> this.togglePar(true)}/>
             </span>
             <span className="input-label">率で表示する</span>
           </label>

@@ -9,47 +9,40 @@ import ChartContext from "./contexts/chart";
 import SimpleGraph from "./components/simple-graph";
 import PieChart from "./components/pie-chart";
 import BarChart from "./components/bar-chart";
+import Portal from "./components/portal";
 import StackBarChart from "./components/stack-bar-chart";
 import Common from "./components/common";
 import ChartController from "./components/chart-controller/chart-controller";
+declare var ga:Function;
+
+let index = document.querySelector('#index');
+index.style.display = 'none';
+let indexSrc = index.innerHTML;
 
 class App extends Root<{},{}> {
   initialState(props) {
-    return {
-      from: 'app',
-      data: {}
-    }
-  }
-
-  normalizeQuery(uri, props){
-    let {query} = props.location;
-    if(uri.indexOf('/area/') == -1){
-      delete query.area;
-    }
-    return query;
+    return {indexSrc}
   }
 
   listen(to) {
     to('link', (uri, query?)=> {
       window.scrollTo(0, 0);
+      ga('send', 'pageview', 'uri');
       this.props.history.pushState(null, uri, query)
-    });
-
-    to('link:navigator', ()=>{
-      window.scrollTo(0, window.innerHeight)
     });
   }
 }
 
 render((
   <Router history={new CreateHistory()}>
-    <Route path="/" component={App}>
+    <Route path="" component={App}>
       <Route path="" component={Common}>
         <Route path="chart" component={ChartContext}>
           <Route path="" component={ChartController}>
             <Route path=":base/:table/:x/:y" component={StackBarChart}/>
           </Route>
         </Route>
+        <Route path="*" component={Portal}/>
       </Route>
     </Route>
   </Router>

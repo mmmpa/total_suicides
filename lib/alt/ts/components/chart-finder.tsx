@@ -13,7 +13,9 @@ export default class ChartFinderComponent extends Node<{},{}> {
     let {base, table, x, y} = props.params;
     let tableKeys = _.map(Constants.tables, ({key})=> key);
     let metaKeys = _.map(Constants.metas, ({key})=> key);
-    this.state = {base, table, x, y, tableKeys, metaKeys};
+    let areaKeys = _.map(Constants.areas, ({key})=> key);
+    let yearKeys = _.map(Constants.years, ({key})=> key);
+    this.state = {base, table, x, y, tableKeys, metaKeys, areaKeys, yearKeys};
   }
 
   detectIcon(split) {
@@ -26,16 +28,16 @@ export default class ChartFinderComponent extends Node<{},{}> {
 
   selectableKeys(target) {
     let {table, x, y} = this.state;
-    let all = [].concat(Constants.metas, Constants.tables);
+    let all = [Constants.metas, Constants.tables];
     switch (target) {
       case 'table':
         return all;
       case 'x':
-        let selectable = this.isTable(table) ? Constants.metas : all;
+        let selectable = this.isTable(table) ? [Constants.metas, []] : all;
         return _.filter(selectable, ({key})=> key != table)
       case `y`:
-        let selectable = this.isTable(table) || this.isTable(x) ? Constants.metas : all;
-        return _.filter(selectable, ({key})=> key != table && key != x)
+        let selectable = this.isTable(table) || this.isTable(x) ? [Constants.metas, []]  : all;
+        return [_.filter(selectable, ({key})=> key != table && key != x)],
       default:
         return all;
     }
@@ -48,10 +50,36 @@ export default class ChartFinderComponent extends Node<{},{}> {
   }
 
   find() {
-    let {table, x, y, metaKeys} = this.state;
+    let {metaKeys, areaKeys, yearKeys} = this.state;
+    let [table, x, y] = _.map(['table', 'x', 'y'], (target)=> {
+      return this.refs[target].value;
+    });
     let meta = _.without(metaKeys, table, x, y);
-    let base = !meta.length ? 'total' : meta[0];
-    let query = {};
+    let base = !meta.length ? 'total' : _.includes(meta, 'year') ? 'year' : meta[0];
+    let {query} = this.props.location;
+
+    let loading = [table, x, y];
+
+    if (_.includes(loading, 'year')) {
+      query.year = query.year || yearKeys.join(',');
+    }
+
+    if (_.includes(loading, 'gender')) {
+      if (query.gender) {
+        query.gender == '0' && (query.gender = '1,2')
+      } else {
+        query.gender = '1,2';
+      }
+    }
+
+    if (_.includes(loading, 'area')) {
+      let areas = _.without(areaKeys, 0).join(',');
+      if (query.area) {
+        query.area == '0' && (query.area = areas)
+      } else {
+        query.area = areas;
+      }
+    }
 
     switch (base) {
       case 'year':
@@ -65,22 +93,13 @@ export default class ChartFinderComponent extends Node<{},{}> {
         break;
     }
 
-    switch (table) {
-      case 'year':
-        query.year = 26;
-        break;
-      case 'gender':
-        query.gender = '1,2';
-        break;
-    }
-
-    let uri = ['/chart', base, table, x, y].join('/');
+    let uri = ['/chart', base, table, x, y || 'none'].join('/');
     this.dispatch('link', uri, query);
   }
 
   writeAllSelector(target:string, placeholder:string, suffix = '') {
     let selectable = this.selectableKeys(target);
-    return <select className="chart-finder selector" key={`${target}list`} defaultValue={this.state[target]} onChange={(e)=> this.change(target, e.target.value)}>
+    return <select className="chart-finder selector" ref={target} key={`${target}list`} defaultValue={this.state[target]} onChange={(e)=> this.change(target, e.target.value)}>
       <option name={target} value={'none'} key={`${target}-default`} className="placeholder">{placeholder}</option>
       {
         _.map(selectable, ({key, name})=>{
