@@ -23,20 +23,28 @@ export abstract class Node<P, S> extends React.Component<P, S> {
 
 export abstract class Root<P, S> extends Node<P, S> {
   emitter:EventEmitter;
+  addedOnStore = []
 
-  abstract listen(to:(eventname:string, callback:Function)=>void):void;
+  abstract listen(to:(eventName:string, callback:Function)=>void):void;
+
   abstract initialState(props):S;
 
   static get childContextTypes() {
     return EventingShared;
   }
 
-  componentWillMount(){
-    if(!this.emitter){
+  componentWillUnmount() {
+    let disposed = this.addedOnStore.map(({eventName, callback})=> {
+      this.emitter.removeListener(eventName, callback);
+    });
+  }
+
+  componentWillMount() {
+    if (!this.emitter) {
       this.emitter = this.context.emitter || new EventEmitter();
-      this.listen((eventname:string, callback:Function) => {
-        this.emitter.removeAllListeners(eventname);
-        this.emitter.on(eventname, callback);
+      this.listen((eventName:string, callback:Function) => {
+        this.addedOnStore.push({eventName, callback});
+        this.emitter.on(eventName, callback);
       });
     }
   }

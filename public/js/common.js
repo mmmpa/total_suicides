@@ -60463,6 +60463,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var React = require('react');
 var eventer_1 = require('../lib/eventer');
+var _ = require('lodash');
 var site_map_1 = require('../components/site-map');
 var header_1 = require('../components/header');
 var copyright_1 = require('../components/copyright');
@@ -60472,15 +60473,24 @@ var CommonComponent = (function (_super) {
     function CommonComponent() {
         _super.apply(this, arguments);
     }
+    Object.defineProperty(CommonComponent.prototype, "children", {
+        get: function () {
+            var props = _.merge(_.clone(this.props), this.state);
+            delete props.children;
+            return React.cloneElement(this.props.children || React.createElement("div", null, "blank"), props || {});
+        },
+        enumerable: true,
+        configurable: true
+    });
     CommonComponent.prototype.render = function () {
-        return React.createElement("div", {"className": "global-wrapper"}, React.createElement("header", {"className": "global-header"}, React.createElement(header_1.default, null)), React.createElement(chart_finder_1.default, React.__spread({}, this.props)), React.createElement("article", {"className": "main-content"}, React.cloneElement(this.props.children || React.createElement("div", null, "blank"), this.props || {})), React.createElement(site_map_1.default, React.__spread({}, this.props)), React.createElement(chart_finder_1.default, React.__spread({}, this.props)), React.createElement(copyright_1.default, null));
+        return React.createElement("div", {"className": "global-wrapper"}, React.createElement("header", {"className": "global-header"}, React.createElement(header_1.default, null)), React.createElement(chart_finder_1.default, React.__spread({}, this.props)), React.createElement("article", {"className": "main-content"}, this.children), React.createElement(site_map_1.default, React.__spread({}, this.props)), React.createElement(chart_finder_1.default, React.__spread({}, this.props)), React.createElement(copyright_1.default, null));
     };
     return CommonComponent;
 })(eventer_1.Node);
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CommonComponent;
 
-},{"../components/chart-finder":298,"../components/copyright":300,"../components/header":302,"../components/site-map":304,"../lib/eventer":309,"react":287}],300:[function(require,module,exports){
+},{"../components/chart-finder":298,"../components/copyright":300,"../components/header":302,"../components/site-map":304,"../lib/eventer":309,"lodash":79,"react":287}],300:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60680,6 +60690,14 @@ var StackBarChartComponent = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(StackBarChartComponent.prototype, "keyBase", {
+        get: function () {
+            var _a = this.props, base = _a.base, table = _a.table, x = _a.x, y = _a.y;
+            return [base, table, x, y].join('-');
+        },
+        enumerable: true,
+        configurable: true
+    });
     StackBarChartComponent.prototype.domain = function (max) {
         if (this.par) {
             return this.autoScale ? null : [0, 100];
@@ -60729,7 +60747,7 @@ var StackBarChartComponent = (function (_super) {
             return React.createElement("article", {"className": "chart-list body"}, React.createElement("div", {"className": "loading"}, React.createElement(fa_1.default, {"icon": "spinner", "animation": 'pulse'}), "loading..."));
         }
         var max = this.detectMax(tableListList);
-        return React.createElement("div", null, React.createElement("article", {"className": "chart-list body"}, tableListList.map(function (_a) {
+        return React.createElement("div", null, React.createElement("article", {"className": "chart-list body", "key": this.keyBase}, tableListList.map(function (_a) {
             var title = _a.title, tables = _a.tables;
             return React.createElement("section", {"className": "chart-list chart-line", "key": "line-" + title}, React.createElement("h1", {"className": "chart-list chart-title"}, title), _this.writeTables(tables, max));
         })));
@@ -60810,6 +60828,7 @@ var ChartContext = (function (_super) {
     ChartContext.prototype.listen = function (to) {
         var _this = this;
         to('chart:area', function (areas) {
+            console.log('aea');
             var query = _this.setToQuery('area', areas);
             _this.changeQuery(query);
         });
@@ -61372,6 +61391,7 @@ var Root = (function (_super) {
     __extends(Root, _super);
     function Root(props) {
         _super.call(this, props);
+        this.addedOnStore = [];
         this.state = this.initialState(props);
     }
     Object.defineProperty(Root, "childContextTypes", {
@@ -61381,13 +61401,20 @@ var Root = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Root.prototype.componentWillUnmount = function () {
+        var _this = this;
+        var disposed = this.addedOnStore.map(function (_a) {
+            var eventName = _a.eventName, callback = _a.callback;
+            _this.emitter.removeListener(eventName, callback);
+        });
+    };
     Root.prototype.componentWillMount = function () {
         var _this = this;
         if (!this.emitter) {
             this.emitter = this.context.emitter || new events_1.EventEmitter();
-            this.listen(function (eventname, callback) {
-                _this.emitter.removeAllListeners(eventname);
-                _this.emitter.on(eventname, callback);
+            this.listen(function (eventName, callback) {
+                _this.addedOnStore.push({ eventName: eventName, callback: callback });
+                _this.emitter.on(eventName, callback);
             });
         }
     };

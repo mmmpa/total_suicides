@@ -65,8 +65,8 @@ export default class ChartContext extends Root<{},{}> {
   }
 
   listen(to) {
-
     to('chart:area', (areas:number[])=> {
+      console.log('aea')
       let query = this.setToQuery('area', areas);
       this.changeQuery(query);
     });

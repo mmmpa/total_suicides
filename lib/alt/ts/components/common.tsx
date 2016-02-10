@@ -12,6 +12,12 @@ import Copyright from '../components/copyright'
 import ChartFinder from '../components/chart-finder'
 
 export default class CommonComponent extends Node<{},{}> {
+  get children(){
+    let props = _.merge(_.clone(this.props), this.state);
+    delete props.children;
+    return React.cloneElement(this.props.children || <div>blank</div>, props || {})
+  }
+
   render() {
     return <div className="global-wrapper">
       <header className="global-header">
@@ -19,7 +25,7 @@ export default class CommonComponent extends Node<{},{}> {
       </header>
       <ChartFinder {...this.props}/>
       <article className="main-content">
-        {React.cloneElement(this.props.children || <div>blank</div>, this.props || {})}
+        {this.children}
       </article>
       <SiteMap {...this.props} />
       <ChartFinder {...this.props} />

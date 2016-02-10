@@ -19,6 +19,11 @@ export default class StackBarChartComponent extends Node<{},{}> {
     return par && par != 'false'
   }
 
+  get keyBase():string{
+    let {base, table, x, y} = this.props;
+    return [base, table, x, y].join('-')
+  }
+
   domain(max?:number) {
     if (this.par) {
       return this.autoScale ? null : [0, 100];
@@ -93,7 +98,7 @@ export default class StackBarChartComponent extends Node<{},{}> {
     }
     let max = this.detectMax(tableListList);
     return <div>
-      <article className="chart-list body">
+      <article className="chart-list body" key={this.keyBase}>
         {tableListList.map(({title, tables})=> {
           return <section className="chart-list chart-line" key={`line-${title}`}>
             <h1 className="chart-list chart-title">{title}</h1>
