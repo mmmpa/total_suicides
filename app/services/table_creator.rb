@@ -23,7 +23,7 @@ class TableCreator
     filters = pick_filters(params)
 
     arranged_filters = arrange_filters(filters, base, table, x, y)
-    base_table = detect(base, table, x, y)
+    base_table = detect(base, table, x, y) || :total
 
     filtered = filter_data(base_table, arranged_filters)
     data = normalize(base_table, filtered)
@@ -42,16 +42,40 @@ class TableCreator
     self.raw = grouped
   end
 
+  #
+  # 与えられた属性で上から順番にグループ化する
+  #
   def group(src, *group_names)
     data = group_names.inject(src.clone) do |a, name|
-      group_first_array!(a) do |d|
-        d[name][:name]
+      arrange_first_array!(a) do |array|
+        array.sort_by { |d|
+          key = d[name][:content]
+          Fixnum === key ? key : 0
+        }.group_by { |d|
+          d[name][:name]
+        }
       end
     end
+
     to_array(data)
   end
 
   #
+  # Hashを掘りさげて最初に出会ったArrayをgroup_byする
+  #
+  def arrange_first_array!(src, &block)
+    if Hash === src
+      src.each_pair do |k, v|
+        src[k] = arrange_first_array!(v, &block)
+      end
+      src
+    elsif Array === src
+      yield(src)
+    else
+      src
+    end
+  end
+
   def group_first_array!(src, &block)
     if Hash === src
       src.each_pair do |k, v|
@@ -60,10 +84,15 @@ class TableCreator
       src
     elsif Array === src
       src.group_by(&block)
+    else
+      src
     end
   end
 
-
+  #
+  # Hashを{key, value}の配列に変換する
+  # （Ruby外での処理での）順番維持のため
+  #
 
   def to_array(data)
     to_array_support(data, 3)
@@ -75,6 +104,7 @@ class TableCreator
       a << {key: key, value: detected}
     end
   end
+
   #
   # paramsから必要事項を抽出する
   #
@@ -138,6 +168,7 @@ class TableCreator
   end
 
   def normalize(used_base, all_data)
+    pp used_base
     all_data.map.inject([]) do |all, row|
       total = columns(used_base).inject(0) { |a, column| a + row[column[:key]] }.to_f
       all + columns(used_base).map do |column|
