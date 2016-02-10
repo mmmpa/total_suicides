@@ -9,7 +9,6 @@ class ApiController < ApplicationController
   end
 
   def table
-
     render json: TableCreator.(params)
   end
 

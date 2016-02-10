@@ -22,14 +22,14 @@ describe TableCreator do
   end
 
   describe do
-    context 'no_year' do
+    context 'type1' do
       let(:params){
         {
           'base' => 'way',
           'table' => 'area',
           'x' => 'gender',
           'y' => 'none',
-          'area' => '1,2,3'
+          'area' => '1'
         }
       }
 
@@ -38,14 +38,14 @@ describe TableCreator do
       end
     end
 
-    context do
+    context 'type2' do
       let(:params){
         {
           'base' => 'year',
           'table' => 'area',
           'x' => 'gender',
           'y' => 'way',
-          'area' => '1,2,3'
+          'area' => '2'
         }
       }
 
@@ -54,14 +54,14 @@ describe TableCreator do
       end
     end
 
-    context do
+    context 'type3' do
       let(:params){
         {
           'base' => 'year',
           'table' => 'gender',
           'x' => 'way',
           'y' => 'area',
-          'area' => '1,2,3'
+          'area' => '3'
         }
       }
 
@@ -70,7 +70,7 @@ describe TableCreator do
       end
     end
 
-    context 'none' do
+    context 'type4' do
       let(:params){
         {
           'base' => 'year',
@@ -86,7 +86,7 @@ describe TableCreator do
       end
     end
 
-    context 'nothing' do
+    context 'type5' do
       let(:params){
         {
           'base' => 'year',
@@ -102,7 +102,7 @@ describe TableCreator do
       end
     end
 
-    context do
+    context 'type6' do
       let(:params){
         {
           'base' => 'year',
@@ -114,10 +114,11 @@ describe TableCreator do
       }
 
       it do
-        TableCreator.(params)
+        pp TableCreator.(params)
       end
     end
-    context do
+
+    context 'type7' do
       let(:params){
         {
           'base' => 'year',
@@ -129,7 +130,7 @@ describe TableCreator do
       }
 
       it do
-        TableCreator.(params)
+        pp TableCreator.(params)
       end
     end
   end

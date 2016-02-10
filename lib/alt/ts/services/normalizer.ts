@@ -24,7 +24,6 @@ export function normalize(data) {
           tables: _.map(value.value, (value)=> {
             let table = new Table(value.key);
             _.each(value.value, (value)=> {
-
               table.addRow(value.key, value.value);
             });
             table.finish();

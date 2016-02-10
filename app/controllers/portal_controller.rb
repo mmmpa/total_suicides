@@ -4,7 +4,7 @@ class PortalController < ApplicationController
       when '/'
         @index = true
       else
-        pp @data = TableCreator.(params)
+        @data = TableCreator.(params)
     end
   end
 end

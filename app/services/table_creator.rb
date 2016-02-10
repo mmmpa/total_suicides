@@ -25,7 +25,8 @@ class TableCreator
     arranged_filters = arrange_filters(filters, base, table, x, y)
     base_table = detect(base, table, x, y)
 
-    data = filter_data(base_table, arranged_filters)
+    filtered = filter_data(base_table, arranged_filters)
+    data = normalize(base_table, filtered)
 
     if [base, table, x, y].include?(:year)
       data = [{'結果' => group(data, base, table, x, y)}]
@@ -41,14 +42,28 @@ class TableCreator
     self.raw = grouped
   end
 
-  def group(src, base, table, x, y)
-    data = src.clone
-    data = group_by_base(data, base)
-    data = group_by_table(data, table)
-    data = group_by_x(data, x)
-    data = finish_by_y(data, y)
+  def group(src, *group_names)
+    data = group_names.inject(src.clone) do |a, name|
+      group_first_array!(a) do |d|
+        d[name][:name]
+      end
+    end
     to_array(data)
   end
+
+  #
+  def group_first_array!(src, &block)
+    if Hash === src
+      src.each_pair do |k, v|
+        src[k] = group_first_array!(v, &block)
+      end
+      src
+    elsif Array === src
+      src.group_by(&block)
+    end
+  end
+
+
 
   def to_array(data)
     to_array_support(data, 3)
@@ -56,52 +71,10 @@ class TableCreator
 
   def to_array_support(data, level, now = 0)
     data.each_pair.inject([]) do |a, (key, value)|
-      detected = now != level ? to_array_support(value, level, now + 1) : value
+      detected = now != level ? to_array_support(value, level, now + 1) : value[0][:value]
       a << {key: key, value: detected}
     end
   end
-
-  def group_by_base(data, name)
-    group_table(data, name)
-  end
-
-  def group_by_table(data, name)
-    data.each_pair do |key, value|
-      data[key] = group_table(value, name)
-    end
-    data
-  end
-
-  def group_by_x(data, name)
-    data.each_pair do |_, value|
-      value.each_pair do |key2, value2|
-        value[key2] = group_table(value2, name)
-      end
-    end
-  end
-
-  def finish_by_y(data, name)
-    data.each_pair do |key, value|
-      value.each_pair do |key2, value2|
-        value2.each_pair do |key3, value3|
-          case
-            when name == :none
-              sorted = value3.sort_by { |v| v[:gender][:content] }
-              value2[key3] = {'総数' => sorted.first[:content] || sorted.first[:number]}
-            when TABLE.include?(name)
-              value2[key3] = columns(name).inject({}) do |a, column|
-                a.update(column[:name] => value3.first[column[:key]])
-              end
-            else
-              value2[key3] = value3.sort_by { |v| v[name][:content] }.inject({}) do |a, series|
-                a.update(series[name][:name] => series[:content])
-              end
-          end
-        end
-      end
-    end
-  end
-
   #
   # paramsから必要事項を抽出する
   #
@@ -124,13 +97,11 @@ class TableCreator
   def arrange_filters(filters, *used)
     arranged = filters.clone
 
-    #used = [base, table, x, y]
-
     # 使用を指定されていない項目にはフィルターを効かせない
     FILTER_DEFAULT.each do |set|
       key = set[:key]
       value = set[:value]
-      p [used, key]
+
       unless used.include?(key)
         if Proc === value
           arranged[key] = value.()
@@ -151,29 +122,44 @@ class TableCreator
     used_base = base || :total
     result = detect_table(used_base).includes { [:year, :area, :gender] }
 
-    filters.each_pair do |k, v|
-      next unless v.present?
+    filters.each_pair.inject(result) do |a, (k, v)|
+      next a unless v.present?
       case k
         when :area
-          result = result.joins { :area }.where { area.content.in v }
+          a.joins { :area }.where { area.content.in v }
         when :year
-          result = result.joins { :year }.where { year.content.in v }
+          a.joins { :year }.where { year.content.in v }
         when :gender
-          result = result.joins { :gender }.where { gender.content.in v }
+          a.joins { :gender }.where { gender.content.in v }
         else
-          nil
+          a
       end
     end
+  end
 
-    result.to_a.map!(&:as_json).map! do |row|
+  def normalize(used_base, all_data)
+    all_data.map.inject([]) do |all, row|
       total = columns(used_base).inject(0) { |a, column| a + row[column[:key]] }.to_f
-      columns(used_base).each do |column|
-        row[column[:key]] = {
+      all + columns(used_base).map do |column|
+        value = {
           number: row[column[:key]],
           par: (row[column[:key]] / total * 100).round(2)
         }
+        {
+          year: row.year,
+          gender: row.gender,
+          area: row.area,
+          used_base => {
+            content: column[:key],
+            name: column[:name]
+          },
+          value: value,
+          none: {
+            content: 0,
+            name: '総数'
+          }
+        }
       end
-      row
     end
   end
 
@@ -194,20 +180,6 @@ class TableCreator
       gender: data[:gender],
       area: data[:area]
     }
-  end
-
-  def group_table(base, table)
-    if TABLE.include?(table)
-      remap_table_hash(base, table)
-    else
-      base.sort_by { |data|
-        data[table][:content]
-      }.inject({}) { |a, data|
-        store = a[data[table][:name]] ||= []
-        store.push(data)
-        a
-      }
-    end
   end
 
   def columns(table)
