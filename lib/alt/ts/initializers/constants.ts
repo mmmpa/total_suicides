@@ -74,6 +74,49 @@ export default class Constants {
 
   static colors:string[] = ['#1abc9c', '#3498db', '#f1c40f', '#e74c3c', '#2ecc71', '#9b59b6', '#e67e22', '#34495e', '#95a5a6', '#16a085', '#2980b9', '#f39c12', '#c0392b', '#27ae60', '#8e44ad', '#d35400', '#2c3e50', '#7f8c8d'];
 
+  static _colorKeys;
+  static get colorKeys() {
+    if (this._colorKeys) {
+      return this._colorKeys;
+    }
+    this._colorKeys = {};
+
+    _.each(_.union(this.tablePropList, this.metaPropsList), (props)=> {
+      _.each(props, ({name}, i)=>{
+        this._colorKeys[name] = i;
+      });
+    });
+
+    return this._colorKeys;
+  }
+
+  static detectColor(name:string):string{
+    return this.normalColor(this.colorKeys[name]);
+  }
+
+  static get tablePropList() {
+    return [
+      this.ageProps,
+      this.housemateProps,
+      this.jobProps,
+      this.locationProps,
+      this.wayProps,
+      this.hourProps,
+      this.dayProps,
+      this.reasonProps,
+      this.attemptedProps,
+      this.totalProps
+    ]
+  }
+
+  static get metaPropsList(){
+    return [
+      this.areas,
+      this.genders,
+      this.years
+    ]
+  }
+
   static tables = [
     {key: 'age', name: '年齢層'},
     {key: 'housemate', name: '同居人の有無'},
@@ -195,13 +238,13 @@ export default class Constants {
     {key: 'number', name: '自殺者数'},
   ];
 
-  static isIncludedTable(name){
+  static isIncludedTable(name) {
     return _.includes(this.tableKeys, name)
   }
 
   static _keyMap;
-  static get keyMap(){
-    if(this._keyMap){
+  static get keyMap() {
+    if (this._keyMap) {
       return this._keyMap;
     }
     _.flatten([this.areas, this.genders])
@@ -226,7 +269,7 @@ export default class Constants {
 
   static total = [
     {key: 0, name: '総数'}
-    ]
+  ]
 
   static genders = [
     {key: 0, name: '総数'},

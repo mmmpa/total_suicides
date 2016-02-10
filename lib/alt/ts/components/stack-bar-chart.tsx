@@ -36,10 +36,7 @@ export default class StackBarChartComponent extends Node<{},{}> {
 
   arrangeSeries(series, parSeries) {
     let using = this.par ? parSeries : series;
-    return _.map(using, ({field, name})=> {
-      let color = Constants.normalColor(field - 1);
-      return {field, name, color};
-    })
+    return using;
   }
 
   writeChart(chartSet:ChartSet, max?:number) {

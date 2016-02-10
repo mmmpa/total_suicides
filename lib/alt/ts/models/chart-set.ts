@@ -1,5 +1,7 @@
 import Table from "./table";
 import * as _ from 'lodash'
+import Constants from '../initializers/constants'
+import Constants from "../initializers/constants";
 
 export default class ChartSet {
   constructor(public series:any[] = [], public parSeries:any[] = [], public data:any[] = []) {
@@ -13,7 +15,7 @@ export default class ChartSet {
           return null
         }
       }
-      return {field: k, name: k}
+      return {field: k, name: k, color: Constants.detectColor(k)}
     }));
 
     let parSeries = _.compact(_.map(table.column, (k)=> {

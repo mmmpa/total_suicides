@@ -11,10 +11,48 @@ export default class ChartContext extends Root<{},{}> {
 
   componentDidMount() {
     this.fetchData(this.props);
+    this.setTitle(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
     this.fetchData(nextProps, this.props);
+    this.setTitle(nextProps);
+  }
+
+  setTitle(props) {
+    let {table, x} = props.params;
+    this.dispatch('title', `${this.detect_text(table)}別の自殺者数を${this.detect_text(x)}で並べて表示`)
+  }
+
+  detect_text(name) {
+    switch (name) {
+      case 'area':
+        return '地域'
+      case 'year':
+        return '年度'
+      case 'age':
+        return '性別'
+      case 'age':
+        return '年齢層'
+      case 'housemate':
+        return '同居人の有無'
+      case 'job':
+        return '職業'
+      case 'location':
+        return '場所'
+      case 'way':
+        return '手段'
+      case 'hour':
+        return '時間帯'
+      case 'day':
+        return '曜日'
+      case 'reason':
+        return '動機・要因'
+      case 'attempted':
+        return '未遂歴'
+      case 'total':
+        return '総数'
+    }
   }
 
   fetchData(props, preProps?) {

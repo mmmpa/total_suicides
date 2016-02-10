@@ -60573,6 +60573,7 @@ var PortalComponent = (function (_super) {
     };
     PortalComponent.prototype.componentDidMount = function () {
         var _this = this;
+        this.dispatch('title');
         _.each(document.querySelectorAll('#raw a'), function (a) {
             a.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -60692,11 +60693,7 @@ var StackBarChartComponent = (function (_super) {
     };
     StackBarChartComponent.prototype.arrangeSeries = function (series, parSeries) {
         var using = this.par ? parSeries : series;
-        return _.map(using, function (_a) {
-            var field = _a.field, name = _a.name;
-            var color = constants_1.default.normalColor(field - 1);
-            return { field: field, name: name, color: color };
-        });
+        return using;
     };
     StackBarChartComponent.prototype.writeChart = function (chartSet, max) {
         var series = chartSet.series, parSeries = chartSet.parSeries, data = chartSet.data;
@@ -60760,9 +60757,45 @@ var ChartContext = (function (_super) {
     };
     ChartContext.prototype.componentDidMount = function () {
         this.fetchData(this.props);
+        this.setTitle(this.props);
     };
     ChartContext.prototype.componentWillReceiveProps = function (nextProps) {
         this.fetchData(nextProps, this.props);
+        this.setTitle(nextProps);
+    };
+    ChartContext.prototype.setTitle = function (props) {
+        var _a = props.params, table = _a.table, x = _a.x;
+        this.dispatch('title', this.detect_text(table) + "\u5225\u306E\u81EA\u6BBA\u8005\u6570\u3092" + this.detect_text(x) + "\u3067\u4E26\u3079\u3066\u8868\u793A");
+    };
+    ChartContext.prototype.detect_text = function (name) {
+        switch (name) {
+            case 'area':
+                return '地域';
+            case 'year':
+                return '年度';
+            case 'age':
+                return '性別';
+            case 'age':
+                return '年齢層';
+            case 'housemate':
+                return '同居人の有無';
+            case 'job':
+                return '職業';
+            case 'location':
+                return '場所';
+            case 'way':
+                return '手段';
+            case 'hour':
+                return '時間帯';
+            case 'day':
+                return '曜日';
+            case 'reason':
+                return '動機・要因';
+            case 'attempted':
+                return '未遂歴';
+            case 'total':
+                return '総数';
+        }
     };
     ChartContext.prototype.fetchData = function (props, preProps) {
         var _this = this;
@@ -60856,6 +60889,8 @@ var chart_controller_1 = require("./components/chart-controller/chart-controller
 var index = document.querySelector('#index');
 index.style.display = 'none';
 var indexSrc = index.innerHTML;
+var data = document.querySelector('#data');
+data && (data.style.display = 'none');
 var App = (function (_super) {
     __extends(App, _super);
     function App() {
@@ -60870,6 +60905,11 @@ var App = (function (_super) {
             window.scrollTo(0, 0);
             ga('send', 'pageview', 'uri');
             _this.props.history.pushState(null, uri, query);
+        });
+        to('title', function (sub) {
+            var base = '自殺を知る、自殺を考える';
+            sub && (base += '::' + sub);
+            document.title = base;
         });
     };
     return App;
@@ -60957,6 +60997,56 @@ var Constants = (function () {
     Object.defineProperty(Constants, "areaBarProps", {
         get: function () {
             return this.barProps;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Constants, "colorKeys", {
+        get: function () {
+            var _this = this;
+            if (this._colorKeys) {
+                return this._colorKeys;
+            }
+            this._colorKeys = {};
+            _.each(_.union(this.tablePropList, this.metaPropsList), function (props) {
+                _.each(props, function (_a, i) {
+                    var name = _a.name;
+                    _this._colorKeys[name] = i;
+                });
+            });
+            return this._colorKeys;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Constants.detectColor = function (name) {
+        return this.normalColor(this.colorKeys[name]);
+    };
+    Object.defineProperty(Constants, "tablePropList", {
+        get: function () {
+            return [
+                this.ageProps,
+                this.housemateProps,
+                this.jobProps,
+                this.locationProps,
+                this.wayProps,
+                this.hourProps,
+                this.dayProps,
+                this.reasonProps,
+                this.attemptedProps,
+                this.totalProps
+            ];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Constants, "metaPropsList", {
+        get: function () {
+            return [
+                this.areas,
+                this.genders,
+                this.years
+            ];
         },
         enumerable: true,
         configurable: true
@@ -61346,6 +61436,7 @@ exports.default = Fa;
 
 },{"react":287}],311:[function(require,module,exports){
 var _ = require('lodash');
+var constants_1 = require('../initializers/constants');
 var ChartSet = (function () {
     function ChartSet(series, parSeries, data) {
         if (series === void 0) { series = []; }
@@ -61362,7 +61453,7 @@ var ChartSet = (function () {
                     return null;
                 }
             }
-            return { field: k, name: k };
+            return { field: k, name: k, color: constants_1.default.detectColor(k) };
         }));
         var parSeries = _.compact(_.map(table.column, function (k) {
             return { field: k + 'par', name: k };
@@ -61389,7 +61480,7 @@ var ChartSet = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ChartSet;
 
-},{"lodash":79}],312:[function(require,module,exports){
+},{"../initializers/constants":308,"lodash":79}],312:[function(require,module,exports){
 var _ = require('lodash');
 var Table = (function () {
     function Table(title, column) {

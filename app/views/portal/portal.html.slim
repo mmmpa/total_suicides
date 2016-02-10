@@ -1,4 +1,29 @@
 article#app
+- if @data
+  - begin
+    article#data
+      h1 このページで表示される表のデータ
+      section.all
+      - @data.each do |value|
+        - value.each_pair do |key2, value2|
+          section
+            h1= key2
+            - value2.each do |value3|
+              section
+              h2= value3[:key]
+              - value3[:value].each do |value4|
+                section
+                  h3= value4[:key]
+                  - value4[:value].each do |value5|
+                    section
+                      h4= value5[:key]
+                      - value5[:value].each do |value6|
+                        section
+                          h5= value6[:key]
+                          div= value6[:value][:number].to_s + '人'
+                          div= value6[:value][:par].to_s + '%'
+  - rescue
+    div null
 article#index
   article.portal.body
     section.portal.section.use

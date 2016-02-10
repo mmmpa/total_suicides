@@ -18,6 +18,8 @@ declare var ga:Function;
 let index = document.querySelector('#index');
 index.style.display = 'none';
 let indexSrc = index.innerHTML;
+let data = document.querySelector('#data');
+data && (data.style.display = 'none');
 
 class App extends Root<{},{}> {
   initialState(props) {
@@ -30,6 +32,13 @@ class App extends Root<{},{}> {
       ga('send', 'pageview', 'uri');
       this.props.history.pushState(null, uri, query)
     });
+
+    to('title', (sub?)=> {
+      let base = '自殺を知る、自殺を考える';
+      sub && (base += '::' + sub);
+      document.title = base;
+    });
+
   }
 }
 

@@ -10,6 +10,7 @@ export default class PortalComponent extends Node<{},{}> {
   }
 
   componentDidMount() {
+    this.dispatch('title')
     _.each(document.querySelectorAll('#raw a'), (a)=> {
       a.addEventListener('click', (e)=> {
         e.preventDefault();

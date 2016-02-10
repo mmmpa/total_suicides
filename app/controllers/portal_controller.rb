@@ -4,7 +4,7 @@ class PortalController < ApplicationController
       when '/'
         @index = true
       else
-        nil
+        pp @data = TableCreator.(params)
     end
   end
 end

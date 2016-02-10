@@ -17,5 +17,6 @@ Rails.application.routes.draw do
   end
 
   get '', to: 'portal#portal', as: :portal
+  get '/chart/:base/:table/:x/:y', to: 'portal#portal'
   get '*path', to: 'portal#portal'
 end
