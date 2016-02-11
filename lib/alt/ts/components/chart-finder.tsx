@@ -45,7 +45,7 @@ export default class ChartFinderComponent extends Node<P,S> {
         }
       case `y`:
         if (this.isTable(table) || this.isTable(x)) {
-          return [metas, []]
+          return [_.filter(metas, ({key})=> key != table && key != x), []]
         } else {
           return [_.filter(metas, ({key})=> key != table && key != x), tables]
         }

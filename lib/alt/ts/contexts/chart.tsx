@@ -31,6 +31,7 @@ export default class ChartContext extends Root<P,{}> {
     let gender = this.pickSelectedFromQuery(props, 'gender');
     let autoScale = this.pickEnabledFromQuery(props, 'autoScale');
     let par = this.pickEnabledFromQuery(props, 'par');
+    console.log({area, year, gender, autoScale, par})
     this.setState({area, year, gender, autoScale, par});
   }
 

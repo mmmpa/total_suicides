@@ -60133,7 +60133,7 @@ var ChartConfigurationComponent = (function (_super) {
     };
     ChartConfigurationComponent.prototype.render = function () {
         var _this = this;
-        return React.createElement("div", null, React.createElement("section", {"className": "chart-config body"}, React.createElement("section", {"className": "chart-config auto-scale"}, React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "radio", "name": "auto-scale", "defaultChecked": !this.autoScale, "onClick": function () { return _this.toggleScale(false); }})), React.createElement("span", {"className": "input-label"}, "Y軸最大値を統一する")), React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "radio", "name": "auto-scale", "defaultChecked": this.autoScale, "onClick": function () { return _this.toggleScale(true); }})), React.createElement("span", {"className": "input-label"}, "Y軸を自動調整する"))), React.createElement("section", {"className": "chart-config auto-scale"}, React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "radio", "name": "par", "defaultChecked": !this.par, "onClick": function () { return _this.togglePar(false); }})), React.createElement("span", {"className": "input-label"}, "人数で表示する")), React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "radio", "name": "par", "defaultChecked": this.par, "onClick": function () { return _this.togglePar(true); }})), React.createElement("span", {"className": "input-label"}, "率で表示する")))));
+        return React.createElement("div", null, React.createElement("section", {"className": "chart-config body"}, React.createElement("section", {"className": "chart-config auto-scale"}, React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "radio", "name": "auto-scale", "checked": !this.autoScale, "onChange": function () { return _this.toggleScale(false); }})), React.createElement("span", {"className": "input-label"}, "Y軸最大値を統一する")), React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "radio", "name": "auto-scale", "checked": this.autoScale, "onChange": function () { return _this.toggleScale(true); }})), React.createElement("span", {"className": "input-label"}, "Y軸を自動調整する"))), React.createElement("section", {"className": "chart-config auto-scale"}, React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "radio", "name": "par", "checked": !this.par, "onChange": function () { return _this.togglePar(false); }})), React.createElement("span", {"className": "input-label"}, "人数で表示する")), React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "radio", "name": "par", "checked": this.par, "onChange": function () { return _this.togglePar(true); }})), React.createElement("span", {"className": "input-label"}, "率で表示する")))));
     };
     return ChartConfigurationComponent;
 })(eventer_1.Node);
@@ -60319,7 +60319,10 @@ var ChartFinderComponent = (function (_super) {
                 }
             case "y":
                 if (this.isTable(table) || this.isTable(x)) {
-                    return [constants_1.metas, []];
+                    return [_.filter(constants_1.metas, function (_a) {
+                            var key = _a.key;
+                            return key != table && key != x;
+                        }), []];
                 }
                 else {
                     return [_.filter(constants_1.metas, function (_a) {
@@ -60688,6 +60691,7 @@ var ChartContext = (function (_super) {
         var gender = this.pickSelectedFromQuery(props, 'gender');
         var autoScale = this.pickEnabledFromQuery(props, 'autoScale');
         var par = this.pickEnabledFromQuery(props, 'par');
+        console.log({ area: area, year: year, gender: gender, autoScale: autoScale, par: par });
         this.setState({ area: area, year: year, gender: gender, autoScale: autoScale, par: par });
     };
     ChartContext.prototype.pickSelectedFromQuery = function (props, name) {
@@ -61311,7 +61315,12 @@ var ChartSet = (function () {
             return { field: k, name: k, color: constants_1.detectColor(k) };
         }));
         var parSeries = _.compact(_.map(table.column, function (k) {
-            return { field: k + 'par', name: k };
+            if (table.column.length >= 2) {
+                if (_.includes(['総計', '総数', '全国'], k)) {
+                    return null;
+                }
+            }
+            return { field: k + 'par', name: k, color: constants_1.detectColor(k) };
         }));
         var data = _.compact(_.map(table.rowTitle, function (title, i) {
             var result = { sort: title };

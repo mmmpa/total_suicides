@@ -18,7 +18,12 @@ export default class ChartSet {
     }));
 
     let parSeries = _.compact(_.map(table.column, (k)=> {
-      return {field: k + 'par', name: k}
+      if (table.column.length >= 2) {
+        if (_.includes(['総計', '総数', '全国'], k)) {
+          return null
+        }
+      }
+      return {field: k + 'par', name: k, color: detectColor(k)}
     }));
 
     let data = _.compact(_.map(table.rowTitle, (title, i)=> {
