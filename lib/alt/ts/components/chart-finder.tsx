@@ -1,21 +1,26 @@
 import * as React from 'react'
 import {Node} from '../lib/eventer'
-import * as d3 from 'd3'
-import Constants from "../initializers/constants";
+import {tableKeys, metaKeys, areaKeys, yearKeys, metas, tables} from "../initializers/constants";
+
 import * as _ from 'lodash';
-import {normalizeBarData} from '../services/normalizer'
-import * as RD3 from 'react-d3-basic'
-import AreaSelector from './area-selector'
 import Fa from '../lib/fa'
 
-export default class ChartFinderComponent extends Node<{},{}> {
+interface S {
+  base:string,
+  table:string,
+  x:string,
+  y:string
+}
+
+interface P {
+  location:any
+}
+
+export default class ChartFinderComponent extends Node<P,S> {
   constructor(props) {
+    super(props);
     let {base, table, x, y} = props.params;
-    let tableKeys = _.map(Constants.tables, ({key})=> key);
-    let metaKeys = _.map(Constants.metas, ({key})=> key);
-    let areaKeys = _.map(Constants.areas, ({key})=> key);
-    let yearKeys = _.map(Constants.years, ({key})=> key);
-    this.state = {base, table, x, y, tableKeys, metaKeys, areaKeys, yearKeys};
+    this.state = {base, table, x, y};
   }
 
   detectIcon(split) {
@@ -23,12 +28,11 @@ export default class ChartFinderComponent extends Node<{},{}> {
   }
 
   isTable(target) {
-    return _.includes(this.state.tableKeys, target);
+    return _.includes(tableKeys, target);
   }
 
   selectableKeys(target) {
     let {table, x, y} = this.state;
-    let {metas, tables} = Constants;
     let all = [metas, tables];
     switch (target) {
       case 'table':
@@ -57,9 +61,8 @@ export default class ChartFinderComponent extends Node<{},{}> {
   }
 
   find() {
-    let {metaKeys, areaKeys, yearKeys} = this.state;
     let [table, x, y] = _.map(['table', 'x', 'y'], (target)=> {
-      return this.refs[target].value;
+      return (this.refs[target] as HTMLInputElement).value;
     });
     let meta = _.without(metaKeys, table, x, y);
     let base = !meta.length ? 'total' : _.includes(meta, 'year') ? 'year' : meta[0];
@@ -107,13 +110,24 @@ export default class ChartFinderComponent extends Node<{},{}> {
   writeAllSelector(target:string, placeholder:string, suffix = '') {
     let selectable = this.selectableKeys(target);
     let labels = ['大分類', '詳細'];
-    return <select className="chart-finder selector" ref={target} key={`${target}list`} defaultValue={this.state[target]} onChange={(e)=> this.change(target, e.target.value)}>
-      <option name={target} value={'none'} key={`${target}-default`} className="placeholder">{placeholder}</option>
+    return <select className="chart-finder selector"
+                   ref={target}
+                   key={`${target}list`}
+                   defaultValue={this.state[target]}
+                   onChange={(e)=> this.change(target, (e.target as HTMLInputElement).value)}>
+      <option className="placeholder"
+              name={target}
+              value={'none'}
+              key={`${target}-default`}>
+        {placeholder}
+      </option>
       {
         _.map(selectable, (group, i)=>{
           return <optgroup key={`finder-group-${i}`} label={labels[i]}>
             {_.map(group, ({key, name})=>{
-              return <option name={target} value={key} key={`${target}-${key}`}>{name}{suffix}</option>
+              return <option name={target} value={key} key={`${target}-${key}`}>
+                {name}{suffix}
+              </option>
               })
               }
           </optgroup>

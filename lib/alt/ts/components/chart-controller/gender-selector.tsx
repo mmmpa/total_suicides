@@ -4,17 +4,17 @@ import Constants from "../../initializers/constants";
 import * as _ from 'lodash';
 import Fa from "../../lib/fa";
 
-export default class GenderSelectorComponent extends Node<{},{}> {
+interface P{
+  selected:number[]
+}
+
+export default class GenderSelectorComponent extends Node<P,{}> {
   isChecked(key:number):boolean {
     return _.includes(this.selected, key);
   }
 
   get selected() {
-    let {gender} = this.props.location.query;
-    if (!gender) {
-      return [];
-    }
-    return gender.split(',').map((n)=> +n)
+    return this.props.selected;
   }
 
   toggle(key:number) {
@@ -34,7 +34,6 @@ export default class GenderSelectorComponent extends Node<{},{}> {
   deselectAll() {
     this.dispatch('chart:gender', []);
   }
-
 
   render() {
     return <div>

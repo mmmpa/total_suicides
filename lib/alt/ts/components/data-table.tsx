@@ -2,9 +2,9 @@ import * as React from 'react'
 import {Node} from '../lib/eventer'
 import Table from "../models/table";
 
-
 interface P {
-  table:Table
+  table:Table,
+  par:boolean
 }
 
 export default class RotatedDataTable extends Node<P,{}> {

@@ -6,22 +6,24 @@ import * as _ from 'lodash'
 import {Root, Node} from './lib/eventer'
 import PresetGraph from "./contexts/preset-graph";
 import ChartContext from "./contexts/chart";
-import SimpleGraph from "./components/simple-graph";
-import PieChart from "./components/pie-chart";
-import BarChart from "./components/bar-chart";
 import Portal from "./components/portal";
 import StackBarChart from "./components/stack-bar-chart";
 import Common from "./components/common";
 import ChartController from "./components/chart-controller/chart-controller";
+
 declare var ga:Function;
 
-let index = document.querySelector('#index');
+let index = document.querySelector('#index') as HTMLElement;
 index.style.display = 'none';
 let indexSrc = index.innerHTML;
-let data = document.querySelector('#data');
+let data = document.querySelector('#data') as HTMLElement;
 data && (data.style.display = 'none');
 
-class App extends Root<{},{}> {
+interface P {
+  history:History
+}
+
+class App extends Root<P,{}> {
   initialState(props) {
     return {indexSrc}
   }

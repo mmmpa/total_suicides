@@ -6,7 +6,9 @@ interface IEventingShared {
   emitter: EventEmitter
 }
 
-export const EventingShared = {emitter: React.PropTypes.object};
+export const EventingShared = {
+  emitter: React.PropTypes.object
+};
 
 export abstract class Node<P, S> extends React.Component<P, S> {
   context:IEventingShared;
@@ -20,10 +22,9 @@ export abstract class Node<P, S> extends React.Component<P, S> {
   }
 }
 
-
 export abstract class Root<P, S> extends Node<P, S> {
   emitter:EventEmitter;
-  addedOnStore = []
+  addedOnStore = [];
 
   abstract listen(to:(eventName:string, callback:Function)=>void):void;
 
@@ -36,7 +37,9 @@ export abstract class Root<P, S> extends Node<P, S> {
   componentWillUnmount() {
     let disposed = this.addedOnStore.map(({eventName, callback})=> {
       this.emitter.removeListener(eventName, callback);
+      return eventName;
     });
+    console.log({disposed});
   }
 
   componentWillMount() {

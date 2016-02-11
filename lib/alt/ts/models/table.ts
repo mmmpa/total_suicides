@@ -1,11 +1,19 @@
 import * as _ from 'lodash'
 
+interface IRow {
+  key:string,
+  value:{
+    number:number,
+    par:number
+  }
+}
+
 export default class Table {
-  row:number[][] = [];
+  row:IRow[][] = [];
   rowTitle:string[] = [];
   max:number = 0;
 
-  constructor(public title:string, public column:{string: string}[] = []) {
+  constructor(public title:string, public column:string[] = []) {
 
   }
 
@@ -13,7 +21,7 @@ export default class Table {
     this.column.push(name);
   }
 
-  addRow(title:string, row:number[]) {
+  addRow(title:string, row:IRow[]) {
     this.rowTitle.push(title);
     this.row.push(row);
   }
@@ -30,9 +38,17 @@ export default class Table {
   getMax():number {
     let m = 0;
     _.each(this.row, (row, i)=> {
-      let total = _.reduce(row, (a, {key, value})=> {
-        return a + value.number
-      }, 0);
+      let total;
+      if (row.length === 1) {
+        total = row[0].value.number;
+      } else {
+        total = _.reduce(row, (a, {key, value})=> {
+          if (_.includes(['総計', '総数', '全国'], key)) {
+            return a;
+          }
+          return a + value.number
+        }, 0);
+      }
       total > m && (m = total);
     });
     return m;

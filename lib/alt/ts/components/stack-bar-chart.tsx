@@ -7,16 +7,25 @@ import * as RD3 from 'react-d3-basic'
 import RotatedDataTable from "./data-table";
 import ChartSet from "../models/chart-set";
 import Fa from '../lib/fa'
+import {ITableList, ITableSet} from "../services/normalizer";
 
-export default class StackBarChartComponent extends Node<{},{}> {
-  get autoScale():boolean {
-    let {autoScale} = this.props.location.query;
-    return autoScale && autoScale != 'false'
+interface P{
+  par:boolean,
+  autoScale:boolean,
+  tableListList:ITableList[],
+  base:string,
+  table:string,
+  x:string,
+  y:string,
+}
+
+export default class StackBarChartComponent extends Node<P,{}> {
+  get autoScale():boolean{
+    return this.props.autoScale;
   }
 
-  get par():boolean {
-    let {par} = this.props.location.query;
-    return par && par != 'false'
+  get par():boolean{
+    return this.props.par;
   }
 
   get keyBase():string{
@@ -61,8 +70,9 @@ export default class StackBarChartComponent extends Node<{},{}> {
   }
 
   writeTable(table) {
+    let {par} = this.props;
     return <div className="chart-list data-table-container">
-      <RotatedDataTable {...{table}} />
+      <RotatedDataTable {...{table, par}} />
     </div>
   }
 
@@ -76,7 +86,7 @@ export default class StackBarChartComponent extends Node<{},{}> {
     return max;
   }
 
-  writeTables(tableList, max) {
+  writeTables(tableList:ITableSet[], max) {
     return _.map(tableList, ({table, chart})=> {
       return <section className="chart-list chart-block" key={`block-${table.title}`}>
         <h1>{table.title}</h1>
@@ -88,6 +98,7 @@ export default class StackBarChartComponent extends Node<{},{}> {
 
   render() {
     let {tableListList} = this.props;
+
     if (!tableListList || !tableListList.length || _.isString(tableListList)) {
       return <article className="chart-list body">
         <div className="loading">

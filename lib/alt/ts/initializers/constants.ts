@@ -393,3 +393,10 @@ export default class Constants {
     }
   ];
 }
+
+export let tableKeys = _.map(Constants.tables, ({key})=> key);
+export let metaKeys = _.map(Constants.metas, ({key})=> key);
+export let areaKeys = _.map(Constants.areas, ({key})=> key);
+export let yearKeys = _.map(Constants.years, ({key})=> key);
+export let metas = Constants.metas;
+export let tables = Constants.tables;

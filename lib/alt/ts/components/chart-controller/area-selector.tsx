@@ -4,17 +4,13 @@ import Constants from "../../initializers/constants";
 import * as _ from 'lodash';
 import Fa from "../../lib/fa";
 
-export default class AreaSelectorComponent extends Node<{},{}> {
+interface P{
+  selected:number[]
+}
+
+export default class AreaSelectorComponent extends Node<P,{}> {
   get selected() {
-    let {area} = this.props.location.query;
-    if (!area) {
-      return [];
-    }
-    return area.split(',').map((n)=> +n)
-  }
-
-  get separated() {
-
+    return this.props.selected;
   }
 
   toggle(e) {
@@ -34,15 +30,15 @@ export default class AreaSelectorComponent extends Node<{},{}> {
     this.dispatch('chart:area', _.without(this.selected, ...deselectKeys));
   }
 
-  writeWideArea(separatedAreas, props) {
+  writeWideArea(separatedAreas, props:P) {
     return separatedAreas.map((wideArea)=> {
-      return <secsion className="area-selector wide-area-section" key={`wide-area-selector-${wideArea.name}`}>
+      return <section className="area-selector wide-area-section" key={`wide-area-selector-${wideArea.name}`}>
         {this.writeSmallArea(wideArea.areas, props)}
-      </secsion>
+      </section>
     });
   }
 
-  writeSmallArea(areas, props) {
+  writeSmallArea(areas:any[], props:P) {
     let wideKeys = _.map(areas, ({key})=> key)
     return <section className="area-selector small-area-section">
       <div className="area-selector select-all">

@@ -4,17 +4,17 @@ import Constants from "../../initializers/constants";
 import * as _ from 'lodash';
 import Fa from "../../lib/fa";
 
-export default class YearSelectorComponent extends Node<{},{}> {
+interface P{
+  selected:number[]
+}
+
+export default class YearSelectorComponent extends Node<P,{}> {
   isChecked(key:number):boolean {
     return _.includes(this.selected, key);
   }
 
   get selected() {
-    let {year} = this.props.location.query;
-    if (!year) {
-      return [];
-    }
-    return year.split(',').map((n)=> +n)
+    return this.props.selected;
   }
 
   toggle(key:number) {

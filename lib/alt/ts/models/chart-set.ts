@@ -1,7 +1,6 @@
 import Table from "./table";
 import * as _ from 'lodash'
 import Constants from '../initializers/constants'
-import Constants from "../initializers/constants";
 
 export default class ChartSet {
   constructor(public series:any[] = [], public parSeries:any[] = [], public data:any[] = []) {
@@ -32,10 +31,5 @@ export default class ChartSet {
     }));
 
     return new ChartSet(series, parSeries, data)
-  }
-
-
-  get configuration() {
-    return {}
   }
 }

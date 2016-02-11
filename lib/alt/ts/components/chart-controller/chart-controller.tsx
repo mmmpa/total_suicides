@@ -7,30 +7,36 @@ import YearSelector from './year-selector'
 import GenderSelector from './gender-selector'
 import ChartConfiguration from './chart-configuration'
 
-export default class ChartControllerComponent extends Node<{},{}> {
-  writeSelector(props) {
-    let {split, table, sort} = props;
-    let used:string[] = [split, table, sort]
-    if (_.includes(used, 'area')) {
-      return <AreaSelector {...props}/>
-    }
-    return null;
-  }
+interface P{
+  year:number[],
+  area:number[],
+  gender:number[],
+  par:boolean,
+  autoScale:boolean,
+  tableListList:any[],
+  base:string,
+  table:string,
+  x:string,
+  y:string,
+  children:any
+}
 
+export default class ChartControllerComponent extends Node<P,{}> {
   render() {
+    let {year, area, gender, par, autoScale, tableListList, base, table, x, y} = this.props;
     return <div>
       <section className="chart-controller">
         <h1 className="chart-controller title">
           表示内容の絞りこみ
           <em>（チェックがない場合は、すべて選択されているあつかいになります）</em>
         </h1>
-        <YearSelector {...this.props}/>
-        <GenderSelector {...this.props}/>
-        <AreaSelector {...this.props}/>
+        <YearSelector selected={year}/>
+        <GenderSelector selected={gender}/>
+        <AreaSelector selected={area}/>
       </section>
-      <ChartConfiguration {...this.props}/>
+      <ChartConfiguration {...{par, autoScale}}/>
       <article className="chart-content">
-        {React.cloneElement(this.props.children || <div>blank</div>, this.props || {})}
+        {React.cloneElement(this.props.children || <div>blank</div>, {par, autoScale, tableListList, base, table, x, y})}
       </article>
     </div>
   }

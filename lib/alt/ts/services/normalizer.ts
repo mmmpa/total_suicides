@@ -6,22 +6,22 @@ import ChartSet from "../models/chart-set";
 let preData = null;
 let preResult = null;
 
-export function normalize(data) {
+export function normalize(data:any):ITableList[] {
   if(data == preData && preResult){
     console.log('same data');
     return preResult;
   }
   preData = data;
 
-  let result = [];
+  let result:ITableList[] = [];
   _.each(data, (container)=> {
-    _.each(container, (value, key)=> {
+    _.each(container, (value:any, key)=> {
       let titleHeader = key != '結果' ? key + '::' : '';
-      _.each(value, (value)=> {
+      _.each(value, (value:any)=> {
         let title = titleHeader + value.key;
         result.push({
           title,
-          tables: _.map(value.value, (value)=> {
+          tables: _.map(value.value, (value:any):ITableSet=> {
             let table = new Table(value.key);
             _.each(value.value, (value)=> {
               table.addRow(value.key, value.value);
@@ -39,4 +39,14 @@ export function normalize(data) {
 
 export function tableToChart(table):ChartSet{
   return ChartSet.fromTable(table);
+}
+
+export interface ITableList{
+  title:string,
+  tables:ITableSet[]
+}
+
+export interface ITableSet{
+  table:Table,
+  chart:ChartSet
 }

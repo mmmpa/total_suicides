@@ -1,10 +1,15 @@
 import {Root} from '../lib/eventer'
 import {fetch} from '../services/fetcher'
 import Constants from "../initializers/constants";
-import {normalize} from "../services/normalizer"
+import {normalize, ITableList} from "../services/normalizer"
 import ChartSet from "../models/chart-set";
 
-export default class ChartContext extends Root<{},{}> {
+interface P{
+  location:any,
+  history:History
+}
+
+export default class ChartContext extends Root<P,{}> {
   initialState(props) {
     return {}
   }
@@ -12,11 +17,35 @@ export default class ChartContext extends Root<{},{}> {
   componentDidMount() {
     this.fetchData(this.props);
     this.setTitle(this.props);
+    this.pickState(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
     this.fetchData(nextProps, this.props);
     this.setTitle(nextProps);
+    this.pickState(nextProps);
+  }
+
+  pickState(props){
+    let area = this.pickSelectedFromQuery(props, 'area');
+    let year = this.pickSelectedFromQuery(props, 'year');
+    let gender = this.pickSelectedFromQuery(props, 'gender');
+    let autoScale = this.pickEnabledFromQuery(props, 'autoScale');
+    let par = this.pickEnabledFromQuery(props, 'par');
+    this.setState({area, year, gender, autoScale, par});
+  }
+
+  pickSelectedFromQuery(props:P, name:string) {
+    let target = props.location.query[name];
+    if (!target) {
+      return [];
+    }
+    return target.toString().split(',').map((n)=> +n)
+  }
+
+  pickEnabledFromQuery(props:P, name:string):boolean{
+    let target = props.location.query[name];
+    return target && target != 'false'
   }
 
   setTitle(props) {
@@ -27,31 +56,31 @@ export default class ChartContext extends Root<{},{}> {
   detect_text(name) {
     switch (name) {
       case 'area':
-        return '地域'
+        return '地域';
       case 'year':
-        return '年度'
+        return '年度';
       case 'age':
-        return '性別'
+        return '性別';
       case 'age':
-        return '年齢層'
+        return '年齢層';
       case 'housemate':
-        return '同居人の有無'
+        return '同居人の有無';
       case 'job':
-        return '職業'
+        return '職業';
       case 'location':
-        return '場所'
+        return '場所';
       case 'way':
-        return '手段'
+        return '手段';
       case 'hour':
-        return '時間帯'
+        return '時間帯';
       case 'day':
-        return '曜日'
+        return '曜日';
       case 'reason':
-        return '動機・要因'
+        return '動機・要因';
       case 'attempted':
-        return '未遂歴'
+        return '未遂歴';
       case 'total':
-        return '総数'
+        return '総数';
     }
   }
 
@@ -59,7 +88,7 @@ export default class ChartContext extends Root<{},{}> {
     fetch(props, (result)=> {
       let {base, table, x, y} = props.params;
       let {data} = result;
-      let tableListList = normalize(data);
+      let tableListList:ITableList[] = normalize(data);
       setTimeout(()=>this.setState({tableListList, base, table, x, y}), 1)
     })
   }
@@ -109,22 +138,5 @@ export default class ChartContext extends Root<{},{}> {
       query
     )
   }
-
-  queryToArray(key) {
-    let target = this.props.location.query[key];
-    if (!target) {
-      return [];
-    }
-    return target.split(',');
-  }
-
-  get years() {
-    return this.queryToArray('year');
-  }
-
-  get genders() {
-    return this.queryToArray('year');
-  }
-
 }
 

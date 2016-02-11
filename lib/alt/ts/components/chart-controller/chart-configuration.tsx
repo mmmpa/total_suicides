@@ -1,19 +1,20 @@
 import * as React from 'react'
 import {Node} from '../../lib/eventer'
 import Constants from "../../initializers/constants";
-import * as d3 from 'd3'
 import * as _ from 'lodash';
-import * as RD3 from 'react-d3-basic'
 
-export default class ChartConfigurationComponent extends Node<{},{}> {
+interface P{
+  autoScale:boolean,
+  par:boolean
+}
+
+export default class ChartConfigurationComponent extends Node<P,{}> {
   get autoScale():boolean{
-    let {autoScale} = this.props.location.query;
-    return autoScale && autoScale != 'false'
+    return this.props.autoScale;
   }
 
   get par():boolean{
-    let {par} = this.props.location.query;
-    return par && par != 'false'
+    return this.props.par;
   }
 
   toggleScale(autoScale:boolean){
