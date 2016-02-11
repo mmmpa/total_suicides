@@ -103,8 +103,7 @@ export default class ChartFinderComponent extends Node<P,S> {
         break;
     }
 
-    let uri = ['/chart', base, table, x, y || 'none'].join('/');
-    this.dispatch('link', uri, query);
+    this.dispatch('chart:find', base, table, x, y, query);
   }
 
   writeAllSelector(target:string, placeholder:string, suffix = '') {
@@ -113,7 +112,7 @@ export default class ChartFinderComponent extends Node<P,S> {
     return <select className="chart-finder selector"
                    ref={target}
                    key={`${target}list`}
-                   defaultValue={this.state[target]}
+                   value={this.state[target]}
                    onChange={(e)=> this.change(target, (e.target as HTMLInputElement).value)}>
       <option className="placeholder"
               name={target}

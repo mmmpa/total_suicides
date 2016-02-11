@@ -10,7 +10,6 @@ export const EventingShared = {
   emitter: React.PropTypes.any
 };
 
-
 interface RootP{
   children:any
 }

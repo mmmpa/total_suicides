@@ -49,7 +49,6 @@ export default class ChartContext extends Root<P,{}> {
   }
 
   setTitle(props) {
-    console.log({props})
     let {table, x} = props.params;
     this.dispatch('title', `${this.detect_text(table)}別の自殺者数を${this.detect_text(x)}で並べて表示`)
   }
@@ -95,6 +94,11 @@ export default class ChartContext extends Root<P,{}> {
   }
 
   listen(to) {
+    to('chart:find', (base, table, x, y, query)=> {
+      let uri = ['/chart', base, table, x, y || 'none'].join('/');
+      this.dispatch('link', uri, query);
+    });
+
     to('chart:area', (areas:number[])=> {
       let query = this.setToQuery('area', areas);
       this.changeQuery(query);

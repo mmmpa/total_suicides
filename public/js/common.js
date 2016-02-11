@@ -60379,15 +60379,14 @@ var ChartFinderComponent = (function (_super) {
                 query.gender = 0;
                 break;
         }
-        var uri = ['/chart', base, table, x, y || 'none'].join('/');
-        this.dispatch('link', uri, query);
+        this.dispatch('chart:find', base, table, x, y, query);
     };
     ChartFinderComponent.prototype.writeAllSelector = function (target, placeholder, suffix) {
         var _this = this;
         if (suffix === void 0) { suffix = ''; }
         var selectable = this.selectableKeys(target);
         var labels = ['大分類', '詳細'];
-        return React.createElement("select", {"className": "chart-finder selector", "ref": target, "key": target + "list", "defaultValue": this.state[target], "onChange": function (e) { return _this.change(target, e.target.value); }}, React.createElement("option", {"className": "placeholder", "name": target, "value": 'none', "key": target + "-default"}, placeholder), _.map(selectable, function (group, i) {
+        return React.createElement("select", {"className": "chart-finder selector", "ref": target, "key": target + "list", "value": this.state[target], "onChange": function (e) { return _this.change(target, e.target.value); }}, React.createElement("option", {"className": "placeholder", "name": target, "value": 'none', "key": target + "-default"}, placeholder), _.map(selectable, function (group, i) {
             return React.createElement("optgroup", {"key": "finder-group-" + i, "label": labels[i]}, _.map(group, function (_a) {
                 var key = _a.key, name = _a.name;
                 return React.createElement("option", {"name": target, "value": key, "key": target + "-" + key}, name, suffix);
@@ -60706,7 +60705,6 @@ var ChartContext = (function (_super) {
         return target && target != 'false';
     };
     ChartContext.prototype.setTitle = function (props) {
-        console.log({ props: props });
         var _a = props.params, table = _a.table, x = _a.x;
         this.dispatch('title', this.detect_text(table) + "\u5225\u306E\u81EA\u6BBA\u8005\u6570\u3092" + this.detect_text(x) + "\u3067\u4E26\u3079\u3066\u8868\u793A");
     };
@@ -60751,6 +60749,10 @@ var ChartContext = (function (_super) {
     };
     ChartContext.prototype.listen = function (to) {
         var _this = this;
+        to('chart:find', function (base, table, x, y, query) {
+            var uri = ['/chart', base, table, x, y || 'none'].join('/');
+            _this.dispatch('link', uri, query);
+        });
         to('chart:area', function (areas) {
             var query = _this.setToQuery('area', areas);
             _this.changeQuery(query);
