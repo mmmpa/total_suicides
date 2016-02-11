@@ -7,13 +7,18 @@ interface IEventingShared {
 }
 
 export const EventingShared = {
-  emitter: React.PropTypes.object
+  emitter: React.PropTypes.any
 };
+
+
+interface RootP{
+  children:any
+}
 
 export abstract class Node<P, S> extends React.Component<P, S> {
   context:IEventingShared;
 
-  static get contextTypes() {
+  static get contextTypes():React.ValidationMap<any> {
     return EventingShared;
   }
 
@@ -22,7 +27,7 @@ export abstract class Node<P, S> extends React.Component<P, S> {
   }
 }
 
-export abstract class Root<P, S> extends Node<P, S> {
+export abstract class Root<P, S> extends Node<RootP & P, S> {
   emitter:EventEmitter;
   addedOnStore = [];
 

@@ -60091,8 +60091,7 @@ var AreaSelectorComponent = (function (_super) {
         })));
     };
     AreaSelectorComponent.prototype.render = function () {
-        var separatedAreas = constants_1.default.separatedAreas;
-        return React.createElement("div", null, React.createElement("section", {"className": "selector-area area-selector body"}, React.createElement("h1", {"className": "selector-area title"}, React.createElement(fa_1.default, {"icon": "globe"}), "地域"), this.writeWideArea(separatedAreas, this.props)));
+        return React.createElement("div", null, React.createElement("section", {"className": "selector-area area-selector body"}, React.createElement("h1", {"className": "selector-area title"}, React.createElement(fa_1.default, {"icon": "globe"}), "地域"), this.writeWideArea(constants_1.separatedAreas, this.props)));
     };
     return AreaSelectorComponent;
 })(eventer_1.Node);
@@ -60211,7 +60210,7 @@ var GenderSelectorComponent = (function (_super) {
     };
     GenderSelectorComponent.prototype.render = function () {
         var _this = this;
-        return React.createElement("div", null, React.createElement("section", {"className": "selector-area gender-selector body"}, React.createElement("h1", {"className": "selector-area title"}, React.createElement(fa_1.default, {"icon": "venus-mars"}), "性別"), React.createElement("div", {"className": "selector-area select-all"}, React.createElement("p", null, React.createElement(fa_1.default, {"icon": "check"}), React.createElement("a", {"onClick": function () { return _this.selectAll(); }}, "選択")), React.createElement("p", null, React.createElement(fa_1.default, {"icon": "trash"}), React.createElement("a", {"onClick": function () { return _this.deselectAll(); }}, "解除"))), React.createElement("section", {"className": "selector-area selector-list"}, _.map(constants_1.default.genders, function (_a) {
+        return React.createElement("div", null, React.createElement("section", {"className": "selector-area gender-selector body"}, React.createElement("h1", {"className": "selector-area title"}, React.createElement(fa_1.default, {"icon": "venus-mars"}), "性別"), React.createElement("div", {"className": "selector-area select-all"}, React.createElement("p", null, React.createElement(fa_1.default, {"icon": "check"}), React.createElement("a", {"onClick": function () { return _this.selectAll(); }}, "選択")), React.createElement("p", null, React.createElement(fa_1.default, {"icon": "trash"}), React.createElement("a", {"onClick": function () { return _this.deselectAll(); }}, "解除"))), React.createElement("section", {"className": "selector-area selector-list"}, _.map(constants_1.genders, function (_a) {
             var key = _a.key, name = _a.name;
             return React.createElement("div", {"key": "gender-selector-" + key}, React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "checkbox", "name": "year", "checked": _this.isChecked(key), "onChange": function () { return _this.toggle(key); }})), React.createElement("span", {"className": "input-label"}, name)));
         }))));
@@ -60258,7 +60257,7 @@ var YearSelectorComponent = (function (_super) {
         this.dispatch('chart:year', now);
     };
     YearSelectorComponent.prototype.selectAll = function () {
-        this.dispatch('chart:year', _.map(constants_1.default.years, function (_a) {
+        this.dispatch('chart:year', _.map(constants_1.years, function (_a) {
             var key = _a.key;
             return key;
         }));
@@ -60268,7 +60267,7 @@ var YearSelectorComponent = (function (_super) {
     };
     YearSelectorComponent.prototype.render = function () {
         var _this = this;
-        return React.createElement("div", null, React.createElement("section", {"className": "selector-area year-selector body"}, React.createElement("h1", {"className": "selector-area title"}, React.createElement(fa_1.default, {"icon": "calendar"}), "年度"), React.createElement("div", {"className": "selector-area select-all"}, React.createElement("p", null, React.createElement(fa_1.default, {"icon": "check"}), React.createElement("a", {"onClick": function () { return _this.selectAll(); }}, "選択")), React.createElement("p", null, React.createElement(fa_1.default, {"icon": "trash"}), React.createElement("a", {"onClick": function () { return _this.deselectAll(); }}, "解除"))), React.createElement("section", {"className": "selector-area selector-list"}, _.map(constants_1.default.years, function (_a) {
+        return React.createElement("div", null, React.createElement("section", {"className": "selector-area year-selector body"}, React.createElement("h1", {"className": "selector-area title"}, React.createElement(fa_1.default, {"icon": "calendar"}), "年度"), React.createElement("div", {"className": "selector-area select-all"}, React.createElement("p", null, React.createElement(fa_1.default, {"icon": "check"}), React.createElement("a", {"onClick": function () { return _this.selectAll(); }}, "選択")), React.createElement("p", null, React.createElement(fa_1.default, {"icon": "trash"}), React.createElement("a", {"onClick": function () { return _this.deselectAll(); }}, "解除"))), React.createElement("section", {"className": "selector-area selector-list"}, _.map(constants_1.years, function (_a) {
             var key = _a.key, name = _a.name;
             return React.createElement("div", {"key": "year-selector-" + key}, React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "checkbox", "name": "year", "checked": _this.isChecked(key), "onChange": function () { return _this.toggle(key); }})), React.createElement("span", {"className": "input-label"}, name)));
         }))));
@@ -60562,12 +60561,11 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var React = require('react');
 var eventer_1 = require('../lib/eventer');
-var d3 = require('d3');
-var constants_1 = require("../initializers/constants");
 var _ = require('lodash');
 var RD3 = require('react-d3-basic');
 var data_table_1 = require("./data-table");
 var fa_1 = require('../lib/fa');
+var constants_1 = require("../initializers/constants");
 var StackBarChartComponent = (function (_super) {
     __extends(StackBarChartComponent, _super);
     function StackBarChartComponent() {
@@ -60602,7 +60600,7 @@ var StackBarChartComponent = (function (_super) {
         return !max || this.autoScale ? null : [0, max];
     };
     StackBarChartComponent.prototype.arrangeChartProp = function (data) {
-        var defaultProps = constants_1.default.barProps;
+        var defaultProps = constants_1.barProps;
         var minWidth = data.length * 90;
         defaultProps.width < minWidth && (defaultProps.width = minWidth);
         return defaultProps;
@@ -60655,7 +60653,7 @@ var StackBarChartComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = StackBarChartComponent;
 
-},{"../initializers/constants":307,"../lib/eventer":308,"../lib/fa":309,"./data-table":301,"d3":2,"lodash":79,"react":287,"react-d3-basic":95}],305:[function(require,module,exports){
+},{"../initializers/constants":307,"../lib/eventer":308,"../lib/fa":309,"./data-table":301,"lodash":79,"react":287,"react-d3-basic":95}],305:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -60834,64 +60832,13 @@ var App = (function (_super) {
 react_dom_1.render((React.createElement(react_router_1.Router, {"history": new CreateHistory()}, React.createElement(react_router_1.Route, {"path": "", "component": App}, React.createElement(react_router_1.Route, {"path": "", "component": common_1.default}, React.createElement(react_router_1.Route, {"path": "chart", "component": chart_1.default}, React.createElement(react_router_1.Route, {"path": "", "component": chart_controller_1.default}, React.createElement(react_router_1.Route, {"path": ":base/:table/:x/:y", "component": stack_bar_chart_1.default}))), React.createElement(react_router_1.Route, {"path": "*", "component": portal_1.default}))))), document.querySelector('#app'));
 
 },{"./components/chart-controller/chart-controller":295,"./components/common":299,"./components/portal":303,"./components/stack-bar-chart":304,"./contexts/chart":305,"./lib/eventer":308,"history/lib/createBrowserHistory":39,"react":287,"react-dom":131,"react-router":154}],307:[function(require,module,exports){
-var d3_1 = require('d3');
 var _ = require('lodash');
 var Constants = (function () {
     function Constants() {
     }
-    Object.defineProperty(Constants, "pieColors", {
-        get: function () {
-            return d3_1.scale.ordinal().range(this.colors);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Constants, "pieProps", {
-        get: function () {
-            return {
-                colors: this.pieColors,
-                width: this.pieWidth,
-                height: this.pieHeight,
-                radius: this.pieSize / 3,
-                innerRadius: this.pieInnerSize / 2,
-                sectorBorderColor: 'white'
-            };
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Constants, "smallPieProps", {
-        get: function () {
-            return {
-                colors: this.pieColors,
-                width: this.pieWidth / 2,
-                height: this.pieHeight / 2,
-                radius: this.pieSize / 6,
-                innerRadius: this.pieInnerSize / 4,
-                sectorBorderColor: 'white'
-            };
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Constants, "widePieProps", {
-        get: function () {
-            return {
-                colors: this.pieColors,
-                width: this.pieWidth / 1.5,
-                height: this.pieHeight / 2,
-                radius: this.pieSize / 6,
-                innerRadius: this.pieInnerSize / 4,
-                sectorBorderColor: 'white'
-            };
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(Constants, "barProps", {
         get: function () {
             return {
-                colors: this.pieColors,
                 width: 500,
                 height: 500,
                 sectorBorderColor: 'white',
@@ -60904,20 +60851,6 @@ var Constants = (function () {
     Constants.normalColor = function (index) {
         return this.wheelColors[(index * 31) % this.wheelColors.length];
     };
-    Object.defineProperty(Constants, "genderBarProps", {
-        get: function () {
-            return this.barProps;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Constants, "areaBarProps", {
-        get: function () {
-            return this.barProps;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(Constants, "colorKeys", {
         get: function () {
             var _this = this;
@@ -60978,30 +60911,6 @@ var Constants = (function () {
     Constants.isIncludedTable = function (name) {
         return _.includes(this.tableKeys, name);
     };
-    Object.defineProperty(Constants, "keyMap", {
-        get: function () {
-            if (this._keyMap) {
-                return this._keyMap;
-            }
-            _.flatten([this.areas, this.genders]);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Constants, "splitters", {
-        get: function () {
-            return {
-                area: this.areas,
-                gender: this.genders,
-                year: this.years,
-                total: [
-                    { key: 0, name: '総数' }
-                ]
-            };
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(Constants, "years", {
         get: function () {
             return _.map([21, 22, 23, 24, 25, 26].reverse(), function (n) {
@@ -61026,14 +60935,7 @@ var Constants = (function () {
         enumerable: true,
         configurable: true
     });
-    Constants.horizontals = ['year', 'gender', 'area'];
-    Constants.pieSize = 800;
-    Constants.pieWidth = 1000;
-    Constants.pieHeight = 800;
-    Constants.pieInnerSize = 50;
-    Constants.monoBlue = ['#103b56', '#13496c', '#175882', '#1a6799', '#1d76af', '#2085c5', '#0d0d0d', '#1a1a1a', '#262626'];
     Constants.wheelColors = ['#0086AB', '#0098A6', '#00A199', '#009C7F', '#009767', '#009250', '#059C30', '#0BA60B', '#3BB111', '#6FBB18', '#A4C520', '#B6D11B', '#CBDC15', '#E4E80F', '#F3EB08', '#FFE600', '#FBDA02', '#F8CF05', '#F4C107', '#F1B709', '#EDAD0B', '#E58611', '#DE6316', '#D6431B', '#CF2620', '#C7243A', '#C42245', '#C01F52', '#BD1D5D', '#B91B67', '#B61972', '#AF1C74', '#A81F76', '#A12275', '#9A2475', '#932674', '#953095', '#7F3B97', '#6C469A', '#5F519C', '#5D639E', '#4D5FA3', '#3B60A8', '#2962AD', '#156BB2', '#007AB7', '#007CB5', '#0080B2', '#0081B0', '#0085AD'];
-    Constants.colors = ['#1abc9c', '#3498db', '#f1c40f', '#e74c3c', '#2ecc71', '#9b59b6', '#e67e22', '#34495e', '#95a5a6', '#16a085', '#2980b9', '#f39c12', '#c0392b', '#27ae60', '#8e44ad', '#d35400', '#2c3e50', '#7f8c8d'];
     Constants.tables = [
         { key: 'age', name: '年齢層' },
         { key: 'housemate', name: '同居人の有無' },
@@ -61249,8 +61151,11 @@ var Constants = (function () {
     ];
     return Constants;
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = Constants;
+exports.barProps = Constants.barProps;
+exports.separatedAreas = Constants.separatedAreas;
+exports.years = Constants.years;
+exports.areas = Constants.areas;
+exports.genders = Constants.genders;
 exports.tableKeys = _.map(Constants.tables, function (_a) {
     var key = _a.key;
     return key;
@@ -61269,8 +61174,9 @@ exports.yearKeys = _.map(Constants.years, function (_a) {
 });
 exports.metas = Constants.metas;
 exports.tables = Constants.tables;
+exports.detectColor = function (name) { return Constants.detectColor(name); };
 
-},{"d3":2,"lodash":79}],308:[function(require,module,exports){
+},{"lodash":79}],308:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -61279,7 +61185,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var events_1 = require('events');
 var React = require('react');
 exports.EventingShared = {
-    emitter: React.PropTypes.object
+    emitter: React.PropTypes.any
 };
 var Node = (function (_super) {
     __extends(Node, _super);
@@ -61400,7 +61306,7 @@ var ChartSet = (function () {
                     return null;
                 }
             }
-            return { field: k, name: k, color: constants_1.default.detectColor(k) };
+            return { field: k, name: k, color: constants_1.detectColor(k) };
         }));
         var parSeries = _.compact(_.map(table.column, function (k) {
             return { field: k + 'par', name: k };
@@ -61531,7 +61437,7 @@ var Fetcher = (function () {
         var _b = props.location.query, yearFilter = _b.yearFilter, areaFilter = _b.areaFilter, genderFilter = _b.genderFilter, itemFilter = _b.itemFilter;
         var requires = [title, column, row];
         var table = this.pickTable(requires);
-        var year = yearFilter || constants_1.default.years[0].key;
+        var year = yearFilter || constants_1.years[0].key;
         if (_.includes(requires, 'year')) {
             year = '-';
         }
@@ -61548,7 +61454,7 @@ var Fetcher = (function () {
     Fetcher.prototype.pickTable = function (names) {
         var table;
         _.each(names, function (name) {
-            if (_.includes(constants_1.default.tableKeys, name)) {
+            if (_.includes(constants_1.tableKeys, name)) {
                 if (table && name == 'total') {
                 }
                 else {

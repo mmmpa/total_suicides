@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {Node} from '../../lib/eventer'
-import Constants from "../../initializers/constants";
+import {genders} from "../../initializers/constants";
 import * as _ from 'lodash';
 import Fa from "../../lib/fa";
 
@@ -53,7 +53,7 @@ export default class GenderSelectorComponent extends Node<P,{}> {
           </p>
         </div>
         <section className="selector-area selector-list">
-          {_.map(Constants.genders, ({key, name})=>{
+          {_.map(genders, ({key, name})=>{
             return <div key={`gender-selector-${key}`}>
               <label>
                 <span className="input-input">

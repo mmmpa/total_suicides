@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {Node} from '../../lib/eventer'
-import Constants from "../../initializers/constants";
+import {years} from "../../initializers/constants";
 import * as _ from 'lodash';
 import Fa from "../../lib/fa";
 
@@ -28,7 +28,7 @@ export default class YearSelectorComponent extends Node<P,{}> {
   }
 
   selectAll() {
-    this.dispatch('chart:year', _.map(Constants.years, ({key})=> key));
+    this.dispatch('chart:year', _.map(years, ({key})=> key));
   }
 
   deselectAll() {
@@ -53,7 +53,7 @@ export default class YearSelectorComponent extends Node<P,{}> {
           </p>
         </div>
         <section className="selector-area selector-list">
-          {_.map(Constants.years, ({key, name})=>{
+          {_.map(years, ({key, name})=>{
             return <div key={`year-selector-${key}`}>
               <label>
                 <span className="input-input">

@@ -1,54 +1,13 @@
-import {scale} from 'd3';
 import * as _ from 'lodash'
 
-export default class Constants {
-  static horizontals:string[] = ['year', 'gender', 'area'];
+interface IKeyNameMap {
+  key:any,
+  name:string
+}
 
-  static pieSize:number = 800;
-  static pieWidth:number = 1000;
-  static pieHeight:number = 800;
-  static pieInnerSize:number = 50;
-
-  static get pieColors() {
-    return scale.ordinal().range(this.colors);
-  }
-
-  static get pieProps() {
-    return {
-      colors: this.pieColors,
-      width: this.pieWidth,
-      height: this.pieHeight,
-      radius: this.pieSize / 3,
-      innerRadius: this.pieInnerSize / 2,
-      sectorBorderColor: 'white'
-    };
-  }
-
-  static get smallPieProps() {
-    return {
-      colors: this.pieColors,
-      width: this.pieWidth / 2,
-      height: this.pieHeight / 2,
-      radius: this.pieSize / 6,
-      innerRadius: this.pieInnerSize / 4,
-      sectorBorderColor: 'white'
-    };
-  }
-
-  static get widePieProps() {
-    return {
-      colors: this.pieColors,
-      width: this.pieWidth / 1.5,
-      height: this.pieHeight / 2,
-      radius: this.pieSize / 6,
-      innerRadius: this.pieInnerSize / 4,
-      sectorBorderColor: 'white'
-    };
-  }
-
+class Constants {
   static get barProps() {
     return {
-      colors: this.pieColors,
       width: 500,
       height: 500,
       sectorBorderColor: 'white',
@@ -60,19 +19,7 @@ export default class Constants {
     return this.wheelColors[(index * 31) % this.wheelColors.length]
   }
 
-  static get genderBarProps() {
-    return this.barProps;
-  }
-
-  static get areaBarProps() {
-    return this.barProps;
-  }
-
-  static monoBlue:string[] = ['#103b56', '#13496c', '#175882', '#1a6799', '#1d76af', '#2085c5', '#0d0d0d', '#1a1a1a', '#262626'];
-
   static wheelColors:string[] = ['#0086AB', '#0098A6', '#00A199', '#009C7F', '#009767', '#009250', '#059C30', '#0BA60B', '#3BB111', '#6FBB18', '#A4C520', '#B6D11B', '#CBDC15', '#E4E80F', '#F3EB08', '#FFE600', '#FBDA02', '#F8CF05', '#F4C107', '#F1B709', '#EDAD0B', '#E58611', '#DE6316', '#D6431B', '#CF2620', '#C7243A', '#C42245', '#C01F52', '#BD1D5D', '#B91B67', '#B61972', '#AF1C74', '#A81F76', '#A12275', '#9A2475', '#932674', '#953095', '#7F3B97', '#6C469A', '#5F519C', '#5D639E', '#4D5FA3', '#3B60A8', '#2962AD', '#156BB2', '#007AB7', '#007CB5', '#0080B2', '#0081B0', '#0085AD'];
-
-  static colors:string[] = ['#1abc9c', '#3498db', '#f1c40f', '#e74c3c', '#2ecc71', '#9b59b6', '#e67e22', '#34495e', '#95a5a6', '#16a085', '#2980b9', '#f39c12', '#c0392b', '#27ae60', '#8e44ad', '#d35400', '#2c3e50', '#7f8c8d'];
 
   static _colorKeys;
   static get colorKeys() {
@@ -82,7 +29,7 @@ export default class Constants {
     this._colorKeys = {};
 
     _.each(_.union(this.tablePropList, this.metaPropsList), (props)=> {
-      _.each(props, ({name}, i)=>{
+      _.each(props, ({name}, i)=> {
         this._colorKeys[name] = i;
       });
     });
@@ -90,7 +37,7 @@ export default class Constants {
     return this._colorKeys;
   }
 
-  static detectColor(name:string):string{
+  static detectColor(name:string):string {
     return this.normalColor(this.colorKeys[name]);
   }
 
@@ -109,7 +56,7 @@ export default class Constants {
     ]
   }
 
-  static get metaPropsList(){
+  static get metaPropsList() {
     return [
       this.areas,
       this.genders,
@@ -117,7 +64,7 @@ export default class Constants {
     ]
   }
 
-  static tables = [
+  static tables:IKeyNameMap[] = [
     {key: 'age', name: '年齢層'},
     {key: 'housemate', name: '同居人の有無'},
     {key: 'job', name: '職業'},
@@ -130,7 +77,7 @@ export default class Constants {
     {key: 'total', name: '総数'}
   ];
 
-  static metas = [
+  static metas:IKeyNameMap[] = [
     {key: 'area', name: '都道府県'},
     {key: 'gender', name: '性別'},
     {key: 'year', name: '年度'},
@@ -141,7 +88,7 @@ export default class Constants {
     return this._tableKeys = this.tables.map((o)=> o.key);
   }
 
-  static ageProps = [
+  static ageProps:IKeyNameMap[] = [
     {key: 'o0', name: '20歳未満'},
     {key: 'o20', name: '20-29歳'},
     {key: 'o30', name: '30-39歳'},
@@ -153,13 +100,13 @@ export default class Constants {
     {key: 'unknown', name: '不詳'},
   ];
 
-  static housemateProps = [
+  static housemateProps:IKeyNameMap[] = [
     {key: 'yes', name: 'あり'},
     {key: 'no', name: 'なし'},
     {key: 'unknown', name: '不詳'},
   ];
 
-  static jobProps = [
+  static jobProps:IKeyNameMap[] = [
     {key: 'self_employed', name: '自営業・家族従業者'},
     {key: 'employed', name: '被雇用・勤め人'},
     {key: 'student', name: '学生・生徒等'},
@@ -170,7 +117,7 @@ export default class Constants {
     {key: 'unknown', name: '不詳'},
   ];
 
-  static locationProps = [
+  static locationProps:IKeyNameMap[] = [
     {key: 'home', name: '自宅等'},
     {key: 'building', name: '高層ビル'},
     {key: 'vehicle', name: '乗物'},
@@ -180,7 +127,7 @@ export default class Constants {
     {key: 'unknown', name: '不詳'},
   ];
 
-  static wayProps = [
+  static wayProps:IKeyNameMap[] = [
     {key: 'hanging', name: '首つり'},
     {key: 'poison', name: '服毒'},
     {key: 'briquet', name: '練炭等'},
@@ -190,7 +137,7 @@ export default class Constants {
     {key: 'unknown', name: '不詳'},
   ];
 
-  static hourProps = [
+  static hourProps:IKeyNameMap[] = [
     {key: 'a0', name: '0-2時'},
     {key: 'a2', name: '2-4時'},
     {key: 'a4', name: '4-6時'},
@@ -206,7 +153,7 @@ export default class Constants {
     {key: 'unknown', name: '不詳'},
   ];
 
-  static dayProps = [
+  static dayProps:IKeyNameMap[] = [
     {key: 'sunday', name: '日曜'},
     {key: 'monday', name: '月曜'},
     {key: 'tuesday', name: '火曜'},
@@ -217,7 +164,7 @@ export default class Constants {
     {key: 'unknown', name: '不詳'},
   ];
 
-  static reasonProps = [
+  static reasonProps:IKeyNameMap[] = [
     {key: 'family', name: '家庭問題'},
     {key: 'health', name: '健康問題'},
     {key: 'life', name: '経済・生活問題'},
@@ -228,13 +175,13 @@ export default class Constants {
     {key: 'unknown', name: '不詳'},
   ];
 
-  static attemptedProps = [
+  static attemptedProps:IKeyNameMap[] = [
     {key: 'yes', name: 'あり'},
     {key: 'no', name: 'なし'},
     {key: 'unknown', name: '不詳'},
   ];
 
-  static totalProps = [
+  static totalProps:IKeyNameMap[] = [
     {key: 'number', name: '自殺者数'},
   ];
 
@@ -242,43 +189,24 @@ export default class Constants {
     return _.includes(this.tableKeys, name)
   }
 
-  static _keyMap;
-  static get keyMap() {
-    if (this._keyMap) {
-      return this._keyMap;
-    }
-    _.flatten([this.areas, this.genders])
-  }
-
-  static get splitters() {
-    return {
-      area: this.areas,
-      gender: this.genders,
-      year: this.years,
-      total: [
-        {key: 0, name: '総数'}
-      ]
-    }
-  }
-
-  static get years() {
-    return _.map([21, 22, 23, 24, 25, 26].reverse(), (n)=> {
+  static get years():IKeyNameMap[] {
+    return _.map([21, 22, 23, 24, 25, 26].reverse(), (n):IKeyNameMap=> {
       return {key: n, name: `平成${n}年`}
     }).reverse();
   }
 
-  static total = [
+  static total:IKeyNameMap[] = [
     {key: 0, name: '総数'}
-  ]
+  ];
 
-  static genders = [
+  static genders:IKeyNameMap[] = [
     {key: 0, name: '総数'},
     {key: 1, name: '女性'},
     {key: 2, name: '男性'}
   ];
 
-  static _areas;
-  static get areas() {
+  static _areas:IKeyNameMap[];
+  static get areas():IKeyNameMap[] {
     if (this._areas) {
       return this._areas;
     }
@@ -291,7 +219,7 @@ export default class Constants {
   }
 
 
-  static separatedAreas = [
+  static separatedAreas:{name:string, areas:IKeyNameMap[]}[] = [
     {
       name: '全国',
       areas: [
@@ -394,9 +322,15 @@ export default class Constants {
   ];
 }
 
-export let tableKeys = _.map(Constants.tables, ({key})=> key);
-export let metaKeys = _.map(Constants.metas, ({key})=> key);
-export let areaKeys = _.map(Constants.areas, ({key})=> key);
-export let yearKeys = _.map(Constants.years, ({key})=> key);
-export let metas = Constants.metas;
-export let tables = Constants.tables;
+export let barProps = Constants.barProps;
+export let separatedAreas:{name:string, areas:IKeyNameMap[]}[] = Constants.separatedAreas;
+export let years:IKeyNameMap[] = Constants.years;
+export let areas:IKeyNameMap[] = Constants.areas;
+export let genders:IKeyNameMap[] = Constants.genders;
+export let tableKeys:any[] = _.map(Constants.tables, ({key})=> key);
+export let metaKeys:any[] = _.map(Constants.metas, ({key})=> key);
+export let areaKeys:any[] = _.map(Constants.areas, ({key})=> key);
+export let yearKeys:any[] = _.map(Constants.years, ({key})=> key);
+export let metas:IKeyNameMap[] = Constants.metas;
+export let tables:IKeyNameMap[] = Constants.tables;
+export let detectColor:(string)=>string = (name) => Constants.detectColor(name);

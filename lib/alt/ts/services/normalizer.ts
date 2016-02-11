@@ -1,4 +1,3 @@
-import Constants from "../initializers/constants";
 import * as _ from 'lodash';
 import Table from "../models/table";
 import ChartSet from "../models/chart-set";

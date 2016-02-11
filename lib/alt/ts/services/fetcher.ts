@@ -1,4 +1,4 @@
-import Constants from "../initializers/constants";
+import {years, tableKeys} from "../initializers/constants";
 const request = require('superagent');
 
 class Fetcher {
@@ -70,7 +70,7 @@ class Fetcher {
     let requires = [title, column, row];
     let table = this.pickTable(requires);
 
-    let year =  yearFilter || Constants.years[0].key;
+    let year =  yearFilter || years[0].key;
     if (_.includes(requires, 'year')) {
       year = '-';
     }
@@ -91,7 +91,7 @@ class Fetcher {
   pickTable(names:string[]) {
     let table;
     _.each(names, (name:string)=> {
-      if (_.includes(Constants.tableKeys, name)) {
+      if (_.includes(tableKeys, name)) {
         if (table && name == 'total') {
           //throw 'Double table error';
         }else{

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {Node} from '../../lib/eventer'
-import Constants from "../../initializers/constants";
+import {separatedAreas} from "../../initializers/constants";
 import * as _ from 'lodash';
 import Fa from "../../lib/fa";
 
@@ -70,7 +70,6 @@ export default class AreaSelectorComponent extends Node<P,{}> {
   }
 
   render() {
-    let {separatedAreas} = Constants;
     return <div>
       <section className="selector-area area-selector body">
         <h1 className="selector-area title">

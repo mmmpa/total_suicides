@@ -1,6 +1,5 @@
 import * as React from 'react'
 import {Node} from '../lib/eventer'
-import Constants from "../initializers/constants";
 import * as _ from 'lodash';
 import Fa from '../lib/fa'
 

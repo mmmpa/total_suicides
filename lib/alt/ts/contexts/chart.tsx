@@ -1,6 +1,5 @@
 import {Root} from '../lib/eventer'
 import {fetch} from '../services/fetcher'
-import Constants from "../initializers/constants";
 import {normalize, ITableList} from "../services/normalizer"
 import ChartSet from "../models/chart-set";
 
