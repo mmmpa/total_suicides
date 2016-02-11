@@ -60706,6 +60706,7 @@ var ChartContext = (function (_super) {
         return target && target != 'false';
     };
     ChartContext.prototype.setTitle = function (props) {
+        console.log({ props: props });
         var _a = props.params, table = _a.table, x = _a.x;
         this.dispatch('title', this.detect_text(table) + "\u5225\u306E\u81EA\u6BBA\u8005\u6570\u3092" + this.detect_text(x) + "\u3067\u4E26\u3079\u3066\u8868\u793A");
     };
@@ -60715,7 +60716,7 @@ var ChartContext = (function (_super) {
                 return '地域';
             case 'year':
                 return '年度';
-            case 'age':
+            case 'gender':
                 return '性別';
             case 'age':
                 return '年齢層';

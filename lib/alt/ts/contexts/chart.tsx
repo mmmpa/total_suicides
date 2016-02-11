@@ -49,6 +49,7 @@ export default class ChartContext extends Root<P,{}> {
   }
 
   setTitle(props) {
+    console.log({props})
     let {table, x} = props.params;
     this.dispatch('title', `${this.detect_text(table)}別の自殺者数を${this.detect_text(x)}で並べて表示`)
   }
@@ -59,7 +60,7 @@ export default class ChartContext extends Root<P,{}> {
         return '地域';
       case 'year':
         return '年度';
-      case 'age':
+      case 'gender':
         return '性別';
       case 'age':
         return '年齢層';
