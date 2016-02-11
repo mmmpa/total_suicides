@@ -60532,8 +60532,8 @@ var PortalComponent = (function (_super) {
     function PortalComponent() {
         _super.apply(this, arguments);
     }
-    PortalComponent.prototype.link = function (uri) {
-        this.dispatch('link', uri, null);
+    PortalComponent.prototype.link = function (uri, query) {
+        this.dispatch('link', uri, query);
     };
     PortalComponent.prototype.componentDidMount = function () {
         var _this = this;
@@ -60541,7 +60541,8 @@ var PortalComponent = (function (_super) {
         _.each(document.querySelectorAll('#raw .inner-link a'), function (a) {
             a.addEventListener('click', function (e) {
                 e.preventDefault();
-                _this.link(e.target.href);
+                var anchor = e.target;
+                _this.link(anchor.href.replace(/.+?:\/\/.+?\//, '/'), {});
             });
         });
     };
@@ -60561,6 +60562,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var React = require('react');
 var eventer_1 = require('../lib/eventer');
+var d3 = require('d3');
 var _ = require('lodash');
 var RD3 = require('react-d3-basic');
 var data_table_1 = require("./data-table");
@@ -60600,7 +60602,7 @@ var StackBarChartComponent = (function (_super) {
         return !max || this.autoScale ? null : [0, max];
     };
     StackBarChartComponent.prototype.arrangeChartProp = function (data) {
-        var defaultProps = constants_1.barProps;
+        var defaultProps = constants_1.generateBarProps();
         var minWidth = data.length * 90;
         defaultProps.width < minWidth && (defaultProps.width = minWidth);
         return defaultProps;
@@ -60653,7 +60655,7 @@ var StackBarChartComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = StackBarChartComponent;
 
-},{"../initializers/constants":307,"../lib/eventer":308,"../lib/fa":309,"./data-table":301,"lodash":79,"react":287,"react-d3-basic":95}],305:[function(require,module,exports){
+},{"../initializers/constants":307,"../lib/eventer":308,"../lib/fa":309,"./data-table":301,"d3":2,"lodash":79,"react":287,"react-d3-basic":95}],305:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -61151,7 +61153,7 @@ var Constants = (function () {
     ];
     return Constants;
 })();
-exports.barProps = Constants.barProps;
+exports.generateBarProps = function () { return Constants.barProps; };
 exports.separatedAreas = Constants.separatedAreas;
 exports.years = Constants.years;
 exports.areas = Constants.areas;

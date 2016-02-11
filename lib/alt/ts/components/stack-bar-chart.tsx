@@ -1,12 +1,13 @@
 import * as React from 'react';
 import {Node} from '../lib/eventer';
+import * as d3 from 'd3';
 import * as _ from 'lodash';
 import * as RD3 from 'react-d3-basic';
 import RotatedDataTable from "./data-table";
 import ChartSet from "../models/chart-set";
 import Fa from '../lib/fa';
 import {ITableList, ITableSet} from "../services/normalizer";
-import {barProps} from "../initializers/constants";
+import {generateBarProps} from "../initializers/constants";
 
 interface P{
   par:boolean,
@@ -41,7 +42,7 @@ export default class StackBarChartComponent extends Node<P,{}> {
   }
 
   arrangeChartProp(data) {
-    let defaultProps = barProps;
+    let defaultProps = generateBarProps();
     let minWidth = data.length * 90;
     defaultProps.width < minWidth && (defaultProps.width = minWidth)
     return defaultProps;

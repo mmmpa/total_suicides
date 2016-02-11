@@ -322,7 +322,7 @@ class Constants {
   ];
 }
 
-export let barProps = Constants.barProps;
+export let generateBarProps = ()=> Constants.barProps;
 export let separatedAreas:{name:string, areas:IKeyNameMap[]}[] = Constants.separatedAreas;
 export let years:IKeyNameMap[] = Constants.years;
 export let areas:IKeyNameMap[] = Constants.areas;

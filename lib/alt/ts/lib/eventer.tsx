@@ -35,7 +35,7 @@ export abstract class Root<P, S> extends Node<RootP & P, S> {
 
   abstract initialState(props):S;
 
-  static get childContextTypes() {
+  static get childContextTypes():React.ValidationMap<any> {
     return EventingShared;
   }
 

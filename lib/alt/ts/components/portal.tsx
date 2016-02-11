@@ -8,8 +8,8 @@ interface P{
 }
 
 export default class PortalComponent extends Node<P,{}> {
-  link(uri){
-    this.dispatch('link', uri, null);
+  link(uri, query){
+    this.dispatch('link', uri, query);
   }
 
   componentDidMount() {
@@ -17,7 +17,8 @@ export default class PortalComponent extends Node<P,{}> {
     _.each(document.querySelectorAll('#raw .inner-link a'), (a)=> {
       a.addEventListener('click', (e)=> {
         e.preventDefault();
-        this.link((e.target as HTMLAnchorElement).href);
+        let anchor = e.target as HTMLAnchorElement;
+        this.link(anchor.href.replace(/.+?:\/\/.+?\//, '/'), {});
       });
     });
   }
