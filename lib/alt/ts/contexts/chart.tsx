@@ -3,7 +3,7 @@ import {fetch} from '../services/fetcher'
 import {normalize, ITableList} from "../services/normalizer"
 import ChartSet from "../models/chart-set";
 
-interface P{
+interface P {
   location:any,
   history:History
 }
@@ -25,7 +25,7 @@ export default class ChartContext extends Root<P,{}> {
     this.pickState(nextProps);
   }
 
-  pickState(props){
+  pickState(props) {
     let area = this.pickSelectedFromQuery(props, 'area');
     let year = this.pickSelectedFromQuery(props, 'year');
     let gender = this.pickSelectedFromQuery(props, 'gender');
@@ -43,7 +43,7 @@ export default class ChartContext extends Root<P,{}> {
     return target.toString().split(',').map((n)=> +n)
   }
 
-  pickEnabledFromQuery(props:P, name:string):boolean{
+  pickEnabledFromQuery(props:P, name:string):boolean {
     let target = props.location.query[name];
     return target && target != 'false'
   }
