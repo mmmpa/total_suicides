@@ -1,7 +1,1 @@
-# Total Suicides
-
-グラフ描画アプリの予定
-
-# todo
-
-データの権利関係調べる
+[自殺を知る、自殺を考える](http://suicide-note.herokuapp.com/)
