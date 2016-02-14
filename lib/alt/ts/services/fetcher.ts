@@ -10,24 +10,44 @@ class Fetcher {
 
   }
 
-  isSameQuery(query){
-    if(!this.preQuery){
+  isSameQuery(query) {
+    if (!this.preQuery) {
       return false;
     }
 
     let different = true;
-    _.each(query, (v,k)=>{
-      if(this.preQuery[k] != v){
+    _.each(query, (v, k)=> {
+      if (this.preQuery[k] != v) {
         different = false;
       }
     });
     return different;
   }
 
-  stringifyQuery(query){
-    return _.reduce(query, (a, v, k)=>{
+  stringifyQuery(query) {
+    return _.reduce(query, (a, v, k)=> {
       return a + k + v;
     }, '')
+  }
+
+  fetchRaw(params:{years:number[], genders:number[], areas:number[], detail:string}, callback:(data:any[])=>void) {
+    let {years, genders, areas, detail} = params;
+    let gender = genders.join(',');
+    let year = years.join(',');
+    let area = areas.join(',');
+    let uri = ['/api', gender, year, area, detail].join('/');
+
+    request
+      .get(uri)
+      .end((err, res)=> {
+        this.pre = null;
+        if (!!err) {
+          //
+        } else {
+          console.log(`fetched from ${uri}`, res.body);
+          callback(res.body);
+        }
+      });
   }
 
   fetch(props, callback:Function) {
@@ -70,7 +90,7 @@ class Fetcher {
     let requires = [title, column, row];
     let table = this.pickTable(requires);
 
-    let year =  yearFilter || years[0].key;
+    let year = yearFilter || years[0].key;
     if (_.includes(requires, 'year')) {
       year = '-';
     }
@@ -94,7 +114,7 @@ class Fetcher {
       if (_.includes(tableKeys, name)) {
         if (table && name == 'total') {
           //throw 'Double table error';
-        }else{
+        } else {
           table = name;
         }
       }
@@ -107,4 +127,7 @@ const f = new Fetcher();
 
 export function fetch(params, callback:Function) {
   f.fetch(params, callback)
+}
+export function fetchRaw(params, callback) {
+  f.fetchRaw(params, callback)
 }

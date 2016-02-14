@@ -56,6 +56,22 @@ class Constants {
     ]
   }
 
+  static get tableMaps() {
+    return [
+      {key: 'age', value: this.ageProps},
+      {key: 'housemate', value: this.housemateProps},
+      {key: 'job', value: this.jobProps},
+      {key: 'location', value: this.locationProps},
+      {key: 'way', value: this.wayProps},
+      {key: 'hour', value: this.hourProps},
+      {key: 'day', value: this.dayProps},
+      {key: 'reason', value: this.reasonProps},
+      {key: 'attempted', value: this.attemptedProps},
+      {key: 'total', value: this.totalProps},
+    ]
+  }
+
+
   static get metaPropsList() {
     return [
       this.areas,
@@ -334,3 +350,4 @@ export let yearKeys:any[] = _.map(Constants.years, ({key})=> key);
 export let metas:IKeyNameMap[] = Constants.metas;
 export let tables:IKeyNameMap[] = Constants.tables;
 export let detectColor:(string)=>string = (name) => Constants.detectColor(name);
+export let tableMaps = Constants.tableMaps;

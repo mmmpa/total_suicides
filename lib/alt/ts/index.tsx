@@ -10,6 +10,10 @@ import Portal from "./components/portal";
 import StackBarChart from "./components/stack-bar-chart";
 import Common from "./components/common";
 import ChartController from "./components/chart-controller/chart-controller";
+import V2 from './contexts/v2'
+import V2Chart from './components/v2/chart'
+import V2Finder from './components/v2/chart-finder'
+import ChartFinderContext from "./contexts/chart-finder-context";
 
 declare var ga:Function;
 
@@ -47,6 +51,11 @@ class App extends Root<P,{}> {
 render((
   <Router history={new CreateHistory()}>
     <Route path="" component={App}>
+      <Route path="v2" component={V2}>
+        <Route path="finder" component={V2Finder}/>
+        <Route path=":year/:gender/:area" component={V2Chart}/>
+        <Route path="*" component={Portal}/>
+      </Route>
       <Route path="" component={Common}>
         <Route path="chart" component={ChartContext}>
           <Route path="" component={ChartController}>

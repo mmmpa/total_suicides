@@ -6,5 +6,7 @@ class PortalController < ApplicationController
       else
         @data = TableCreator.(params)
     end
+  rescue
+    nil
   end
 end
