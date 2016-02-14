@@ -1,7 +1,8 @@
 import {Root} from '../lib/eventer'
 import {fetchRaw} from '../services/fetcher'
-import {normalize, ITableList} from "../services/normalizer"
+import {normalize, ITableList, sliceRecordList} from "../services/normalizer"
 import ChartSet from "../models/chart-set";
+import {stringifyParams, retrieveParams} from "../services/params-stringifier";
 
 interface P {
   location:any,
@@ -11,85 +12,84 @@ interface P {
 export default class ChartContext extends Root<P,{}> {
   initialState(props) {
     return {
-      selectedYears: [],
-      selectedGenders: [],
-      selectedAreas: [],
-      selectedDetail: null,
-      errors: {}
-    }
-  }
-
-  find(){
-    let {selectedAreas, selectedYears, selectedGenders, selectedDetail} = this.state;
-    let errors = _.reduce({selectedAreas, selectedYears, selectedGenders, selectedDetail}, (a, value, key)=>{
-      if(!value || value.length === 0){
-        a[key.replace('selected', 'errorOn')] = 'すくなくとも一つ選択してください'
-      }
-      return a
-    }, {});
-
-    if(_.keys(errors).length === 0){
-      fetchRaw({
-        years: selectedYears,
-        genders: selectedGenders,
-        areas: selectedAreas,
-        detail: selectedDetail
-      }, (data:any[])=>{
-
-      });
-    }else{
-      this.setState({errors});
+      charts: []
     }
   }
 
   componentDidMount() {
-    //this.fetchData(this.props);
-    this.setTitle(this.props);
-    this.pickState(this.props);
+    console.log('mount')
+    this.fetchData(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
-    //this.fetchData(nextProps, this.props);
-    this.setTitle(nextProps);
-    this.pickState(nextProps);
+    this.fetchData(nextProps);
   }
 
-  pickState(props) {
-    let selectedAreas = this.pickSelectedFromQuery(props, 'area');
-    let selectedYears = this.pickSelectedFromQuery(props, 'year');
-    let selectedGenders = this.pickSelectedFromQuery(props, 'gender');
-    let selectedDetail = this.pickSelectedFromQuery(props, 'detail', false)[0];
-    let autoScale = this.pickEnabledFromQuery(props, 'autoScale');
-    let par = this.pickEnabledFromQuery(props, 'par');
-    console.log({selectedAreas, selectedYears, selectedGenders, selectedDetail, autoScale, par})
-    this.setState({selectedAreas, selectedYears, selectedGenders, selectedDetail, autoScale, par});
-  }
-
-  pickSelectedFromQuery(props:P, name:string, num:boolean = true) {
-    let target = props.location.query[name];
-    if (!target) {
-      return [];
+  fetchData(props) {
+    let {query} = props.location;
+    let chartSettings = [];
+    for (let i = 1, set; set = query[`chart${i}`]; i++) {
+      chartSettings.push({
+        key: query,
+        value: retrieveParams(set)
+      });
     }
-    if(num){
-      return target.toString().split(',').map((n)=> +n);
-    }else{
-      return target.toString().split(',');
+    chartSettings.forEach(({key, value}, i)=> {
+      console.log(i)
+      let {gender,  year,area, detailName} = value;
+      fetchRaw(gender, year, area, detailName, (data:any[])=> {
+        let sliced = sliceRecordList(data, detailName);
+        console.log({sliced});
+      })
+    })
+  }
+
+
+  find(params) {
+    let gender, area, year, detail, detailName;
+
+    let {x, y, z, xSpecified, ySpecified} = params;
+    if (!_.includes([x, y], 'year')) {
+      year = z;
     }
+
+    _.zip([x, y], [xSpecified, ySpecified]).forEach(([key, value])=> {
+      switch (key) {
+        case 'area':
+          area = value;
+          break;
+        case 'year':
+          year = value;
+          break;
+        case 'gender':
+          gender = value;
+          break;
+        default:
+          detailName = key;
+          detail = value;
+      }
+    });
+
+    if (!area) {
+      area = '0'
+    }
+
+    if (!gender) {
+      gender = '0'
+    }
+
+    if (!detailName) {
+      detailName = 'total';
+      detail = 'number';
+    }
+    let chart1 = stringifyParams(gender, area, year, detailName, x, xSpecified, y, ySpecified, z);
+    this.dispatch('link', '/v2/chart', {chart1});
   }
 
-  pickEnabledFromQuery(props:P, name:string):boolean {
-    let target = props.location.query[name];
-    return target && target != 'false'
-  }
-
-  setTitle(props) {
-    let {table, x} = props.params;
-    //this.dispatch('title', `${this.detect_text(table)}別の自殺者数を${this.detect_text(x)}で並べて表示`)
-  }
 
   listen(to) {
-    to('chart:find', ()=> {
-      this.find();
+    to('chart:find', (params)=> {
+      this.find(params);
     });
 
     to('chart:area', (selectedAreas:number[])=> {

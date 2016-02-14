@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {Node} from '../../lib/eventer';
 import * as d3 from 'd3';
+import * as c3 from 'c3';
 import * as _ from 'lodash';
 import * as RD3 from 'react-d3-basic';
 import RotatedDataTable from "../data-table";
@@ -56,16 +57,16 @@ export default class ChartComponent extends Node<P,{}> {
   writeChart(chartSet:ChartSet, max?:number) {
     let {series, parSeries, data} = chartSet;
     let usingSeries = this.arrangeSeries(series, parSeries);
-    return <div className="chart-list stack-bar-chart">
-      <RD3.BarStackChart
-        data={data}
-        chartSeries={usingSeries}
-        x={(d)=> d.sort}
-        xScale='ordinal'
-        yTickFormat={d3.format(".2s")}
-        yDomain={this.domain(max)}
-        {...this.arrangeChartProp(data)}
-      />
+    var chart = c3.generate({
+      bindto: '#chart',
+      data: {
+        columns: [
+          ['data1', 30, 200, 100, 400, 150, 250],
+          ['data2', 50, 20, 10, 40, 15, 25]
+        ]
+      }
+    });
+    return <div id="chart" className="chart-list stack-bar-chart">
     </div>;
   }
 
@@ -96,28 +97,20 @@ export default class ChartComponent extends Node<P,{}> {
     });
   }
 
-  render() {
-    let {tableListList} = this.props;
+  componentDidMount(){
+    var chart = c3.generate({
+      bindto: '#chart',
+      data: {
+        columns: [
+          ['data1', 30, 200, 100, 400, 150, 250],
+          ['data2', 50, 20, 10, 40, 15, 25]
+        ]
+      }
+    });
+  }
 
-    if (!tableListList || !tableListList.length || _.isString(tableListList)) {
-      return <article className="chart-list body">
-        <div className="loading">
-          <Fa icon="spinner" animation='pulse'/>
-          loading...
-        </div>
-      </article>
-    }
-    let max = this.detectMax(tableListList);
-    return <div>
-      <article className="chart-list body" key={this.keyBase}>
-        {tableListList.map(({title, tables})=> {
-          return <section className="chart-list chart-line" key={`line-${title}`}>
-            <h1 className="chart-list chart-title">{title}</h1>
-            {this.writeTables(tables, max)}
-          </section>
-          })
-          }
-      </article>
-    </div>
+  render() {
+    return <div id="chart" className="chart-list stack-bar-chart">
+    </div>;
   }
 }

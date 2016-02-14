@@ -53,8 +53,7 @@ render((
     <Route path="" component={App}>
       <Route path="v2" component={V2}>
         <Route path="finder" component={V2Finder}/>
-        <Route path=":year/:gender/:area" component={V2Chart}/>
-        <Route path="*" component={Portal}/>
+        <Route path="chart" component={V2Chart}/>
       </Route>
       <Route path="" component={Common}>
         <Route path="chart" component={ChartContext}>

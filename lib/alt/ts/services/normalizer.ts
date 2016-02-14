@@ -1,9 +1,37 @@
 import * as _ from 'lodash';
 import Table from "../models/table";
 import ChartSet from "../models/chart-set";
+import {tableMaps} from '../initializers/constants'
+import * as _ from 'lodash'
 
 let preData = null;
 let preResult = null;
+
+export function sliceRecord(data){
+
+}
+
+export function sliceRecordList(data:any[], detailName:string){
+  let tableMap = _.find(tableMaps, ({key})=>{
+    return key == detailName
+  }).value;
+
+  let result = [];
+  data.forEach((d)=>{
+    let {year, gender, area} = d;
+    tableMap.forEach(({key, name})=>{
+      let tip = {year, gender, area};
+      tip[detailName] = {
+        content: key,
+        name
+      }
+      tip.value = d[key];
+      result.push(tip);
+    });
+  });
+
+  return result;
+}
 
 export function normalize(data:any):ITableList[] {
   if(data == preData && preResult){

@@ -26,12 +26,13 @@ export default class ChartFinderComponent extends Node<P,S> {
       x: '',
       xSpecified: [],
       ySpecified: '',
-      y: ''
+      y: '',
+      z: ''
     }
   }
 
   find() {
-    this.dispatch('chart:find');
+    this.dispatch('chart:find', this.state);
   }
 
   writeErrorMessage(message:string) {
@@ -83,9 +84,9 @@ export default class ChartFinderComponent extends Node<P,S> {
 
   selectXSpecified(xKey) {
     let {xSpecified} = this.state;
-    if(_.includes(xSpecified, xKey)){
+    if (_.includes(xSpecified, xKey)) {
       xSpecified = _.without(xSpecified, xKey);
-    }else{
+    } else {
       xSpecified.push(xKey);
     }
     this.setState({xSpecified});
@@ -98,6 +99,10 @@ export default class ChartFinderComponent extends Node<P,S> {
   selectY(y) {
     let ySpecified = this.specfiers(y)[0].key;
     this.setState({y, ySpecified});
+  }
+
+  selectZ(z) {
+    this.setState({z});
   }
 
   writeYSpecifier() {
@@ -128,7 +133,7 @@ export default class ChartFinderComponent extends Node<P,S> {
 
   render() {
     let {selectedYears, selectedGenders, selectedAreas, selectedDetail, errors} = this.props;
-    let {x, y} = this.state;
+    let {x, y, z} = this.state;
     return <div>
       <article className="v2-finder body">
         <h1>基本となるチャートを決定します</h1>
@@ -151,6 +156,13 @@ export default class ChartFinderComponent extends Node<P,S> {
           })}
         で並べる
         {this.writeXSpecifier()}
+        <h1>時期（縦軸にも横軸にも時期が指定されていない場合必要です）</h1>
+        {years.map(({key, name})=>{
+          return <label>
+            <input type="radio" value={key} checked={key === z} onChange={()=> this.selectZ(key)}/>
+            {name}
+          </label>
+          })}
         <section className="v2-finder section submit">
           <button onClick={()=> this.find()}>
             <Fa icon="download"/>

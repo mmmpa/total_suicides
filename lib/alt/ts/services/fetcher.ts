@@ -30,11 +30,7 @@ class Fetcher {
     }, '')
   }
 
-  fetchRaw(params:{years:number[], genders:number[], areas:number[], detail:string}, callback:(data:any[])=>void) {
-    let {years, genders, areas, detail} = params;
-    let gender = genders.join(',');
-    let year = years.join(',');
-    let area = areas.join(',');
+  fetchRaw(gender:string, year:string, area:string, detail:string, callback:(data:any[])=>void) {
     let uri = ['/api', gender, year, area, detail].join('/');
 
     request
@@ -128,6 +124,6 @@ const f = new Fetcher();
 export function fetch(params, callback:Function) {
   f.fetch(params, callback)
 }
-export function fetchRaw(params, callback) {
-  f.fetchRaw(params, callback)
+export function fetchRaw(gender, year, area, detail, callback) {
+  f.fetchRaw(gender, year, area, detail, callback)
 }
