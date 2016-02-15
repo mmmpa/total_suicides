@@ -37,23 +37,24 @@ export class FetchingParams {
     this.ySpecified = ySpecified;
     this.src = src;
 
-    _.zip([x, y], [xSpecified, ySpecified]).forEach(([key, value])=> {
-      switch (key) {
-        case 'area':
-          this.area = value;
-          break;
-        case 'year':
-          this.year = value;
-          break;
-        case 'gender':
-          this.gender = value;
-          break;
-        default:
-          this.detailName = key;
-          this.detail = value;
-      }
-    });
-
+    if (x) {
+      _.zip([x, y], [xSpecified, ySpecified]).forEach(([key, value])=> {
+        switch (key) {
+          case 'area':
+            this.area = value;
+            break;
+          case 'year':
+            this.year = value;
+            break;
+          case 'gender':
+            this.gender = value;
+            break;
+          default:
+            this.detailName = key;
+            this.detail = value;
+        }
+      });
+    }
 
     if (!this.area) {
       this.area = '0'

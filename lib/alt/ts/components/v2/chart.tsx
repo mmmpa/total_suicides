@@ -7,7 +7,8 @@ import RotatedDataTable from "../data-table";
 import ChartSet from "../../models/chart-set";
 import Fa from '../../lib/fa';
 import {ITableList, ITableSet} from "../../services/normalizer";
-import {generateBarProps, tableKeys, tableMaps, areas, years, genders} from "../../initializers/constants";
+import {generateBarProps, tableKeys, tableMaps, areas, years, genders, detectMap} from "../../initializers/constants";
+import {writeBaseSelector, writeSelectorSpecifier, ChartDataSelector} from '../../services/selector-writer'
 
 interface P {
   charts:any[]
@@ -45,25 +46,11 @@ export default class ChartComponent extends Node<P,{}> {
     return !max || this.autoScale ? null : [0, max];
   }
 
-  detectLabel(y, yKey) {
-    let keyMap = this.detectKeyMap(y);
-    let map = _.find(keyMap, ({key})=> key === yKey);
-    return map ? map.name : null;
-  }
-
-  detectKeyMap(target) {
-    if (_.includes(tableKeys, target)) {
-      return _.find(tableMaps, ({key})=> key === target).value;
-    }
-
-    switch (target) {
-      case 'year':
-        return years;
-      case 'area':
-        return areas;
-      case 'gender':
-        return genders;
-    }
+  detectLabel(y, yKey, z?) {
+    let keyMap = detectMap(y);
+    let map = _.find(keyMap, ({key})=> key+'' === yKey+'');
+    let base =  map ? map.name : null;
+    return z ? `${z}:${base}` : base;
   }
 
   getBaseChart(props) {
@@ -74,7 +61,7 @@ export default class ChartComponent extends Node<P,{}> {
     return props.charts[0]
   }
 
-  getAdditionalChart(props){
+  getAdditionalChart(props) {
     if (!props.charts || props.charts.length < 2) {
       return null;
     }
@@ -89,7 +76,7 @@ export default class ChartComponent extends Node<P,{}> {
       return;
     }
     let baseChartKey = chart.key;
-    let {x, y, xSpecified, ySpecified} = chart.value;
+    let {x, y, xSpecified, ySpecified, z} = chart.value;
     let data = chart.data;
 
     if (this.state.baseChartKey == baseChartKey) {
@@ -116,12 +103,15 @@ export default class ChartComponent extends Node<P,{}> {
     let xContentList = filteredX.map((d)=> {
       return d.value;
     });
-    xContentList.unshift(this.detectLabel(y, ySpecified));
+    xContentList.unshift(this.detectLabel(y, ySpecified, z));
 
     console.log({xNameList, xContentList});
 
     this.chart = c3.generate({
       bindto: '#chart',
+      size:{
+        height: 600
+      },
       data: {
         x: 'x',
         columns: [
@@ -153,14 +143,12 @@ export default class ChartComponent extends Node<P,{}> {
       return;
     }
 
-    let dataList = this.chart.data().map(({id, values})=> {
-      return [id].concat(values.map(({value})=> value))
-    });
+    let dataList = this.chart.data()
 
 
     charts.forEach(({value, data})=> {
       let filteredX = [];
-      let {x, y, xSpecified, ySpecified} = value;
+      let {x, y, xSpecified, ySpecified, z} = value;
 
       console.log({x, y, xSpecified, ySpecified})
 
@@ -170,20 +158,21 @@ export default class ChartComponent extends Node<P,{}> {
         }
       });
 
-      let xNameList = filteredX.map((d)=> {
-        return d[x].name;
-      });
-      xNameList.unshift('x');
-
+      let label = this.detectLabel(y, ySpecified, z);
       let xContentList = filteredX.map((d)=> {
         return d.value;
       });
-      xContentList.unshift(this.detectLabel(y, ySpecified));
-      dataList.push(xContentList);
+
+      _.remove(dataList, ({id})=> id == label);
+      dataList.push({id: label, values: xContentList});
     });
 
-    console.log(dataList)
-    this.chart.load({columns: dataList});
+    let columns = dataList.map(({id, values})=> {
+      return [id].concat(values.map((set)=> set.value || set))
+    });
+
+    console.log({columns});
+    this.chart.load({columns});
   }
 
   componentDidMount() {
@@ -205,7 +194,7 @@ export default class ChartComponent extends Node<P,{}> {
 
     let {x, xSpecified} = this.state;
 
-    return this.detectKeyMap(x).map(({key, name})=> {
+    return detectMap(x).map(({key, name})=> {
       return <label>
         <input type="checkbox" checked={_.includes(xSpecified, key.toString())} onChange={()=> this.changeXSpecified(key)} value={key} id=""/>
         {name}
@@ -228,14 +217,14 @@ export default class ChartComponent extends Node<P,{}> {
     this.dispatch('chart:changeX', this.state.xSpecified.sort());
   }
 
-  writeAdditionalChartSetting(props){
+  writeAdditionalChartSetting(props) {
     let charts = this.getAdditionalChart(props);
 
     if (!charts) {
       return null;
     }
 
-    return charts.map(({value, key}, i)=>{
+    return charts.map(({value, key}, i)=> {
       let {src, gender, area, year, detailName, x, xSpecified, y, ySpecified, z} = value;
       return <section key={`additional-${i}-${key}`}>
         <div className="controller">
@@ -248,6 +237,36 @@ export default class ChartComponent extends Node<P,{}> {
         </section>
       </section>
     })
+  }
+
+  get selectedX(){
+    let chart = this.getBaseChart(this.props);
+    if (!chart) {
+      return null;
+    }
+
+    return chart.value.x;
+  }
+
+  writeAddingController() {
+    let chart = this.getBaseChart(this.props);
+    if (!chart) {
+      return null;
+    }
+
+    return writeBaseSelector((selectedSelector)=> {
+      this.setState({selectedSelector})
+    }, [this.state.selectedSelector], chart.value.x)
+  }
+
+  writeAddingSpecifier() {
+    let {selectedSelector} = this.state;
+    if (!selectedSelector) {
+      return null;
+    }
+    return writeSelectorSpecifier(selectedSelector, (selectedSpecifier)=> {
+      this.setState({selectedSpecifier})
+    }, [this.state.selectedSpecifier])
   }
 
   render() {
@@ -268,7 +287,7 @@ export default class ChartComponent extends Node<P,{}> {
         {this.writeAdditionalChartSetting(this.props)}
       </section>
       <section className="v2-chart adding-controller">
-        {this.writeAdditionalChartSetting(this.props)}
+        <ChartDataSelector x={this.selectedX}/>
       </section>
     </article>;
   }

@@ -103,6 +103,17 @@ export default class ChartContext extends Root<P,S> {
     this.dispatch('link', '/v2/chart', nextQuery);
   }
 
+  add(y, ySpecified, z){
+    let {query} = this.props.location;
+    let base:FetchingParams = retrieveBaseParams(query.base);
+    let nextNumber = 1;
+    while(query[`chart${nextNumber}`]){
+      nextNumber++;
+    }
+    query[`chart${nextNumber}`] = new FetchingParams({y, ySpecified, z}).additionalStringify();
+    this.dispatch('link', '/v2/chart', query);
+  }
+
   listen(to) {
     to('chart:find', (params)=> {
       this.find(params);
@@ -110,6 +121,11 @@ export default class ChartContext extends Root<P,S> {
 
     to('chart:changeX', (xSpecified)=> {
       this.replaceSpecified(xSpecified);
+    });
+
+    to('chart:add', (y, ySpecified, z)=> {
+      console.log({y, ySpecified, z})
+      this.add(y, ySpecified, z);
     });
 
     to('chart:area', (selectedAreas:number[])=> {

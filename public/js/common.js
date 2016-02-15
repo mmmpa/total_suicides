@@ -77288,6 +77288,7 @@ var c3 = require('c3');
 var _ = require('lodash');
 var fa_1 = require('../../lib/fa');
 var constants_1 = require("../../initializers/constants");
+var selector_writer_1 = require('../../services/selector-writer');
 var ChartComponent = (function (_super) {
     __extends(ChartComponent, _super);
     function ChartComponent(props) {
@@ -77325,29 +77326,14 @@ var ChartComponent = (function (_super) {
         }
         return !max || this.autoScale ? null : [0, max];
     };
-    ChartComponent.prototype.detectLabel = function (y, yKey) {
-        var keyMap = this.detectKeyMap(y);
+    ChartComponent.prototype.detectLabel = function (y, yKey, z) {
+        var keyMap = constants_1.detectMap(y);
         var map = _.find(keyMap, function (_a) {
             var key = _a.key;
-            return key === yKey;
+            return key + '' === yKey + '';
         });
-        return map ? map.name : null;
-    };
-    ChartComponent.prototype.detectKeyMap = function (target) {
-        if (_.includes(constants_1.tableKeys, target)) {
-            return _.find(constants_1.tableMaps, function (_a) {
-                var key = _a.key;
-                return key === target;
-            }).value;
-        }
-        switch (target) {
-            case 'year':
-                return constants_1.years;
-            case 'area':
-                return constants_1.areas;
-            case 'gender':
-                return constants_1.genders;
-        }
+        var base = map ? map.name : null;
+        return z ? z + ":" + base : base;
     };
     ChartComponent.prototype.getBaseChart = function (props) {
         if (!this.props.charts || props.charts.length === 0) {
@@ -77369,7 +77355,7 @@ var ChartComponent = (function (_super) {
             return;
         }
         var baseChartKey = chart.key;
-        var _a = chart.value, x = _a.x, y = _a.y, xSpecified = _a.xSpecified, ySpecified = _a.ySpecified;
+        var _a = chart.value, x = _a.x, y = _a.y, xSpecified = _a.xSpecified, ySpecified = _a.ySpecified, z = _a.z;
         var data = chart.data;
         if (this.state.baseChartKey == baseChartKey) {
             console.log('base chart not change');
@@ -77390,10 +77376,13 @@ var ChartComponent = (function (_super) {
         var xContentList = filteredX.map(function (d) {
             return d.value;
         });
-        xContentList.unshift(this.detectLabel(y, ySpecified));
+        xContentList.unshift(this.detectLabel(y, ySpecified, z));
         console.log({ xNameList: xNameList, xContentList: xContentList });
         this.chart = c3.generate({
             bindto: '#chart',
+            size: {
+                height: 600
+            },
             data: {
                 x: 'x',
                 columns: [
@@ -77423,35 +77412,33 @@ var ChartComponent = (function (_super) {
         if (!charts) {
             return;
         }
-        var dataList = this.chart.data().map(function (_a) {
-            var id = _a.id, values = _a.values;
-            return [id].concat(values.map(function (_a) {
-                var value = _a.value;
-                return value;
-            }));
-        });
+        var dataList = this.chart.data();
         charts.forEach(function (_a) {
             var value = _a.value, data = _a.data;
             var filteredX = [];
-            var x = value.x, y = value.y, xSpecified = value.xSpecified, ySpecified = value.ySpecified;
+            var x = value.x, y = value.y, xSpecified = value.xSpecified, ySpecified = value.ySpecified, z = value.z;
             console.log({ x: x, y: y, xSpecified: xSpecified, ySpecified: ySpecified });
             _.sortBy(data, function (d) { return d[x].content; }).forEach(function (d) {
                 if (d[y].content == ySpecified && _.includes(xSpecified, d[x].content.toString())) {
                     filteredX.push(d);
                 }
             });
-            var xNameList = filteredX.map(function (d) {
-                return d[x].name;
-            });
-            xNameList.unshift('x');
+            var label = _this.detectLabel(y, ySpecified, z);
             var xContentList = filteredX.map(function (d) {
                 return d.value;
             });
-            xContentList.unshift(_this.detectLabel(y, ySpecified));
-            dataList.push(xContentList);
+            _.remove(dataList, function (_a) {
+                var id = _a.id;
+                return id == label;
+            });
+            dataList.push({ id: label, values: xContentList });
         });
-        console.log(dataList);
-        this.chart.load({ columns: dataList });
+        var columns = dataList.map(function (_a) {
+            var id = _a.id, values = _a.values;
+            return [id].concat(values.map(function (set) { return set.value || set; }));
+        });
+        console.log({ columns: columns });
+        this.chart.load({ columns: columns });
     };
     ChartComponent.prototype.componentDidMount = function () {
         this.setBaseChart(this.props);
@@ -77468,7 +77455,7 @@ var ChartComponent = (function (_super) {
             return null;
         }
         var _a = this.state, x = _a.x, xSpecified = _a.xSpecified;
-        return this.detectKeyMap(x).map(function (_a) {
+        return constants_1.detectMap(x).map(function (_a) {
             var key = _a.key, name = _a.name;
             return React.createElement("label", null, React.createElement("input", {"type": "checkbox", "checked": _.includes(xSpecified, key.toString()), "onChange": function () { return _this.changeXSpecified(key); }, "value": key, "id": ""}), name);
         });
@@ -77498,16 +77485,47 @@ var ChartComponent = (function (_super) {
             return React.createElement("section", {"key": "additional-" + i + "-" + key}, React.createElement("div", {"className": "controller"}, React.createElement("button", null, React.createElement(fa_1.default, {"icon": "trash"}))), React.createElement("section", {"className": "setting"}, y + "-" + ySpecified));
         });
     };
+    Object.defineProperty(ChartComponent.prototype, "selectedX", {
+        get: function () {
+            var chart = this.getBaseChart(this.props);
+            if (!chart) {
+                return null;
+            }
+            return chart.value.x;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ChartComponent.prototype.writeAddingController = function () {
+        var _this = this;
+        var chart = this.getBaseChart(this.props);
+        if (!chart) {
+            return null;
+        }
+        return selector_writer_1.writeBaseSelector(function (selectedSelector) {
+            _this.setState({ selectedSelector: selectedSelector });
+        }, [this.state.selectedSelector], chart.value.x);
+    };
+    ChartComponent.prototype.writeAddingSpecifier = function () {
+        var _this = this;
+        var selectedSelector = this.state.selectedSelector;
+        if (!selectedSelector) {
+            return null;
+        }
+        return selector_writer_1.writeSelectorSpecifier(selectedSelector, function (selectedSpecifier) {
+            _this.setState({ selectedSpecifier: selectedSpecifier });
+        }, [this.state.selectedSpecifier]);
+    };
     ChartComponent.prototype.render = function () {
         var _this = this;
-        return React.createElement("article", {"className": "v2-chart body"}, React.createElement("div", {"id": "chart", "className": "v2-chart chart-container"}), React.createElement("section", {"className": "v2-chart x-specifier"}, React.createElement("button", {"onClick": function () { return _this.reloadX(); }}, React.createElement(fa_1.default, {"icon": "refresh"}), "変更を反映"), this.writeXSpecifier(this.props)), React.createElement("section", {"className": "v2-chart base-chart configuration"}), React.createElement("section", {"className": "v2-chart additional-chart configuration"}, this.writeAdditionalChartSetting(this.props)), React.createElement("section", {"className": "v2-chart adding-controller"}, this.writeAdditionalChartSetting(this.props)));
+        return React.createElement("article", {"className": "v2-chart body"}, React.createElement("div", {"id": "chart", "className": "v2-chart chart-container"}), React.createElement("section", {"className": "v2-chart x-specifier"}, React.createElement("button", {"onClick": function () { return _this.reloadX(); }}, React.createElement(fa_1.default, {"icon": "refresh"}), "変更を反映"), this.writeXSpecifier(this.props)), React.createElement("section", {"className": "v2-chart base-chart configuration"}), React.createElement("section", {"className": "v2-chart additional-chart configuration"}, this.writeAdditionalChartSetting(this.props)), React.createElement("section", {"className": "v2-chart adding-controller"}, React.createElement(selector_writer_1.ChartDataSelector, {x: this.selectedX})));
     };
     return ChartComponent;
 })(eventer_1.Node);
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ChartComponent;
 
-},{"../../initializers/constants":312,"../../lib/eventer":313,"../../lib/fa":314,"c3":1,"lodash":81,"react":289}],309:[function(require,module,exports){
+},{"../../initializers/constants":312,"../../lib/eventer":313,"../../lib/fa":314,"../../services/selector-writer":320,"c3":1,"lodash":81,"react":289}],309:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -77733,6 +77751,16 @@ var ChartContext = (function (_super) {
         });
         this.dispatch('link', '/v2/chart', nextQuery);
     };
+    ChartContext.prototype.add = function (y, ySpecified, z) {
+        var query = this.props.location.query;
+        var base = params_stringifier_1.retrieveBaseParams(query.base);
+        var nextNumber = 1;
+        while (query[("chart" + nextNumber)]) {
+            nextNumber++;
+        }
+        query[("chart" + nextNumber)] = new params_stringifier_1.FetchingParams({ y: y, ySpecified: ySpecified, z: z }).additionalStringify();
+        this.dispatch('link', '/v2/chart', query);
+    };
     ChartContext.prototype.listen = function (to) {
         var _this = this;
         to('chart:find', function (params) {
@@ -77740,6 +77768,10 @@ var ChartContext = (function (_super) {
         });
         to('chart:changeX', function (xSpecified) {
             _this.replaceSpecified(xSpecified);
+        });
+        to('chart:add', function (y, ySpecified, z) {
+            console.log({ y: y, ySpecified: ySpecified, z: z });
+            _this.add(y, ySpecified, z);
         });
         to('chart:area', function (selectedAreas) {
             _this.setState({ selectedAreas: selectedAreas });
@@ -77880,6 +77912,17 @@ var Constants = (function () {
                 { key: 'reason', value: this.reasonProps },
                 { key: 'attempted', value: this.attemptedProps },
                 { key: 'total', value: this.totalProps },
+            ];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Constants, "metaMaps", {
+        get: function () {
+            return [
+                { key: 'year', value: this.years },
+                { key: 'area', value: this.areas },
+                { key: 'gender', value: this.genders }
             ];
         },
         enumerable: true,
@@ -78171,6 +78214,8 @@ exports.metas = Constants.metas;
 exports.tables = Constants.tables;
 exports.detectColor = function (name) { return Constants.detectColor(name); };
 exports.tableMaps = Constants.tableMaps;
+exports.allMaps = [].concat(Constants.tableMaps, Constants.metaMaps);
+exports.detectMap = function (key) { return _.find(exports.allMaps, function (m) { return m.key == key; }).value; };
 
 },{"lodash":81}],313:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
@@ -78586,23 +78631,25 @@ var FetchingParams = (function () {
         this.xSpecified = xSpecified;
         this.ySpecified = ySpecified;
         this.src = src;
-        _.zip([x, y], [xSpecified, ySpecified]).forEach(function (_a) {
-            var key = _a[0], value = _a[1];
-            switch (key) {
-                case 'area':
-                    _this.area = value;
-                    break;
-                case 'year':
-                    _this.year = value;
-                    break;
-                case 'gender':
-                    _this.gender = value;
-                    break;
-                default:
-                    _this.detailName = key;
-                    _this.detail = value;
-            }
-        });
+        if (x) {
+            _.zip([x, y], [xSpecified, ySpecified]).forEach(function (_a) {
+                var key = _a[0], value = _a[1];
+                switch (key) {
+                    case 'area':
+                        _this.area = value;
+                        break;
+                    case 'year':
+                        _this.year = value;
+                        break;
+                    case 'gender':
+                        _this.gender = value;
+                        break;
+                    default:
+                        _this.detailName = key;
+                        _this.detail = value;
+                }
+            });
+        }
         if (!this.area) {
             this.area = '0';
         }
@@ -78627,4 +78674,112 @@ var FetchingParams = (function () {
 })();
 exports.FetchingParams = FetchingParams;
 
-},{}]},{},[311]);
+},{}],320:[function(require,module,exports){
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var React = require('react');
+var eventer_1 = require('../lib/eventer');
+var fa_1 = require('../lib/fa');
+var _ = require('lodash');
+var constants_1 = require("../initializers/constants");
+function writeBaseSelector(onChange, selected) {
+    var exclusion = [];
+    for (var _i = 2; _i < arguments.length; _i++) {
+        exclusion[_i - 2] = arguments[_i];
+    }
+    return detectSelectable.apply(void 0, exclusion).map(function (_a) {
+        var key = _a.key, name = _a.name;
+        return React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "radio", "checked": _.includes(selected, key), "onChange": function () { return onChange(key); }})), React.createElement("span", {"className": "input-label"}, name));
+    });
+}
+exports.writeBaseSelector = writeBaseSelector;
+function writeSelectorSpecifier(selectorKey, onChange, selected, type) {
+    if (type === void 0) { type = 'radio'; }
+    var keyMap = _.find(constants_1.allMaps, function (_a) {
+        var key = _a.key;
+        return key == selectorKey;
+    }).value;
+    return keyMap.map(function (_a) {
+        var key = _a.key, name = _a.name;
+        return React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": type, "checked": _.includes(selected, key), "onChange": function () { return onChange(key); }})), React.createElement("span", {"className": "input-label"}, name));
+    });
+}
+exports.writeSelectorSpecifier = writeSelectorSpecifier;
+function detectSelectable() {
+    var exclusion = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        exclusion[_i - 0] = arguments[_i];
+    }
+    var base = [
+        { key: 'year', name: '年度' },
+        { key: 'gender', name: '性別' },
+        { key: 'area', name: '地域' }
+    ];
+    var addingTable = true;
+    exclusion.forEach(function (ex) {
+        if (_.includes(constants_1.tableKeys, ex)) {
+            addingTable = false;
+        }
+        else {
+            _.remove(base, function (_a) {
+                var key = _a.key;
+                return key == ex;
+            });
+        }
+    });
+    return addingTable ? base.concat(constants_1.tables) : base;
+}
+var ChartDataSelector = (function (_super) {
+    __extends(ChartDataSelector, _super);
+    function ChartDataSelector(props) {
+        _super.call(this, props);
+        this.state = {
+            base: '',
+            specified: ''
+        };
+    }
+    ChartDataSelector.prototype.writeBase = function () {
+        var _this = this;
+        if (!this.props.x || this.props.x === '') {
+            return null;
+        }
+        return writeBaseSelector(function (base) {
+            _this.setState({ base: base });
+        }, [this.state.base], this.props.x);
+    };
+    ChartDataSelector.prototype.writeSpecifier = function () {
+        var _this = this;
+        var _a = this.state, base = _a.base, specified = _a.specified;
+        if (!base) {
+            return null;
+        }
+        return writeSelectorSpecifier(base, function (specified) {
+            _this.setState({ specified: specified });
+        }, [specified]);
+    };
+    ChartDataSelector.prototype.writeRangeSpecifier = function () {
+        var _this = this;
+        var _a = this.state, base = _a.base, specifiedRange = _a.specifiedRange;
+        if (!base || base === '' || base === 'year' || this.props.x === 'year') {
+            return null;
+        }
+        return writeSelectorSpecifier('year', function (specifiedRange) {
+            _this.setState({ specifiedRange: specifiedRange });
+        }, [specifiedRange]);
+    };
+    ChartDataSelector.prototype.add = function () {
+        var _a = this.state, base = _a.base, specified = _a.specified, specifiedRange = _a.specifiedRange;
+        this.dispatch('chart:add', base, specified, specifiedRange);
+    };
+    ChartDataSelector.prototype.render = function () {
+        var _this = this;
+        return React.createElement("div", {"className": "data-selector"}, React.createElement("section", {"className": "data-selector body"}, this.writeBase(), this.writeSpecifier(), this.writeRangeSpecifier(), React.createElement("button", {"onClick": function () { return _this.add(); }}, React.createElement(fa_1.default, {"icon": "plus-circle"}), "チャートにデータを追加")));
+    };
+    return ChartDataSelector;
+})(eventer_1.Node);
+exports.ChartDataSelector = ChartDataSelector;
+
+},{"../initializers/constants":312,"../lib/eventer":313,"../lib/fa":314,"lodash":81,"react":289}]},{},[311]);

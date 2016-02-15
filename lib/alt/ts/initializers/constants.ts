@@ -71,6 +71,13 @@ class Constants {
     ]
   }
 
+  static get metaMaps() {
+    return [
+      {key: 'year', value: this.years},
+      {key: 'area', value: this.areas},
+      {key: 'gender', value: this.genders}
+    ]
+  }
 
   static get metaPropsList() {
     return [
@@ -351,3 +358,5 @@ export let metas:IKeyNameMap[] = Constants.metas;
 export let tables:IKeyNameMap[] = Constants.tables;
 export let detectColor:(string)=>string = (name) => Constants.detectColor(name);
 export let tableMaps = Constants.tableMaps;
+export let allMaps = [].concat(Constants.tableMaps, Constants.metaMaps);
+export let detectMap = (key)=> _.find(allMaps, (m)=> m.key == key).value;
