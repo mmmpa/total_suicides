@@ -12,8 +12,10 @@ import {writeBaseSelector, writeSelectorSpecifier, ChartDataSelector} from '../.
 import FetchingChart from "../../models/fetched-chart";
 import FetchingChart from "../../models/fetched-chart";
 import FetchingChart from "../../models/fetched-chart";
+import {ChartBase} from "../../services/params-stringifier";
 
 interface P {
+  base:ChartBase,
   charts:FetchingChart[]
 }
 
@@ -38,12 +40,12 @@ export default class ChartComponent extends Node<P,{}> {
   }
 
   get selectedX() {
-    let chart = this.getBaseChart(this.props);
-    if (!chart) {
+    let base = this.getBaseChart(this.props);
+    if (!base) {
       return null;
     }
 
-    return chart.value.x;
+    return base.x;
   }
 
   detectLabel(y, yKey, z?) {
@@ -54,58 +56,41 @@ export default class ChartComponent extends Node<P,{}> {
   }
 
   getBaseChart(props) {
-    if (!this.props.charts || props.charts.length === 0) {
-      return null;
-    }
-
-    return props.charts[0]
+    return this.props.base;
   }
 
   getAdditionalChart(props):FetchingChart[] {
-    if (!props.charts || props.charts.length < 2) {
+    if (!props.charts || props.charts.length === 0) {
       return null;
     }
-    let c = props.charts.concat();
-    c.shift();
-    return c;
+    return props.charts.concat();
   }
 
   setBaseChart(props) {
-    let chart = this.getBaseChart(props);
-    if (!chart) {
+    let base = this.getBaseChart(props);
+
+    if (!base) {
       return;
     }
-    let baseChartKey = chart.key;
-    let {x, y, xSpecified, ySpecified, z} = chart.value;
-    let data = chart.data;
+    let baseChartKey = base.stringify();
+    let {x, xSpecified} = base;
 
     if (this.state.baseChartKey == baseChartKey) {
-      console.log('base chart not change')
+      console.log('Base chart not change')
       return;
     }
     this.setState({baseChartKey, x, xSpecified});
-
-    console.log({x, y, xSpecified, ySpecified});
-
-    let filteredX = [];
-
-    _.sortBy(data, (d)=> d[x].content).forEach((d)=> {
-      if (d[y].content == ySpecified && _.includes(xSpecified, d[x].content.toString())) {
-        filteredX.push(d);
+    console.log({baseChartKey, x, xSpecified})
+    let xNameList = [];
+    let dummy = [];
+    detectMap(x).forEach((map)=> {
+      if (_.includes(xSpecified, map.key.toString())) {
+        xNameList.push(map.name);
+        dummy.push(0);
       }
     });
-
-    let xNameList = filteredX.map((d)=> {
-      return d[x].name;
-    });
     xNameList.unshift('x');
-
-    let xContentList = filteredX.map((d)=> {
-      return d.value;
-    });
-    xContentList.unshift(this.detectLabel(y, ySpecified, z));
-
-    console.log({xNameList, xContentList});
+    dummy.unshift('place holder');
 
     this.chart = c3.generate({
       bindto: '#chart',
@@ -116,7 +101,7 @@ export default class ChartComponent extends Node<P,{}> {
         x: 'x',
         columns: [
           xNameList,
-          xContentList
+          dummy
         ],
         type: 'bar',
         types: {
@@ -137,27 +122,24 @@ export default class ChartComponent extends Node<P,{}> {
   }
 
   setAdditionalChart(props) {
-    if(!this.chart){
+    if (!this.chart) {
       return;
     }
     let charts = this.getAdditionalChart(props);
 
     let dataList = this.chart.data().concat();
-    let baseData = dataList.shift();
-    let columns = [[baseData.id].concat(baseData.values.map(({value})=> value))];
+    let columns = [];
 
     if (!charts) {
-      if(dataList.length !== 0){
-        let removables = dataList.map((d)=> d.id);
-        this.chart.unload({ids: removables});
-      }
+      let removables = dataList.map((d)=> d.id);
+      this.chart.unload({ids: removables});
       return;
     }
 
-    let addedNames = [baseData.id];
+    let addedNames = [];
 
     charts.forEach(({value, data})=> {
-      if(!data){
+      if (!data) {
         return;
       }
       let filteredX = [];
@@ -184,15 +166,14 @@ export default class ChartComponent extends Node<P,{}> {
       }
     });
 
-    if(this.chart.data().length < columns.length){
-      console.log({columns})
-      this.chart.load({columns});
-    }
 
-    if(removables.length){
+    this.chart.load({columns});
+
+    if (removables.length) {
       this.chart.unload({ids: removables});
     }
-    console.log(this.chart.data())
+    this.chart.unload('dummy');
+
   }
 
   componentDidMount() {
@@ -206,12 +187,12 @@ export default class ChartComponent extends Node<P,{}> {
   }
 
   writeXSpecifier(props) {
-    let chart = this.getBaseChart(props);
-    if (!chart) {
+    let base = this.getBaseChart(props);
+    if (!base) {
       return null;
     }
 
-    let {x, xSpecified} = this.state;
+    let {x, xSpecified} = base;
 
     return detectMap(x).map(({key, name})=> {
       return <label>
@@ -263,7 +244,6 @@ export default class ChartComponent extends Node<P,{}> {
   }
 
   render() {
-    console.log(this.props.charts)
     return <article className="v2-chart body">
       <div id="chart" className="v2-chart chart-container">
       </div>

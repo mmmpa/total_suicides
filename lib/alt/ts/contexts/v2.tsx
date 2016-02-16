@@ -2,9 +2,8 @@ import {Root} from '../lib/eventer'
 import {fetchRaw} from '../services/fetcher'
 import {normalize, ITableList, sliceRecordList} from "../services/normalizer"
 import ChartSet from "../models/chart-set";
-import {stringifyParams, retrieveParams, retrieveBaseParams, FetchingParams} from "../services/params-stringifier";
+import {stringifyParams, retrieveParams, retrieveBaseParams, FetchingParams, ChartBase} from "../services/params-stringifier";
 import * as _ from 'lodash'
-import FetchingChart from "../models/fetched-chart";
 import FetchingChart from "../models/fetched-chart";
 
 interface P {
@@ -14,6 +13,7 @@ interface P {
 
 interface S {
   charts:FetchingChart[],
+  base:ChartBase,
   loaded:any
 }
 
@@ -21,6 +21,7 @@ export default class ChartContext extends Root<P,S> {
   initialState(props) {
     return {
       charts: [],
+      base: null,
       loaded: []
     }
   }
@@ -36,30 +37,33 @@ export default class ChartContext extends Root<P,S> {
   fetchData(props) {
     let {query} = props.location;
     let chartSettings:FetchingChart[] = [];
-    let base:FetchingParams = retrieveBaseParams(query.base);
-
-    chartSettings.push(new FetchingChart(base.src, 'base', base));
+    let base:ChartBase = retrieveBaseParams(query.base);
 
     for (let i = 1, set; set = query[`chart${i}`]; i++) {
       chartSettings.push(new FetchingChart(set, `chart${i}`, retrieveParams(set, base)));
     }
+    this.setState({base});
 
     let loaded = this.state.loaded.concat();
     let loading = chartSettings.length;
     let charts:FetchingChart[] = [];
     let olds:FetchingChart[] = this.state.charts.concat();
 
+    let onLoaded = ()=>{
+      loading--;
+      if (loading === 0) {
+        this.setState({charts, loaded});
+      }
+    };
+
     chartSettings.forEach((chart:FetchingChart, i)=> {
-      let {key, name, value} = chart;
+       let {key, name, value} = chart;
 
       let preKey = loaded[i];
       if (preKey === key && olds[i]) {
         chart.data = olds[i].data;
         charts[i] = chart;
-        loading--;
-        if (loading === 0) {
-          this.setState({charts, loaded});
-        }
+        onLoaded();
         return;
       }
 
@@ -68,22 +72,20 @@ export default class ChartContext extends Root<P,S> {
         loaded[i] = key;
         chart.data = data ? sliceRecordList(data, detailName) : null;
         charts[i] = chart;
-        loading--;
-        if (loading === 0) {
-          this.setState({charts, loaded});
-        }
+        onLoaded();
       })
     });
   }
 
   find(params) {
-    let base = new FetchingParams(params);
-    this.dispatch('link', '/v2/chart', {base: base.stringify()});
+    let base = new ChartBase(params.x, params.xSpecified);
+    let chart1 = new FetchingParams(base, params);
+    this.dispatch('link', '/v2/chart', {base: base.stringify(), chart1: chart1.stringify()});
   }
 
   replaceSpecified(xSpecified) {
     let {query} = this.props.location;
-    let base:FetchingParams = retrieveBaseParams(query.base);
+    let base:ChartBase = retrieveBaseParams(query.base);
     base.xSpecified = xSpecified;
 
     let nextQuery = {base: base.stringify()};
@@ -97,7 +99,7 @@ export default class ChartContext extends Root<P,S> {
     }
 
     chartSettings.forEach(({key, value})=> {
-      nextQuery[key] = value.additionalStringify();
+      nextQuery[key] = value.stringify();
     });
 
     this.dispatch('link', '/v2/chart', nextQuery);
@@ -105,7 +107,7 @@ export default class ChartContext extends Root<P,S> {
 
   add(y, ySpecified, z) {
     let {query} = this.props.location;
-    let base:FetchingParams = retrieveBaseParams(query.base);
+    let base:ChartBase = retrieveBaseParams(query.base);
     let nextNumber = 1;
     while (query[`chart${nextNumber}`]) {
       nextNumber++;

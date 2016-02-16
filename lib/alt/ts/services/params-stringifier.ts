@@ -2,18 +2,26 @@ export function stringifyParams(x, xSpecified, y, ySpecified, z):string {
   return [x, xSpecified, y, ySpecified, z].join('_');
 }
 
-export function retrieveBaseParams(stringified:string):FetchingParams {
-  let [x, xSpecifiedSrc, y, ySpecified, z]= stringified.split('_');
+export function retrieveBaseParams(stringified:string):ChartBase {
+  let [x, xSpecifiedSrc]= stringified.split('_');
   let xSpecified = xSpecifiedSrc.split(',');
 
-  return new FetchingParams({x, y, z, xSpecified, ySpecified, src: stringified});
+  return new ChartBase(x, xSpecified, stringified);
 }
 
-export function retrieveParams(stringified:string, base:FetchingParams):FetchingParams {
+export function retrieveParams(stringified:string, base:ChartBase):FetchingParams {
   let [y, ySpecified, z]= stringified.split('_');
-  let {x, xSpecified} = base;
 
-  return new FetchingParams({x, y, z, xSpecified, ySpecified, src: stringified});
+  return new FetchingParams(base, {y, z, ySpecified, src: stringified});
+}
+
+export class ChartBase {
+  constructor(public x:string, public xSpecified:any[], public src?:string) {
+  }
+
+  stringify():string {
+    return [this.x, this.xSpecified].join('_');
+  }
 }
 
 export class FetchingParams {
@@ -29,16 +37,16 @@ export class FetchingParams {
   detailName;
   src;
 
-  constructor({x, y, z, xSpecified, ySpecified, src}) {
-    this.x = x;
+  constructor(base:ChartBase, {y, z, ySpecified, src}) {
+    this.x = base.x;
     this.y = y;
     this.z = z;
-    this.xSpecified = xSpecified;
+    this.xSpecified = base.xSpecified;
     this.ySpecified = ySpecified;
     this.src = src;
 
-    if (x) {
-      _.zip([x, y], [xSpecified, ySpecified]).forEach(([key, value])=> {
+    if (base) {
+      _.zip([base.x, y], [base.xSpecified, ySpecified]).forEach(([key, value])=> {
         switch (key) {
           case 'area':
             this.area = value;
@@ -76,10 +84,6 @@ export class FetchingParams {
   }
 
   stringify():string {
-    return [this.x, this.xSpecified, this.y, this.ySpecified, this.z].join('_');
-  }
-
-  additionalStringify():string {
     return [this.y, this.ySpecified, this.z].join('_');
   }
 }
