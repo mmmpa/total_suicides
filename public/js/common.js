@@ -77665,6 +77665,9 @@ var ChartContext = (function (_super) {
     ChartContext.prototype.fetchData = function (props) {
         var _this = this;
         var query = props.location.query;
+        if (!query.base) {
+            return;
+        }
         var chartSettings = [];
         var base = params_stringifier_1.retrieveBaseParams(query.base);
         for (var i = 1, set = void 0; set = query[("chart" + i)]; i++) {
@@ -77729,7 +77732,7 @@ var ChartContext = (function (_super) {
         while (query[("chart" + nextNumber)]) {
             nextNumber++;
         }
-        query[("chart" + nextNumber)] = new params_stringifier_1.FetchingParams({ y: y, ySpecified: ySpecified, z: z }).additionalStringify();
+        query[("chart" + nextNumber)] = new params_stringifier_1.FetchingParams(base, { y: y, ySpecified: ySpecified, z: z }).stringify();
         this.dispatch('link', '/v2/chart', query);
     };
     ChartContext.prototype.remove = function (chartName) {
@@ -77743,7 +77746,7 @@ var ChartContext = (function (_super) {
             if ("chart" + i === chartName) {
                 continue;
             }
-            nextQuery[("chart" + nextNumber)] = params_stringifier_1.retrieveParams(set, base).additionalStringify();
+            nextQuery[("chart" + nextNumber)] = params_stringifier_1.retrieveParams(set, base).stringify();
             nextLoaded[nextNumber] = loaded[i];
             nextNumber++;
         }

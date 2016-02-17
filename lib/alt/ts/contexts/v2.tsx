@@ -36,6 +36,10 @@ export default class ChartContext extends Root<P,S> {
 
   fetchData(props) {
     let {query} = props.location;
+    if(!query.base){
+      return;
+    }
+
     let chartSettings:FetchingChart[] = [];
     let base:ChartBase = retrieveBaseParams(query.base);
 
@@ -112,7 +116,7 @@ export default class ChartContext extends Root<P,S> {
     while (query[`chart${nextNumber}`]) {
       nextNumber++;
     }
-    query[`chart${nextNumber}`] = new FetchingParams({y, ySpecified, z}).additionalStringify();
+    query[`chart${nextNumber}`] = new FetchingParams(base, {y, ySpecified, z}).stringify();
     this.dispatch('link', '/v2/chart', query);
   }
 
@@ -120,7 +124,7 @@ export default class ChartContext extends Root<P,S> {
     let {query} = this.props.location;
     let loaded = this.state.loaded.concat();
 
-    let base:FetchingParams = retrieveBaseParams(query.base);
+    let base:ChartBase = retrieveBaseParams(query.base);
     let nextNumber = 1;
 
 
@@ -131,7 +135,7 @@ export default class ChartContext extends Root<P,S> {
       if (`chart${i}` === chartName) {
         continue;
       }
-      nextQuery[`chart${nextNumber}`] = retrieveParams(set, base).additionalStringify();
+      nextQuery[`chart${nextNumber}`] = retrieveParams(set, base).stringify();
       nextLoaded[nextNumber] = loaded[i];
       nextNumber++;
     }
