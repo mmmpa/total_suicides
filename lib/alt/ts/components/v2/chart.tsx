@@ -7,10 +7,8 @@ import RotatedDataTable from "../data-table";
 import ChartSet from "../../models/chart-set";
 import Fa from '../../lib/fa';
 import {ITableList, ITableSet} from "../../services/normalizer";
-import {generateBarProps, tableKeys, tableMaps, areas, years, genders, detectMap, detectCategoryName} from "../../initializers/constants";
+import {generateBarProps, tableKeys, tableMaps, areas, years, genders, detectMap, detectCategoryName, detectCategoryDetailMap} from "../../initializers/constants";
 import {writeBaseSelector, writeSelectorSpecifier, ChartDataSelector} from '../../services/selector-writer'
-import FetchingChart from "../../models/fetched-chart";
-import FetchingChart from "../../models/fetched-chart";
 import FetchingChart from "../../models/fetched-chart";
 import {ChartBase} from "../../services/params-stringifier";
 
@@ -48,29 +46,45 @@ export default class ChartComponent extends Node<P,{}> {
     return base.x;
   }
 
-  detectLabel(y, yKey, z?) {
+  detectLabel(y, yKey, zKey?) {
     let header = detectCategoryName(y);
-    let keyMap = detectMap(y);
-    let map = _.find(keyMap, ({key})=> key + '' === yKey + '');
-    let base = map ? `${header}:${map.name}` : null;
-    return z ? `${z}:${base}` : base;
+    let name = detectCategoryDetailMap(y, yKey).name;
+    let base = name ? `${header}:${name}` : null;
+
+    if (zKey) {
+      let year = detectCategoryDetailMap('year', zKey).name;
+      return `${year}:${base}`;
+    } else {
+      return base;
+    }
   }
 
-  getBaseChart(props) {
-    return this.props.base;
+  getBaseChart(props):ChartBase {
+    return props.base;
+  }
+
+  getFirstChart(props):FetchingChart {
+    let {charts} = props;
+    if (!charts || charts.length === 0) {
+      return null;
+    }
+    return charts[0];
   }
 
   getAdditionalChart(props):FetchingChart[] {
-    if (!props.charts || props.charts.length === 0) {
+    let {charts} = props;
+    if (!charts || charts.length <= 1) {
       return null;
     }
-    return props.charts.concat();
+
+    return _.drop(charts.concat(), 1);
   }
 
   setBaseChart(props) {
     let base = this.getBaseChart(props);
+    let first = this.getFirstChart(props);
 
-    if (!base) {
+    if (!base || !first) {
       return;
     }
     let baseChartKey = base.stringify();
@@ -80,18 +94,15 @@ export default class ChartComponent extends Node<P,{}> {
       console.log('Base chart not change')
       return;
     }
+
     this.setState({baseChartKey, x, xSpecified});
-    console.log({baseChartKey, x, xSpecified})
     let xNameList = [];
-    let dummy = [];
-    detectMap(x).forEach((map)=> {
+    detectMap(x).forEach((map, i)=> {
       if (_.includes(xSpecified, map.key.toString())) {
         xNameList.push(map.name);
-        dummy.push(0);
       }
     });
     xNameList.unshift('x');
-    dummy.unshift('place holder');
 
     this.chart = c3.generate({
       bindto: '#chart',
@@ -102,7 +113,7 @@ export default class ChartComponent extends Node<P,{}> {
         x: 'x',
         columns: [
           xNameList,
-          dummy
+          this.arrangeData(first)
         ],
         type: 'bar',
         types: {
@@ -122,13 +133,31 @@ export default class ChartComponent extends Node<P,{}> {
     });
   }
 
+  arrangeData(chartData){
+    let {data, value} = chartData;
+    if (!data) {
+      return;
+    }
+    let {y, ySpecified, z} = value;
+
+    let label = this.detectLabel(y, ySpecified, z);
+    let xContentList = data.map((d)=> {
+      return d.value;
+    });
+    xContentList.unshift(label);
+    return xContentList;
+  }
+
   setAdditionalChart(props) {
     if (!this.chart) {
       return;
     }
+
     let charts = this.getAdditionalChart(props);
 
     let dataList = this.chart.data().concat();
+    let {length} = dataList;
+    let firstData = dataList.shift();
     let columns = [];
 
     if (!charts) {
@@ -137,27 +166,12 @@ export default class ChartComponent extends Node<P,{}> {
       return;
     }
 
-    let addedNames = [];
+    let addedNames = [firstData.id];
 
-    charts.forEach(({value, data})=> {
-      if (!data) {
-        return;
-      }
-      let filteredX = [];
-      let {x, y, xSpecified, ySpecified, z} = value;
-
-      _.sortBy(data, (d)=> d[x].content).forEach((d)=> {
-        if (d[y].content == ySpecified && _.includes(xSpecified, d[x].content.toString())) {
-          filteredX.push(d);
-        }
-      });
-
-      let label = this.detectLabel(y, ySpecified, z);
-      let xContentList = filteredX.map((d)=> {
-        return d.value;
-      });
-      addedNames.push(label);
-      columns.push([label].concat(xContentList));
+    charts.forEach((chartData)=> {
+      let arranged = this.arrangeData(chartData);
+      addedNames.push(arranged[0]);
+      columns.push(arranged);
     });
 
     let removables = [];
@@ -168,13 +182,13 @@ export default class ChartComponent extends Node<P,{}> {
     });
 
 
-    this.chart.load({columns});
+    if(length <= columns.length){
+      this.chart.load({columns});
+    }
 
     if (removables.length) {
       this.chart.unload({ids: removables});
     }
-    this.chart.unload('dummy');
-
   }
 
   componentDidMount() {
@@ -223,7 +237,7 @@ export default class ChartComponent extends Node<P,{}> {
   }
 
   writeAdditionalChartSetting() {
-    let charts = this.getAdditionalChart(this.props);
+    let {charts} = this.props;
 
     if (!charts) {
       return null;
@@ -231,14 +245,15 @@ export default class ChartComponent extends Node<P,{}> {
 
     return charts.map((chart:FetchingChart, i)=> {
       let {src, gender, area, year, detailName, x, xSpecified, y, ySpecified, z} = chart.value;
+      let label = this.detectLabel(y, ySpecified, z);
       return <section key={`additional-${i}-${chart.key}`}>
         <div className="controller">
-          <button onClick={()=> this.remove(chart.name)}>
+          <button disabled={charts.length === 1} onClick={()=> this.remove(chart.name)}>
             <Fa icon="trash"/>
           </button>
         </div>
         <section className="setting">
-          {`${chart.name}::${y}-${ySpecified}`}
+          {`${chart.name}::${label}`}
         </section>
       </section>
     })
@@ -255,14 +270,11 @@ export default class ChartComponent extends Node<P,{}> {
         </button>
         {this.writeXSpecifier(this.props)}
       </section>
-      <section className="v2-chart base-chart configuration">
-
+      <section className="v2-chart adding-controller">
+        <ChartDataSelector x={this.selectedX}/>
       </section>
       <section className="v2-chart additional-chart configuration">
         {this.writeAdditionalChartSetting()}
-      </section>
-      <section className="v2-chart adding-controller">
-        <ChartDataSelector x={this.selectedX}/>
       </section>
     </article>;
   }

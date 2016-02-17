@@ -1,16 +1,16 @@
 export function stringifyParams(x, xSpecified, y, ySpecified, z):string {
-  return [x, xSpecified, y, ySpecified, z].join('_');
+  return [x, xSpecified, y, ySpecified, z].join('__');
 }
 
 export function retrieveBaseParams(stringified:string):ChartBase {
-  let [x, xSpecifiedSrc]= stringified.split('_');
+  let [x, xSpecifiedSrc]= stringified.split('__');
   let xSpecified = xSpecifiedSrc.split(',');
 
   return new ChartBase(x, xSpecified, stringified);
 }
 
 export function retrieveParams(stringified:string, base:ChartBase):FetchingParams {
-  let [y, ySpecified, z]= stringified.split('_');
+  let [y, ySpecified, z]= stringified.split('__');
 
   return new FetchingParams(base, {y, z, ySpecified, src: stringified});
 }
@@ -20,7 +20,7 @@ export class ChartBase {
   }
 
   stringify():string {
-    return [this.x, this.xSpecified].join('_');
+    return [this.x, this.xSpecified].join('__');
   }
 }
 
@@ -76,7 +76,6 @@ export class FetchingParams {
       this.year = z
     }
 
-
     if (!this.detailName) {
       this.detailName = 'total';
       this.detail = 'number';
@@ -84,6 +83,6 @@ export class FetchingParams {
   }
 
   stringify():string {
-    return [this.y, this.ySpecified, this.z].join('_');
+    return [this.y, this.ySpecified, this.z].join('__');
   }
 }
