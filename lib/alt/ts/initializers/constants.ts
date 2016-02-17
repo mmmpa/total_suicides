@@ -58,24 +58,24 @@ class Constants {
 
   static get tableMaps() {
     return [
-      {key: 'age', value: this.ageProps},
-      {key: 'housemate', value: this.housemateProps},
-      {key: 'job', value: this.jobProps},
-      {key: 'location', value: this.locationProps},
-      {key: 'way', value: this.wayProps},
-      {key: 'hour', value: this.hourProps},
-      {key: 'day', value: this.dayProps},
-      {key: 'reason', value: this.reasonProps},
-      {key: 'attempted', value: this.attemptedProps},
-      {key: 'total', value: this.totalProps},
+      {key: 'age', name: '年齢層', value: this.ageProps},
+      {key: 'housemate', name: '同居人の有無', value: this.housemateProps},
+      {key: 'job', name: '職業', value: this.jobProps},
+      {key: 'location', name: '場所', value: this.locationProps},
+      {key: 'way', name: '手段', value: this.wayProps},
+      {key: 'hour', name: '時間帯', value: this.hourProps},
+      {key: 'day', name: '曜日', value: this.dayProps},
+      {key: 'reason', name: '原因・動機', value: this.reasonProps},
+      {key: 'attempted', name: '未遂歴', value: this.attemptedProps},
+      {key: 'total', name: '総数', value: this.totalProps},
     ]
   }
 
   static get metaMaps() {
     return [
-      {key: 'year', value: this.years},
-      {key: 'area', value: this.areas},
-      {key: 'gender', value: this.genders}
+      {key: 'year', name: '年度', value: this.years},
+      {key: 'area', name: '都道府県', value: this.areas},
+      {key: 'gender', name: '性別', value: this.genders}
     ]
   }
 
@@ -359,4 +359,6 @@ export let tables:IKeyNameMap[] = Constants.tables;
 export let detectColor:(string)=>string = (name) => Constants.detectColor(name);
 export let tableMaps = Constants.tableMaps;
 export let allMaps = [].concat(Constants.tableMaps, Constants.metaMaps);
-export let detectMap = (key)=> _.find(allMaps, (m)=> m.key == key).value;
+export let detectMapMap = (key)=> _.find(allMaps, (m)=> m.key == key);
+export let detectCategoryName = (key)=> detectMapMap(key).name;
+export let detectMap = (key)=> detectMapMap(key).value;

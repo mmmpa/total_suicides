@@ -7,7 +7,7 @@ import RotatedDataTable from "../data-table";
 import ChartSet from "../../models/chart-set";
 import Fa from '../../lib/fa';
 import {ITableList, ITableSet} from "../../services/normalizer";
-import {generateBarProps, tableKeys, tableMaps, areas, years, genders, detectMap} from "../../initializers/constants";
+import {generateBarProps, tableKeys, tableMaps, areas, years, genders, detectMap, detectCategoryName} from "../../initializers/constants";
 import {writeBaseSelector, writeSelectorSpecifier, ChartDataSelector} from '../../services/selector-writer'
 import FetchingChart from "../../models/fetched-chart";
 import FetchingChart from "../../models/fetched-chart";
@@ -49,9 +49,10 @@ export default class ChartComponent extends Node<P,{}> {
   }
 
   detectLabel(y, yKey, z?) {
+    let header = detectCategoryName(y);
     let keyMap = detectMap(y);
     let map = _.find(keyMap, ({key})=> key + '' === yKey + '');
-    let base = map ? map.name : null;
+    let base = map ? `${header}:${map.name}` : null;
     return z ? `${z}:${base}` : base;
   }
 
