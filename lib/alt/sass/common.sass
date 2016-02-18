@@ -58,12 +58,13 @@ a:hover
     &.chart
       margin: 10px 0 0 0
       .buttons,
+      .chart-types,
       .setting
         display: inline-block
         vertical-align: middle
+        padding-right: 10px
       .setting
         @extend .size-h5
-        padding-left: 5px
         line-height: 30px
 
       .delete
@@ -72,6 +73,21 @@ a:hover
         width: 30px
         height: 30px
         line-height: 30px
+      .bar-chart,
+      .line-chart
+          @extend .btn
+          padding: 0
+          width: 30px
+          height: 30px
+          line-height: 30px
+          &.activated
+            @extend .btn-primary
+          &.unactivated
+            @extend .btn-default
+      .bar-chart
+        border-radius: 3px 0 0 3px
+      .line-chart
+        border-radius: 0 3px 3px 0
 .header
   &.body
     background: #000

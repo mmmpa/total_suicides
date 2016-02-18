@@ -72,12 +72,15 @@ export default class ChartComponent extends Node<P,{}> {
   }
 
   getAdditionalChart(props):FetchingChart[] {
+    return props.charts;
+    /*
     let {charts} = props;
     if (!charts || charts.length <= 1) {
       return null;
     }
 
     return _.drop(charts.concat(), 1);
+    */
   }
 
   setBaseChart(props) {
@@ -87,7 +90,7 @@ export default class ChartComponent extends Node<P,{}> {
     if (!base || !first) {
       return;
     }
-    let baseChartKey = base.stringify() + first.value.stringify();
+    let baseChartKey = base.stringify();
     let {x, xSpecified} = base;
 
     if (this.state.baseChartKey == baseChartKey) {
@@ -115,10 +118,7 @@ export default class ChartComponent extends Node<P,{}> {
           xNameList,
           this.arrangeData(first)
         ],
-        type: 'bar',
-        types: {
-          age: 'bar'
-        }
+        type: 'spline'
       },
       bar: {
         width: {
@@ -161,9 +161,10 @@ export default class ChartComponent extends Node<P,{}> {
     let charts = this.getAdditionalChart(props);
 
     let dataList = this.chart.data().concat();
-    let firstData = dataList.shift();
+    //let firstData = dataList.shift();
     let {length} = dataList;
     let columns = [];
+    let types = {};
 
     // 基本チャート以外のチャートがなければ全削除。
     if (!charts) {
@@ -172,12 +173,13 @@ export default class ChartComponent extends Node<P,{}> {
       return;
     }
 
-    let addedNames = [firstData.id];
+    let addedNames = [];
 
     charts.forEach((chartData)=> {
       let arranged = this.arrangeData(chartData);
       addedNames.push(arranged[0]);
       columns.push(arranged);
+      types[arranged[0]] = chartData.type
     });
 
     let removables = [];
@@ -187,13 +189,7 @@ export default class ChartComponent extends Node<P,{}> {
       }
     });
 
-    if (length < columns.length) {
-      this.chart.load({columns});
-    }
-
-    if (removables.length) {
-      this.chart.unload({ids: removables});
-    }
+    this.chart.load({columns, types, unload: removables});
   }
 
   componentDidMount() {
@@ -245,6 +241,10 @@ export default class ChartComponent extends Node<P,{}> {
     this.dispatch('chart:remove', chartName);
   }
 
+  changeType(chartName:string, type:string) {
+    this.dispatch('chart:type', chartName, type);
+  }
+
   writeAdditionalChartSetting() {
     let {charts} = this.props;
 
@@ -253,12 +253,21 @@ export default class ChartComponent extends Node<P,{}> {
     }
 
     return charts.map((chart:FetchingChart, i)=> {
-      let {src, gender, area, year, detailName, x, xSpecified, y, ySpecified, z} = chart.value;
+      let {src, gender, area, year, detailName, x, xSpecified, y, ySpecified, z, chartType} = chart.value;
+      let [barChartActivation, lineChartActivation] = chartType == 'line' ? ['unactivated', 'activated'] : ['activated', 'unactivated'];
       let label = this.detectLabel(y, ySpecified, z);
       return <section className="v2-chart added-chart chart" key={`additional-${i}-${chart.key}`}>
         <div className="buttons">
           <button className="delete" disabled={charts.length === 1} onClick={()=> this.remove(chart.name)}>
             <Fa icon="trash"/>
+          </button>
+        </div>
+        <div className="chart-types">
+          <button className={`bar-chart ${barChartActivation}`} onClick={()=> this.changeType(chart.name, 'bar')}>
+            <Fa icon="bar-chart"/>
+          </button>
+          <button className={`line-chart ${lineChartActivation}`} onClick={()=> this.changeType(chart.name, 'line')}>
+            <Fa icon="line-chart"/>
           </button>
         </div>
         <section className="setting">

@@ -364,6 +364,5 @@ export let detectCategoryName = (key)=> detectMapMap(key).name;
 export let detectMap = (key)=> detectMapMap(key).value;
 export let detectCategoryDetailMap = (category, detail)=> {
   let category = _.find(allMaps, ({key})=> key == category);
-  console.log({category})
   return _.find(category.value, ({key})=> key == detail);
 };

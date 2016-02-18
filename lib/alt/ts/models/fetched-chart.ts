@@ -22,6 +22,13 @@ export default class FetchingChart {
     }
   }
 
+  get type(){
+    if(!this.value.chartType){
+      return 'bar'
+    }
+    return this.value.chartType == '' ? 'bar' : this.value.chartType
+  }
+
   get data() {
     return this.data_
   }

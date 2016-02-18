@@ -2,7 +2,7 @@ import {Root} from '../lib/eventer'
 import {fetchRaw} from '../services/fetcher'
 import {normalize, ITableList, sliceRecordList} from "../services/normalizer"
 import ChartSet from "../models/chart-set";
-import {stringifyParams, retrieveParams, retrieveBaseParams, FetchingParams, ChartBase} from "../services/params-stringifier";
+import {retrieveParams, retrieveBaseParams, FetchingParams, ChartBase} from "../services/params-stringifier";
 import * as _ from 'lodash'
 import FetchingChart from "../models/fetched-chart";
 
@@ -144,13 +144,23 @@ export default class ChartContext extends Root<P,S> {
       }
       nextQuery[`chart${nextNumber + 1}`] = retrieveParams(set, base).stringify();
       nextLoaded[nextNumber] = loaded[i - 1];
-      nextLoaded[nextNumber] = loadedData[i - 1];
+      nextLoadedData[nextNumber] = loadedData[i - 1];
       nextNumber++;
     }
     console.log({nextLoaded, nextQuery})
     this.loaded = nextLoaded;
+    this.loadedData = nextLoadedData;
 
     this.dispatch('link', '/v2/chart', nextQuery);
+  }
+
+  changeType(chartName, type){
+    let {query} = this.props.location;
+    let base:ChartBase = retrieveBaseParams(query.base);
+    let params = retrieveParams(query[chartName], base)
+    params.chartType = type;
+    query[chartName] = params.stringify();
+    this.dispatch('link', '/v2/chart', query);
   }
 
   listen(to) {
@@ -167,8 +177,11 @@ export default class ChartContext extends Root<P,S> {
     });
 
     to('chart:remove', (chartName)=> {
-      console.log('remove')
       this.remove(chartName);
+    });
+
+    to('chart:type', (chartName, type)=> {
+      this.changeType(chartName, type);
     });
 
     to('chart:area', (selectedAreas:number[])=> {

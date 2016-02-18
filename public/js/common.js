@@ -77347,11 +77347,15 @@ var ChartComponent = (function (_super) {
         return charts[0];
     };
     ChartComponent.prototype.getAdditionalChart = function (props) {
-        var charts = props.charts;
+        return props.charts;
+        /*
+        let {charts} = props;
         if (!charts || charts.length <= 1) {
-            return null;
+          return null;
         }
+    
         return _.drop(charts.concat(), 1);
+        */
     };
     ChartComponent.prototype.setBaseChart = function (props) {
         var base = this.getBaseChart(props);
@@ -77359,7 +77363,7 @@ var ChartComponent = (function (_super) {
         if (!base || !first) {
             return;
         }
-        var baseChartKey = base.stringify() + first.value.stringify();
+        var baseChartKey = base.stringify();
         var x = base.x, xSpecified = base.xSpecified;
         if (this.state.baseChartKey == baseChartKey) {
             console.log('Base chart not change');
@@ -77384,10 +77388,7 @@ var ChartComponent = (function (_super) {
                     xNameList,
                     this.arrangeData(first)
                 ],
-                type: 'bar',
-                types: {
-                    age: 'bar'
-                }
+                type: 'spline'
             },
             bar: {
                 width: {
@@ -77426,20 +77427,22 @@ var ChartComponent = (function (_super) {
         }
         var charts = this.getAdditionalChart(props);
         var dataList = this.chart.data().concat();
-        var firstData = dataList.shift();
+        //let firstData = dataList.shift();
         var length = dataList.length;
         var columns = [];
+        var types = {};
         // 基本チャート以外のチャートがなければ全削除。
         if (!charts) {
             var removables_1 = dataList.map(function (d) { return d.id; });
             this.chart.unload({ ids: removables_1 });
             return;
         }
-        var addedNames = [firstData.id];
+        var addedNames = [];
         charts.forEach(function (chartData) {
             var arranged = _this.arrangeData(chartData);
             addedNames.push(arranged[0]);
             columns.push(arranged);
+            types[arranged[0]] = chartData.type;
         });
         var removables = [];
         dataList.forEach(function (_a) {
@@ -77448,12 +77451,7 @@ var ChartComponent = (function (_super) {
                 removables.push(id);
             }
         });
-        if (length < columns.length) {
-            this.chart.load({ columns: columns });
-        }
-        if (removables.length) {
-            this.chart.unload({ ids: removables });
-        }
+        this.chart.load({ columns: columns, types: types, unload: removables });
     };
     ChartComponent.prototype.componentDidMount = function () {
         this.setBaseChart(this.props);
@@ -77491,6 +77489,9 @@ var ChartComponent = (function (_super) {
     ChartComponent.prototype.remove = function (chartName) {
         this.dispatch('chart:remove', chartName);
     };
+    ChartComponent.prototype.changeType = function (chartName, type) {
+        this.dispatch('chart:type', chartName, type);
+    };
     ChartComponent.prototype.writeAdditionalChartSetting = function () {
         var _this = this;
         var charts = this.props.charts;
@@ -77498,9 +77499,10 @@ var ChartComponent = (function (_super) {
             return null;
         }
         return charts.map(function (chart, i) {
-            var _a = chart.value, src = _a.src, gender = _a.gender, area = _a.area, year = _a.year, detailName = _a.detailName, x = _a.x, xSpecified = _a.xSpecified, y = _a.y, ySpecified = _a.ySpecified, z = _a.z;
+            var _a = chart.value, src = _a.src, gender = _a.gender, area = _a.area, year = _a.year, detailName = _a.detailName, x = _a.x, xSpecified = _a.xSpecified, y = _a.y, ySpecified = _a.ySpecified, z = _a.z, chartType = _a.chartType;
+            var _b = chartType == 'line' ? ['unactivated', 'activated'] : ['activated', 'unactivated'], barChartActivation = _b[0], lineChartActivation = _b[1];
             var label = _this.detectLabel(y, ySpecified, z);
-            return React.createElement("section", {"className": "v2-chart added-chart chart", "key": "additional-" + i + "-" + chart.key}, React.createElement("div", {"className": "buttons"}, React.createElement("button", {"className": "delete", "disabled": charts.length === 1, "onClick": function () { return _this.remove(chart.name); }}, React.createElement(fa_1.default, {"icon": "trash"}))), React.createElement("section", {"className": "setting"}, chart.name + "::" + label));
+            return React.createElement("section", {"className": "v2-chart added-chart chart", "key": "additional-" + i + "-" + chart.key}, React.createElement("div", {"className": "buttons"}, React.createElement("button", {"className": "delete", "disabled": charts.length === 1, "onClick": function () { return _this.remove(chart.name); }}, React.createElement(fa_1.default, {"icon": "trash"}))), React.createElement("div", {"className": "chart-types"}, React.createElement("button", {"className": "bar-chart " + barChartActivation, "onClick": function () { return _this.changeType(chart.name, 'bar'); }}, React.createElement(fa_1.default, {"icon": "bar-chart"})), React.createElement("button", {"className": "line-chart " + lineChartActivation, "onClick": function () { return _this.changeType(chart.name, 'line'); }}, React.createElement(fa_1.default, {"icon": "line-chart"}))), React.createElement("section", {"className": "setting"}, chart.name + "::" + label));
         });
     };
     ChartComponent.prototype.render = function () {
@@ -77769,12 +77771,21 @@ var ChartContext = (function (_super) {
             }
             nextQuery[("chart" + (nextNumber + 1))] = params_stringifier_1.retrieveParams(set, base).stringify();
             nextLoaded[nextNumber] = loaded[i - 1];
-            nextLoaded[nextNumber] = loadedData[i - 1];
+            nextLoadedData[nextNumber] = loadedData[i - 1];
             nextNumber++;
         }
         console.log({ nextLoaded: nextLoaded, nextQuery: nextQuery });
         this.loaded = nextLoaded;
+        this.loadedData = nextLoadedData;
         this.dispatch('link', '/v2/chart', nextQuery);
+    };
+    ChartContext.prototype.changeType = function (chartName, type) {
+        var query = this.props.location.query;
+        var base = params_stringifier_1.retrieveBaseParams(query.base);
+        var params = params_stringifier_1.retrieveParams(query[chartName], base);
+        params.chartType = type;
+        query[chartName] = params.stringify();
+        this.dispatch('link', '/v2/chart', query);
     };
     ChartContext.prototype.listen = function (to) {
         var _this = this;
@@ -77788,8 +77799,10 @@ var ChartContext = (function (_super) {
             _this.add(y, ySpecified, z);
         });
         to('chart:remove', function (chartName) {
-            console.log('remove');
             _this.remove(chartName);
+        });
+        to('chart:type', function (chartName, type) {
+            _this.changeType(chartName, type);
         });
         to('chart:area', function (selectedAreas) {
             _this.setState({ selectedAreas: selectedAreas });
@@ -78241,7 +78254,6 @@ exports.detectCategoryDetailMap = function (category, detail) {
         var key = _a.key;
         return key == category;
     });
-    console.log({ category: category });
     return _.find(category.value, function (_a) {
         var key = _a.key;
         return key == detail;
@@ -78428,6 +78440,16 @@ var FetchingChart = (function () {
                     return d[x].content;
                 });
             }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FetchingChart.prototype, "type", {
+        get: function () {
+            if (!this.value.chartType) {
+                return 'bar';
+            }
+            return this.value.chartType == '' ? 'bar' : this.value.chartType;
         },
         enumerable: true,
         configurable: true
@@ -78677,10 +78699,6 @@ function tableToChart(table) {
 exports.tableToChart = tableToChart;
 
 },{"../initializers/constants":312,"../models/chart-set":315,"../models/table":317,"lodash":81}],320:[function(require,module,exports){
-function stringifyParams(x, xSpecified, y, ySpecified, z) {
-    return [x, xSpecified, y, ySpecified, z].join('__');
-}
-exports.stringifyParams = stringifyParams;
 function retrieveBaseParams(stringified) {
     var _a = stringified.split('__'), x = _a[0], xSpecifiedSrc = _a[1];
     var xSpecified = xSpecifiedSrc.split(',').map(function (v) {
@@ -78691,8 +78709,8 @@ function retrieveBaseParams(stringified) {
 }
 exports.retrieveBaseParams = retrieveBaseParams;
 function retrieveParams(stringified, base) {
-    var _a = stringified.split('__'), y = _a[0], ySpecified = _a[1], z = _a[2];
-    return new FetchingParams(base, { y: y, z: z, ySpecified: ySpecified, src: stringified });
+    var _a = stringified.split('__'), y = _a[0], ySpecified = _a[1], z = _a[2], chartType = _a[3];
+    return new FetchingParams(base, { y: y, z: z, ySpecified: ySpecified, chartType: chartType, src: stringified });
 }
 exports.retrieveParams = retrieveParams;
 var ChartBase = (function () {
@@ -78710,13 +78728,14 @@ exports.ChartBase = ChartBase;
 var FetchingParams = (function () {
     function FetchingParams(base, _a) {
         var _this = this;
-        var y = _a.y, z = _a.z, ySpecified = _a.ySpecified, src = _a.src;
+        var y = _a.y, z = _a.z, ySpecified = _a.ySpecified, src = _a.src, chartType = _a.chartType;
         this.x = base.x;
         this.y = y;
         this.z = z;
         this.xSpecified = base.xSpecified;
         this.ySpecified = ySpecified;
         this.src = src;
+        this.chartType = chartType;
         if (base) {
             _.zip([base.x, y], [base.xSpecified, ySpecified]).forEach(function (_a) {
                 var key = _a[0], value = _a[1];
@@ -78751,10 +78770,10 @@ var FetchingParams = (function () {
         }
     }
     FetchingParams.prototype.stringify = function () {
-        return [this.y, this.ySpecified, this.z].join('__');
+        return [this.y, this.ySpecified, this.z, this.chartType].join('__');
     };
     FetchingParams.prototype.stringifyAll = function () {
-        return [this.x, this.xSpecified, this.y, this.ySpecified, this.z].join('__');
+        return [this.x, this.xSpecified, this.y, this.ySpecified, this.z, this.chartType].join('__');
     };
     return FetchingParams;
 })();
