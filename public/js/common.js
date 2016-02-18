@@ -77359,7 +77359,7 @@ var ChartComponent = (function (_super) {
         if (!base || !first) {
             return;
         }
-        var baseChartKey = base.stringify();
+        var baseChartKey = base.stringify() + first.value.stringify();
         var x = base.x, xSpecified = base.xSpecified;
         if (this.state.baseChartKey == baseChartKey) {
             console.log('Base chart not change');
@@ -77368,7 +77368,7 @@ var ChartComponent = (function (_super) {
         this.setState({ baseChartKey: baseChartKey, x: x, xSpecified: xSpecified });
         var xNameList = [];
         constants_1.detectMap(x).forEach(function (map, i) {
-            if (_.includes(xSpecified, map.key.toString())) {
+            if (_.includes(xSpecified, map.key)) {
                 xNameList.push(map.name);
             }
         });
@@ -77389,6 +77389,11 @@ var ChartComponent = (function (_super) {
                     age: 'bar'
                 }
             },
+            bar: {
+                width: {
+                    ratio: 0.95
+                }
+            },
             axis: {
                 x: {
                     type: 'category',
@@ -77406,9 +77411,9 @@ var ChartComponent = (function (_super) {
         if (!data) {
             return;
         }
-        var y = value.y, ySpecified = value.ySpecified, z = value.z;
+        var y = value.y, ySpecified = value.ySpecified, z = value.z, xSpecified = value.xSpecified, x = value.x;
         var label = this.detectLabel(y, ySpecified, z);
-        var xContentList = data.map(function (d) {
+        var xContentList = _.filter(data, function (d) { return _.includes(xSpecified, d[x].content); }).map(function (d) {
             return d.value;
         });
         xContentList.unshift(label);
@@ -77421,9 +77426,10 @@ var ChartComponent = (function (_super) {
         }
         var charts = this.getAdditionalChart(props);
         var dataList = this.chart.data().concat();
-        var length = dataList.length;
         var firstData = dataList.shift();
+        var length = dataList.length;
         var columns = [];
+        // 基本チャート以外のチャートがなければ全削除。
         if (!charts) {
             var removables_1 = dataList.map(function (d) { return d.id; });
             this.chart.unload({ ids: removables_1 });
@@ -77442,7 +77448,7 @@ var ChartComponent = (function (_super) {
                 removables.push(id);
             }
         });
-        if (length <= columns.length) {
+        if (length < columns.length) {
             this.chart.load({ columns: columns });
         }
         if (removables.length) {
@@ -77464,13 +77470,12 @@ var ChartComponent = (function (_super) {
             return null;
         }
         var x = base.x, xSpecified = base.xSpecified;
-        return constants_1.detectMap(x).map(function (_a) {
+        return React.createElement("section", {"className": "v2-chart x-specifier-list"}, constants_1.detectMap(x).map(function (_a) {
             var key = _a.key, name = _a.name;
-            return React.createElement("label", null, React.createElement("input", {"type": "checkbox", "checked": _.includes(xSpecified, key.toString()), "onChange": function () { return _this.changeXSpecified(key); }, "value": key, "id": ""}), name);
-        });
+            return React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "checkbox", "checked": _.includes(_this.state.xSpecified, key), "onChange": function () { return _this.changeXSpecified(key); }, "value": key, "id": ""})), React.createElement("span", {"className": "input-label"}, name));
+        }));
     };
-    ChartComponent.prototype.changeXSpecified = function (keySrc) {
-        var key = keySrc.toString();
+    ChartComponent.prototype.changeXSpecified = function (key) {
         var xSpecified = this.state.xSpecified.concat();
         if (_.includes(xSpecified, key)) {
             xSpecified = _.without(xSpecified, key);
@@ -77478,10 +77483,10 @@ var ChartComponent = (function (_super) {
         else {
             xSpecified.push(key);
         }
-        this.setState({ xSpecified: xSpecified });
+        this.reloadX(xSpecified);
     };
-    ChartComponent.prototype.reloadX = function () {
-        this.dispatch('chart:changeX', this.state.xSpecified.sort());
+    ChartComponent.prototype.reloadX = function (xSpecified) {
+        this.dispatch('chart:changeX', xSpecified);
     };
     ChartComponent.prototype.remove = function (chartName) {
         this.dispatch('chart:remove', chartName);
@@ -77495,12 +77500,11 @@ var ChartComponent = (function (_super) {
         return charts.map(function (chart, i) {
             var _a = chart.value, src = _a.src, gender = _a.gender, area = _a.area, year = _a.year, detailName = _a.detailName, x = _a.x, xSpecified = _a.xSpecified, y = _a.y, ySpecified = _a.ySpecified, z = _a.z;
             var label = _this.detectLabel(y, ySpecified, z);
-            return React.createElement("section", {"key": "additional-" + i + "-" + chart.key}, React.createElement("div", {"className": "controller"}, React.createElement("button", {"disabled": charts.length === 1, "onClick": function () { return _this.remove(chart.name); }}, React.createElement(fa_1.default, {"icon": "trash"}))), React.createElement("section", {"className": "setting"}, chart.name + "::" + label));
+            return React.createElement("section", {"className": "v2-chart added-chart chart", "key": "additional-" + i + "-" + chart.key}, React.createElement("div", {"className": "buttons"}, React.createElement("button", {"className": "delete", "disabled": charts.length === 1, "onClick": function () { return _this.remove(chart.name); }}, React.createElement(fa_1.default, {"icon": "trash"}))), React.createElement("section", {"className": "setting"}, chart.name + "::" + label));
         });
     };
     ChartComponent.prototype.render = function () {
-        var _this = this;
-        return React.createElement("article", {"className": "v2-chart body"}, React.createElement("div", {"id": "chart", "className": "v2-chart chart-container"}), React.createElement("section", {"className": "v2-chart x-specifier"}, React.createElement("button", {"onClick": function () { return _this.reloadX(); }}, React.createElement(fa_1.default, {"icon": "refresh"}), "変更を反映"), this.writeXSpecifier(this.props)), React.createElement("section", {"className": "v2-chart adding-controller"}, React.createElement(selector_writer_1.ChartDataSelector, {x: this.selectedX})), React.createElement("section", {"className": "v2-chart additional-chart configuration"}, this.writeAdditionalChartSetting()));
+        return React.createElement("article", {"className": "v2-chart body"}, React.createElement("section", {"className": "v2-chart chart-container"}, React.createElement("div", {"id": "chart"})), React.createElement("section", {"className": "v2-chart chart-controller"}, React.createElement("section", {"className": "v2-chart controller-container x-specifier"}, React.createElement("h1", {"className": "v2-chart controller-title"}, React.createElement(fa_1.default, {"icon": "arrows-h"}), "横軸の表示内容の変更"), this.writeXSpecifier(this.props)), React.createElement("section", {"className": "v2-chart controller-container adding-controller"}, React.createElement("h1", {"className": "v2-chart controller-title"}, React.createElement(fa_1.default, {"icon": "arrows-v"}), "縦軸の表示内容を追加"), React.createElement(selector_writer_1.ChartDataSelector, {x: this.selectedX})), React.createElement("section", {"className": "v2-chart controller-container added-chart chart-list"}, React.createElement("h1", {"className": "v2-chart controller-title"}, React.createElement(fa_1.default, {"icon": "ellipsis-v"}), "表示中の内容"), this.writeAdditionalChartSetting())));
     };
     return ChartComponent;
 })(eventer_1.Node);
@@ -77659,12 +77663,13 @@ var ChartContext = (function (_super) {
     __extends(ChartContext, _super);
     function ChartContext() {
         _super.apply(this, arguments);
+        this.loaded = [];
+        this.loadedData = [];
     }
     ChartContext.prototype.initialState = function (props) {
         return {
             charts: [],
-            base: null,
-            loaded: []
+            base: null
         };
     };
     ChartContext.prototype.componentDidMount = function () {
@@ -77684,21 +77689,23 @@ var ChartContext = (function (_super) {
         for (var i = 1, set = void 0; set = query[("chart" + i)]; i++) {
             chartSettings.push(new fetched_chart_1.default(set, "chart" + i, params_stringifier_1.retrieveParams(set, base)));
         }
-        this.setState({ base: base });
-        var loaded = this.state.loaded.concat();
+        var loaded = this.loaded.concat();
         var loading = chartSettings.length;
         var charts = [];
-        var olds = this.state.charts.concat();
+        var olds = this.loadedData.concat();
         var onLoaded = function () {
             loading--;
             if (loading === 0) {
-                _this.setState({ charts: charts, loaded: loaded });
+                _this.loaded = loaded;
+                _this.loadedData = charts;
+                _this.setState({ base: base, charts: charts });
+                console.log({ charts: charts });
             }
         };
         chartSettings.forEach(function (chart, i) {
-            var key = chart.key, name = chart.name, value = chart.value;
+            var key = chart.key, name = chart.name, value = chart.value, fullKey = chart.fullKey;
             var preKey = loaded[i];
-            if (preKey === key && olds[i]) {
+            if (preKey === fullKey && olds[i]) {
                 chart.data = olds[i].data;
                 charts[i] = chart;
                 onLoaded();
@@ -77706,7 +77713,7 @@ var ChartContext = (function (_super) {
             }
             var gender = value.gender, year = value.year, area = value.area, detailName = value.detailName;
             fetcher_1.fetchRaw(gender, year, area, detailName, function (data) {
-                loaded[i] = key;
+                loaded[i] = fullKey;
                 chart.data = data ? normalizer_1.sliceRecordList(data, detailName) : null;
                 charts[i] = chart;
                 onLoaded();
@@ -77734,6 +77741,7 @@ var ChartContext = (function (_super) {
             var key = _a.key, value = _a.value;
             nextQuery[key] = value.stringify();
         });
+        this.loaded = [];
         this.dispatch('link', '/v2/chart', nextQuery);
     };
     ChartContext.prototype.add = function (y, ySpecified, z) {
@@ -77748,21 +77756,24 @@ var ChartContext = (function (_super) {
     };
     ChartContext.prototype.remove = function (chartName) {
         var query = this.props.location.query;
-        var loaded = this.state.loaded.concat();
+        var loaded = this.loaded.concat();
+        var loadedData = this.loadedData.concat();
         var base = params_stringifier_1.retrieveBaseParams(query.base);
-        var nextNumber = 1;
+        var nextNumber = 0;
         var nextQuery = { base: base.stringify() };
-        var nextLoaded = [loaded[0]];
+        var nextLoaded = [];
+        var nextLoadedData = [];
         for (var i = 1, set = void 0; set = query[("chart" + i)]; i++) {
             if ("chart" + i === chartName) {
                 continue;
             }
-            nextQuery[("chart" + nextNumber)] = params_stringifier_1.retrieveParams(set, base).stringify();
-            nextLoaded[nextNumber] = loaded[i];
+            nextQuery[("chart" + (nextNumber + 1))] = params_stringifier_1.retrieveParams(set, base).stringify();
+            nextLoaded[nextNumber] = loaded[i - 1];
+            nextLoaded[nextNumber] = loadedData[i - 1];
             nextNumber++;
         }
         console.log({ nextLoaded: nextLoaded, nextQuery: nextQuery });
-        this.setState({ loaded: nextLoaded });
+        this.loaded = nextLoaded;
         this.dispatch('link', '/v2/chart', nextQuery);
     };
     ChartContext.prototype.listen = function (to) {
@@ -78421,6 +78432,13 @@ var FetchingChart = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(FetchingChart.prototype, "fullKey", {
+        get: function () {
+            return this.value.stringifyAll();
+        },
+        enumerable: true,
+        configurable: true
+    });
     return FetchingChart;
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -78665,7 +78683,10 @@ function stringifyParams(x, xSpecified, y, ySpecified, z) {
 exports.stringifyParams = stringifyParams;
 function retrieveBaseParams(stringified) {
     var _a = stringified.split('__'), x = _a[0], xSpecifiedSrc = _a[1];
-    var xSpecified = xSpecifiedSrc.split(',');
+    var xSpecified = xSpecifiedSrc.split(',').map(function (v) {
+        var num = +v;
+        return isNaN(num) ? v : num;
+    });
     return new ChartBase(x, xSpecified, stringified);
 }
 exports.retrieveBaseParams = retrieveBaseParams;
@@ -78731,6 +78752,9 @@ var FetchingParams = (function () {
     }
     FetchingParams.prototype.stringify = function () {
         return [this.y, this.ySpecified, this.z].join('__');
+    };
+    FetchingParams.prototype.stringifyAll = function () {
+        return [this.x, this.xSpecified, this.y, this.ySpecified, this.z].join('__');
     };
     return FetchingParams;
 })();
@@ -78808,9 +78832,9 @@ var ChartDataSelector = (function (_super) {
         if (!this.props.x || this.props.x === '') {
             return null;
         }
-        return writeBaseSelector(function (base) {
+        return React.createElement("section", {"className": "v2-chart sub-controller-container data-selector y"}, React.createElement("h1", {"className": "v2-chart sub-controller-title"}, "カテゴリー"), writeBaseSelector(function (base) {
             _this.setState({ base: base });
-        }, [this.state.base], this.props.x);
+        }, [this.state.base], this.props.x));
     };
     ChartDataSelector.prototype.writeSpecifier = function () {
         var _this = this;
@@ -78818,9 +78842,9 @@ var ChartDataSelector = (function (_super) {
         if (!base) {
             return null;
         }
-        return writeSelectorSpecifier(base, function (specified) {
+        return React.createElement("section", {"className": "v2-chart sub-controller-container data-selector y-specifier"}, React.createElement("h1", {"className": "v2-chart sub-controller-title"}, "詳細"), writeSelectorSpecifier(base, function (specified) {
             _this.setState({ specified: specified });
-        }, [specified]);
+        }, [specified]));
     };
     ChartDataSelector.prototype.writeRangeSpecifier = function () {
         var _this = this;
@@ -78828,9 +78852,9 @@ var ChartDataSelector = (function (_super) {
         if (!base || base === '' || base === 'year' || this.props.x === 'year') {
             return null;
         }
-        return writeSelectorSpecifier('year', function (specifiedRange) {
+        return React.createElement("section", {"className": "v2-chart sub-controller-container data-selector y-specifier"}, React.createElement("h1", {"className": "v2-chart sub-controller-title"}, "時期の指定が必要です"), writeSelectorSpecifier('year', function (specifiedRange) {
             _this.setState({ specifiedRange: specifiedRange });
-        }, [specifiedRange]);
+        }, [specifiedRange]));
     };
     ChartDataSelector.prototype.add = function () {
         var _a = this.state, base = _a.base, specified = _a.specified, specifiedRange = _a.specifiedRange;
@@ -78838,7 +78862,7 @@ var ChartDataSelector = (function (_super) {
     };
     ChartDataSelector.prototype.render = function () {
         var _this = this;
-        return React.createElement("div", {"className": "data-selector"}, React.createElement("section", {"className": "data-selector body"}, this.writeBase(), this.writeSpecifier(), this.writeRangeSpecifier(), React.createElement("button", {"onClick": function () { return _this.add(); }}, React.createElement(fa_1.default, {"icon": "plus-circle"}), "チャートにデータを追加")));
+        return React.createElement("section", {"className": "v2-chart data-selector"}, React.createElement("section", {"className": "v2-chart data-selector"}, this.writeBase(), this.writeSpecifier(), this.writeRangeSpecifier(), React.createElement("section", {"className": "v2-chart data-selector submit"}, React.createElement("button", {"className": "submit", "onClick": function () { return _this.add(); }}, React.createElement(fa_1.default, {"icon": "plus-circle"}), "チャートにデータを追加"))));
     };
     return ChartDataSelector;
 })(eventer_1.Node);

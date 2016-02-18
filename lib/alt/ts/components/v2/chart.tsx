@@ -87,7 +87,7 @@ export default class ChartComponent extends Node<P,{}> {
     if (!base || !first) {
       return;
     }
-    let baseChartKey = base.stringify();
+    let baseChartKey = base.stringify() + first.value.stringify();
     let {x, xSpecified} = base;
 
     if (this.state.baseChartKey == baseChartKey) {
@@ -98,7 +98,7 @@ export default class ChartComponent extends Node<P,{}> {
     this.setState({baseChartKey, x, xSpecified});
     let xNameList = [];
     detectMap(x).forEach((map, i)=> {
-      if (_.includes(xSpecified, map.key.toString())) {
+      if (_.includes(xSpecified, map.key)) {
         xNameList.push(map.name);
       }
     });
@@ -120,6 +120,11 @@ export default class ChartComponent extends Node<P,{}> {
           age: 'bar'
         }
       },
+      bar: {
+        width: {
+          ratio: 0.95
+        }
+      },
       axis: {
         x: {
           type: 'category',
@@ -133,15 +138,15 @@ export default class ChartComponent extends Node<P,{}> {
     });
   }
 
-  arrangeData(chartData){
+  arrangeData(chartData) {
     let {data, value} = chartData;
     if (!data) {
       return;
     }
-    let {y, ySpecified, z} = value;
+    let {y, ySpecified, z, xSpecified, x} = value;
 
     let label = this.detectLabel(y, ySpecified, z);
-    let xContentList = data.map((d)=> {
+    let xContentList = _.filter(data, (d)=> _.includes(xSpecified, d[x].content)).map((d)=> {
       return d.value;
     });
     xContentList.unshift(label);
@@ -156,10 +161,11 @@ export default class ChartComponent extends Node<P,{}> {
     let charts = this.getAdditionalChart(props);
 
     let dataList = this.chart.data().concat();
-    let {length} = dataList;
     let firstData = dataList.shift();
+    let {length} = dataList;
     let columns = [];
 
+    // 基本チャート以外のチャートがなければ全削除。
     if (!charts) {
       let removables = dataList.map((d)=> d.id);
       this.chart.unload({ids: removables});
@@ -181,8 +187,7 @@ export default class ChartComponent extends Node<P,{}> {
       }
     });
 
-
-    if(length <= columns.length){
+    if (length < columns.length) {
       this.chart.load({columns});
     }
 
@@ -209,27 +214,31 @@ export default class ChartComponent extends Node<P,{}> {
 
     let {x, xSpecified} = base;
 
-    return detectMap(x).map(({key, name})=> {
+    return <section className="v2-chart x-specifier-list">{detectMap(x).map(({key, name})=> {
       return <label>
-        <input type="checkbox" checked={_.includes(xSpecified, key.toString())} onChange={()=> this.changeXSpecified(key)} value={key} id=""/>
-        {name}
-      </label>
-    });
+        <span className="input-input">
+          <input type="checkbox" checked={_.includes(this.state.xSpecified, key)} onChange={()=> this.changeXSpecified(key)} value={key} id=""/>
+        </span>
+        <span className="input-label">
+          {name}
+        </span>
+      </label>})}
+    </section>
   }
 
-  changeXSpecified(keySrc) {
-    let key = keySrc.toString();
+  changeXSpecified(key) {
     let xSpecified = this.state.xSpecified.concat();
     if (_.includes(xSpecified, key)) {
       xSpecified = _.without(xSpecified, key);
     } else {
       xSpecified.push(key);
     }
-    this.setState({xSpecified});
+
+    this.reloadX(xSpecified);
   }
 
-  reloadX() {
-    this.dispatch('chart:changeX', this.state.xSpecified.sort());
+  reloadX(xSpecified) {
+    this.dispatch('chart:changeX', xSpecified);
   }
 
   remove(chartName:string) {
@@ -246,9 +255,9 @@ export default class ChartComponent extends Node<P,{}> {
     return charts.map((chart:FetchingChart, i)=> {
       let {src, gender, area, year, detailName, x, xSpecified, y, ySpecified, z} = chart.value;
       let label = this.detectLabel(y, ySpecified, z);
-      return <section key={`additional-${i}-${chart.key}`}>
-        <div className="controller">
-          <button disabled={charts.length === 1} onClick={()=> this.remove(chart.name)}>
+      return <section className="v2-chart added-chart chart" key={`additional-${i}-${chart.key}`}>
+        <div className="buttons">
+          <button className="delete" disabled={charts.length === 1} onClick={()=> this.remove(chart.name)}>
             <Fa icon="trash"/>
           </button>
         </div>
@@ -261,20 +270,32 @@ export default class ChartComponent extends Node<P,{}> {
 
   render() {
     return <article className="v2-chart body">
-      <div id="chart" className="v2-chart chart-container">
-      </div>
-      <section className="v2-chart x-specifier">
-        <button onClick={()=> this.reloadX()}>
-          <Fa icon="refresh"/>
-          変更を反映
-        </button>
-        {this.writeXSpecifier(this.props)}
+      <section className="v2-chart chart-container">
+        <div id="chart">
+        </div>
       </section>
-      <section className="v2-chart adding-controller">
-        <ChartDataSelector x={this.selectedX}/>
-      </section>
-      <section className="v2-chart additional-chart configuration">
-        {this.writeAdditionalChartSetting()}
+      <section className="v2-chart chart-controller">
+        <section className="v2-chart controller-container x-specifier">
+          <h1 className="v2-chart controller-title">
+            <Fa icon="arrows-h"/>
+            横軸の表示内容の変更
+          </h1>
+          {this.writeXSpecifier(this.props)}
+        </section>
+        <section className="v2-chart controller-container adding-controller">
+          <h1 className="v2-chart controller-title">
+            <Fa icon="arrows-v"/>
+            縦軸の表示内容を追加
+          </h1>
+          <ChartDataSelector x={this.selectedX}/>
+        </section>
+        <section className="v2-chart controller-container added-chart chart-list">
+          <h1 className="v2-chart controller-title">
+            <Fa icon="ellipsis-v"/>
+            表示中の内容
+          </h1>
+          {this.writeAdditionalChartSetting()}
+        </section>
       </section>
     </article>;
   }

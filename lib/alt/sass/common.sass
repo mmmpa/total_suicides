@@ -16,9 +16,62 @@ a:hover
   text-decoration: none
 
 .v2-chart
+  &.chart-container
+    padding: 20px
   &.body
     background: #fff
+  &.controller-title
+    @extend .size-h4
+    margin: 0 0 10px 0
+    border-bottom: 2px solid $gray2
+    padding: 0 0 10px 0
+  &.sub-controller-title
+    @extend .size-h5
+    margin: 0 0 10px 0
+    border-bottom: 2px dotted #eee
+    padding: 0 0 10px 0
+  &.chart-controller
+    padding-bottom: 1px
+    background: $gray1
+    overflow: hidden
+  &.controller-container
+    margin: 40px 0 20px 0
+    padding: 0 20px
+  &.sub-controller-container
+    margin: 20px 0 20px 0
+  &.x-specifier-list
+    label
+      @extend .size-h5
+      display: inline-block
+      white-space: nowrap
+      padding-right: 20px
+  &.data-selector
+    label
+      @extend .size-h5
+      display: inline-block
+      white-space: nowrap
+      padding-right: 20px
+    &.submit
+      .submit
+        @extend .btn, .btn-success, .size-h6
+  &.added-chart
+    &.chart
+      margin: 10px 0 0 0
+      .buttons,
+      .setting
+        display: inline-block
+        vertical-align: middle
+      .setting
+        @extend .size-h5
+        padding-left: 5px
+        line-height: 30px
 
+      .delete
+        @extend .btn, .btn-danger
+        padding: 0
+        width: 30px
+        height: 30px
+        line-height: 30px
 .header
   &.body
     background: #000
@@ -99,6 +152,7 @@ a:hover
     padding: 20px
     p
       @extend .size-h6
+
 span
   &.input-input,
   &.input-label
@@ -159,6 +213,7 @@ span
   div
     display: inline-block
     vertical-align: top
+
 .selector-area
   @extend .size-h6
   label
@@ -181,6 +236,7 @@ span
       display: inline-block
       margin: 0
     line-height: 100%
+
 .area-selector
   @extend .size-h6
   label

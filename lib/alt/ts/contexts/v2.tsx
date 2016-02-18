@@ -13,16 +13,17 @@ interface P {
 
 interface S {
   charts:FetchingChart[],
-  base:ChartBase,
-  loaded:any
+  base:ChartBase
 }
 
 export default class ChartContext extends Root<P,S> {
+  loaded:any[] = [];
+  loadedData:FetchingChart[] = [];
+
   initialState(props) {
     return {
       charts: [],
-      base: null,
-      loaded: []
+      base: null
     }
   }
 
@@ -36,7 +37,7 @@ export default class ChartContext extends Root<P,S> {
 
   fetchData(props) {
     let {query} = props.location;
-    if(!query.base){
+    if (!query.base) {
       return;
     }
 
@@ -46,25 +47,27 @@ export default class ChartContext extends Root<P,S> {
     for (let i = 1, set; set = query[`chart${i}`]; i++) {
       chartSettings.push(new FetchingChart(set, `chart${i}`, retrieveParams(set, base)));
     }
-    this.setState({base});
 
-    let loaded = this.state.loaded.concat();
+    let loaded = this.loaded.concat();
     let loading = chartSettings.length;
     let charts:FetchingChart[] = [];
-    let olds:FetchingChart[] = this.state.charts.concat();
+    let olds:FetchingChart[] = this.loadedData.concat();
 
-    let onLoaded = ()=>{
+    let onLoaded = ()=> {
       loading--;
       if (loading === 0) {
-        this.setState({charts, loaded});
+        this.loaded = loaded;
+        this.loadedData = charts;
+        this.setState({base, charts});
+        console.log({charts})
       }
     };
 
     chartSettings.forEach((chart:FetchingChart, i)=> {
-       let {key, name, value} = chart;
+      let {key, name, value, fullKey} = chart;
 
       let preKey = loaded[i];
-      if (preKey === key && olds[i]) {
+      if (preKey === fullKey && olds[i]) {
         chart.data = olds[i].data;
         charts[i] = chart;
         onLoaded();
@@ -73,7 +76,7 @@ export default class ChartContext extends Root<P,S> {
 
       let {gender, year, area, detailName} = value;
       fetchRaw(gender, year, area, detailName, (data:any[])=> {
-        loaded[i] = key;
+        loaded[i] = fullKey;
         chart.data = data ? sliceRecordList(data, detailName) : null;
         charts[i] = chart;
         onLoaded();
@@ -106,6 +109,8 @@ export default class ChartContext extends Root<P,S> {
       nextQuery[key] = value.stringify();
     });
 
+    this.loaded = [];
+
     this.dispatch('link', '/v2/chart', nextQuery);
   }
 
@@ -122,25 +127,29 @@ export default class ChartContext extends Root<P,S> {
 
   remove(chartName) {
     let {query} = this.props.location;
-    let loaded = this.state.loaded.concat();
+    let loaded = this.loaded.concat();
+    let loadedData = this.loadedData.concat();
 
     let base:ChartBase = retrieveBaseParams(query.base);
-    let nextNumber = 1;
+    let nextNumber = 0;
 
 
     let nextQuery = {base: base.stringify()};
-    let nextLoaded = [loaded[0]]
+    let nextLoaded = []
+    let nextLoadedData = []
 
     for (let i = 1, set; set = query[`chart${i}`]; i++) {
       if (`chart${i}` === chartName) {
         continue;
       }
-      nextQuery[`chart${nextNumber}`] = retrieveParams(set, base).stringify();
-      nextLoaded[nextNumber] = loaded[i];
+      nextQuery[`chart${nextNumber + 1}`] = retrieveParams(set, base).stringify();
+      nextLoaded[nextNumber] = loaded[i - 1];
+      nextLoaded[nextNumber] = loadedData[i - 1];
       nextNumber++;
     }
     console.log({nextLoaded, nextQuery})
-    this.setState({loaded: nextLoaded});
+    this.loaded = nextLoaded;
+
     this.dispatch('link', '/v2/chart', nextQuery);
   }
 

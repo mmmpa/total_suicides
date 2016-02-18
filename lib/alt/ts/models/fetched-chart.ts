@@ -25,4 +25,8 @@ export default class FetchingChart {
   get data() {
     return this.data_
   }
+
+  get fullKey(){
+    return this.value.stringifyAll();
+  }
 }

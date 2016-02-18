@@ -4,7 +4,10 @@ export function stringifyParams(x, xSpecified, y, ySpecified, z):string {
 
 export function retrieveBaseParams(stringified:string):ChartBase {
   let [x, xSpecifiedSrc]= stringified.split('__');
-  let xSpecified = xSpecifiedSrc.split(',');
+  let xSpecified = xSpecifiedSrc.split(',').map((v)=>{
+    let num = +v;
+    return isNaN(num) ? v : num;
+  });
 
   return new ChartBase(x, xSpecified, stringified);
 }
@@ -84,5 +87,9 @@ export class FetchingParams {
 
   stringify():string {
     return [this.y, this.ySpecified, this.z].join('__');
+  }
+
+  stringifyAll():string {
+    return [this.x, this.xSpecified, this.y, this.ySpecified, this.z].join('__');
   }
 }

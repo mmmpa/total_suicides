@@ -61,9 +61,12 @@ export class ChartDataSelector extends Node<{}, {}> {
       return null;
     }
 
-    return writeBaseSelector((base)=> {
-      this.setState({base})
-    }, [this.state.base], this.props.x)
+    return <section className="v2-chart sub-controller-container data-selector y">
+      <h1 className="v2-chart sub-controller-title">カテゴリー</h1>
+      {writeBaseSelector((base)=> {
+        this.setState({base})
+        }, [this.state.base], this.props.x)}
+    </section>
   }
 
   writeSpecifier() {
@@ -71,9 +74,13 @@ export class ChartDataSelector extends Node<{}, {}> {
     if (!base) {
       return null;
     }
-    return writeSelectorSpecifier(base, (specified)=> {
-      this.setState({specified})
-    }, [specified])
+
+    return <section className="v2-chart sub-controller-container data-selector y-specifier">
+      <h1 className="v2-chart sub-controller-title">詳細</h1>
+      {writeSelectorSpecifier(base, (specified)=> {
+        this.setState({specified})
+        }, [specified])}
+    </section>
   }
 
   writeRangeSpecifier() {
@@ -81,9 +88,13 @@ export class ChartDataSelector extends Node<{}, {}> {
     if (!base || base === '' || base === 'year' || this.props.x === 'year') {
       return null;
     }
-    return writeSelectorSpecifier('year', (specifiedRange)=> {
-      this.setState({specifiedRange})
-    }, [specifiedRange])
+
+    return <section className="v2-chart sub-controller-container data-selector y-specifier">
+      <h1 className="v2-chart sub-controller-title">時期の指定が必要です</h1>
+      {writeSelectorSpecifier('year', (specifiedRange)=> {
+        this.setState({specifiedRange})
+        }, [specifiedRange])}
+    </section>
   }
 
   add() {
@@ -92,16 +103,18 @@ export class ChartDataSelector extends Node<{}, {}> {
   }
 
   render() {
-    return <div className="data-selector">
-      <section className="data-selector body">
+    return <section className="v2-chart data-selector">
+      <section className="v2-chart data-selector">
         {this.writeBase()}
         {this.writeSpecifier()}
         {this.writeRangeSpecifier()}
-        <button onClick={()=> this.add()}>
-          <Fa icon="plus-circle"/>
-          チャートにデータを追加
-        </button>
+        <section className="v2-chart data-selector submit">
+          <button className="submit" onClick={()=> this.add()}>
+            <Fa icon="plus-circle"/>
+            チャートにデータを追加
+          </button>
+        </section>
       </section>
-    </div>
+    </section>
   }
 }
