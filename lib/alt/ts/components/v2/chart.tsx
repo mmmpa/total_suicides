@@ -11,6 +11,7 @@ import {generateBarProps, tableKeys, tableMaps, areas, years, genders, detectMap
 import {writeBaseSelector, writeSelectorSpecifier, ChartDataSelector} from '../../services/selector-writer'
 import FetchingChart from "../../models/fetched-chart";
 import {ChartBase} from "../../services/params-stringifier";
+import * as Promise from 'bluebird'
 
 interface P {
   base:ChartBase,
@@ -19,11 +20,13 @@ interface P {
 
 export default class ChartComponent extends Node<P,{}> {
   private chart;
+  private promice = Promise.resolve();
 
   constructor(props) {
     super(props);
     this.state = {
       baseChartKey: '',
+      chartsKey: '',
       x: '',
       xSpecified: []
     }
@@ -89,6 +92,7 @@ export default class ChartComponent extends Node<P,{}> {
     let {per} = props;
 
     if (!base || !first) {
+      this.chart && this.chart.flush()
       return;
     }
     let baseChartKey = base.stringify();
@@ -160,7 +164,16 @@ export default class ChartComponent extends Node<P,{}> {
     }
 
     let charts = this.getAdditionalChart(props);
-    let {per} = props
+    let chartsKey = charts.map((c)=> c.fullKey).join('--');
+
+    if (this.state.chartsKey == chartsKey) {
+      console.log('Charts not change')
+      return;
+    }
+
+    this.setState({chartsKey});
+
+    let {per} = props;
     let dataList = this.chart.data().concat();
     //let firstData = dataList.shift();
     let {length} = dataList;
@@ -183,14 +196,19 @@ export default class ChartComponent extends Node<P,{}> {
       types[arranged[0]] = chartData.type
     });
 
-    let removables = [];
+    let unload = [];
     dataList.forEach(({id})=> {
       if (!_.includes(addedNames, id)) {
-        removables.push(id);
+        unload.push(id);
       }
     });
 
-    this.chart.load({columns, types, unload: removables});
+    this.promice = this.promice.then((v)=> {
+      return new Promise((resolve, _)=> {
+        this.chart.load({columns, types, unload});
+        setTimeout(()=> resolve(), 500);
+      });
+    });
   }
 
   componentDidMount() {

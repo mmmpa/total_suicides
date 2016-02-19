@@ -104,6 +104,7 @@ export default class ChartContext extends Root<P,S> {
   }
 
   find(params) {
+    this.setState({charts: []});
     let base = new ChartBase(params.x, params.xSpecified);
     let chart1 = new FetchingParams(base, params);
     this.dispatch('link', '/v2/chart', {base: base.stringify(), chart1: chart1.stringify()});
@@ -173,6 +174,7 @@ export default class ChartContext extends Root<P,S> {
   }
 
   changeType(chartName, type) {
+    console.log('change type')
     let {query} = this.props.location;
     let base:ChartBase = retrieveBaseParams(query.base);
     let params = retrieveParams(query[chartName], base)
