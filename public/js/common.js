@@ -82581,9 +82581,9 @@ var ChartComponent = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(ChartComponent.prototype, "par", {
+    Object.defineProperty(ChartComponent.prototype, "per", {
         get: function () {
-            return this.props.par;
+            return this.props.per;
         },
         enumerable: true,
         configurable: true
@@ -82703,7 +82703,7 @@ var ChartComponent = (function (_super) {
             return;
         }
         var charts = this.getAdditionalChart(props);
-        var chartsKey = charts.map(function (c) { return c.fullKey; }).join('--');
+        var chartsKey = charts.map(function (c) { return c.fullKey; }).join('--') + (props.per ? 'per' : 'number');
         if (this.state.chartsKey == chartsKey) {
             console.log('Charts not change');
             return;

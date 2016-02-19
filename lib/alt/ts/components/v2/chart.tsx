@@ -36,8 +36,8 @@ export default class ChartComponent extends Node<P,{}> {
     return this.props.autoScale;
   }
 
-  get par():boolean {
-    return this.props.par;
+  get per():boolean {
+    return this.props.per;
   }
 
   get selectedX() {
@@ -164,7 +164,7 @@ export default class ChartComponent extends Node<P,{}> {
     }
 
     let charts = this.getAdditionalChart(props);
-    let chartsKey = charts.map((c)=> c.fullKey).join('--');
+    let chartsKey = charts.map((c)=> c.fullKey).join('--') + (props.per ? 'per' : 'number');
 
     if (this.state.chartsKey == chartsKey) {
       console.log('Charts not change')
