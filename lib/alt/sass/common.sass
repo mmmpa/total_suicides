@@ -16,8 +16,11 @@ a:hover
   text-decoration: none
 
 .v2-chart
+  &.chart-starter
+    padding: 20px
   &.chart-container
     padding: 20px
+    height: 640px
   &.body
     background: #fff
   &.controller-title
@@ -39,6 +42,12 @@ a:hover
     padding: 0 20px
   &.sub-controller-container
     margin: 20px 0 20px 0
+  &.other-controll
+    .per
+      margin: 20px 0 0 0
+    .back-to-finder
+      vertical-align: middle
+      @extend .btn, .btn-success, .size-h6
   &.x-specifier-list
     label
       @extend .size-h5
@@ -91,7 +100,7 @@ a:hover
 .header
   &.body
     background: #000
-    padding: 20px 0 0
+    padding: 20px 0
   &.title
     color: #fff
     display: inline-block
@@ -324,7 +333,7 @@ span
 .copyright
   &.body
     background: #000
-    padding: 10px 0
+    padding: 20px 0 0
     address
       font-style: normal
       display: block

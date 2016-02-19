@@ -23,11 +23,9 @@ export default class CommonComponent extends Node<P,{}> {
       <header className="global-header">
         <Header />
       </header>
-      <ChartFinder {...this.props}/>
       <article className="main-content">
         {this.children}
       </article>
-      <ChartFinder {...this.props} />
       <Copyright />
     </div>
   }

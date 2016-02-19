@@ -1,5 +1,5 @@
 module ApplicationHelper
-  DEFAULT_TITLE = '自殺を知る、自殺を考える'
+  DEFAULT_TITLE = '自殺を知る、自殺を考える :: 自殺者数チャート'
   TAILS = %w(別の自殺者数を で並べて表示)
 
   def write_title
@@ -9,7 +9,7 @@ module ApplicationHelper
       base
     }.join).compact.join('::')
   rescue
-    '自殺を知る、自殺を考える'
+    '自殺を知る、自殺を考える :: 自殺者数チャート'
   end
 
   private

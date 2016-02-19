@@ -74,18 +74,19 @@ export default class ChartComponent extends Node<P,{}> {
   getAdditionalChart(props):FetchingChart[] {
     return props.charts;
     /*
-    let {charts} = props;
-    if (!charts || charts.length <= 1) {
-      return null;
-    }
+     let {charts} = props;
+     if (!charts || charts.length <= 1) {
+     return null;
+     }
 
-    return _.drop(charts.concat(), 1);
-    */
+     return _.drop(charts.concat(), 1);
+     */
   }
 
   setBaseChart(props) {
     let base = this.getBaseChart(props);
     let first = this.getFirstChart(props);
+    let {per} = props;
 
     if (!base || !first) {
       return;
@@ -116,7 +117,7 @@ export default class ChartComponent extends Node<P,{}> {
         x: 'x',
         columns: [
           xNameList,
-          this.arrangeData(first)
+          this.arrangeData(first, per)
         ],
         type: 'spline'
       },
@@ -138,7 +139,7 @@ export default class ChartComponent extends Node<P,{}> {
     });
   }
 
-  arrangeData(chartData) {
+  arrangeData(chartData, per?) {
     let {data, value} = chartData;
     if (!data) {
       return;
@@ -147,7 +148,7 @@ export default class ChartComponent extends Node<P,{}> {
 
     let label = this.detectLabel(y, ySpecified, z);
     let xContentList = _.filter(data, (d)=> _.includes(xSpecified, d[x].content)).map((d)=> {
-      return d.value;
+      return per ? d.per : d.value;
     });
     xContentList.unshift(label);
     return xContentList;
@@ -159,7 +160,7 @@ export default class ChartComponent extends Node<P,{}> {
     }
 
     let charts = this.getAdditionalChart(props);
-
+    let {per} = props
     let dataList = this.chart.data().concat();
     //let firstData = dataList.shift();
     let {length} = dataList;
@@ -176,7 +177,7 @@ export default class ChartComponent extends Node<P,{}> {
     let addedNames = [];
 
     charts.forEach((chartData)=> {
-      let arranged = this.arrangeData(chartData);
+      let arranged = this.arrangeData(chartData, per);
       addedNames.push(arranged[0]);
       columns.push(arranged);
       types[arranged[0]] = chartData.type
@@ -245,6 +246,10 @@ export default class ChartComponent extends Node<P,{}> {
     this.dispatch('chart:type', chartName, type);
   }
 
+  changePer() {
+    this.dispatch('chart:per');
+  }
+
   writeAdditionalChartSetting() {
     let {charts} = this.props;
 
@@ -277,6 +282,24 @@ export default class ChartComponent extends Node<P,{}> {
     })
   }
 
+  writePerSelector(props) {
+    return <section className="per">
+      <label>
+        <span className="input-input">
+          <input type="checkbox" checked={props.per} onChange={()=> this.changePer()}/>
+        </span>
+        <span className="input-label">
+          全体の割合（%）で表示する
+        </span>
+      </label>
+      <p className="notice">割合とは年齢層、同居人の有無、職業、場所、手段、時間帯、曜日、原因、動機、未遂歴カテゴリー内部の各項目の合計に対する、各項目の値の割合です。表示している項目における割合とは限らないことに注意してください。</p>
+    </section>
+  }
+
+  back() {
+    this.dispatch('chart:finder');
+  }
+
   render() {
     return <article className="v2-chart body">
       <section className="v2-chart chart-container">
@@ -284,6 +307,13 @@ export default class ChartComponent extends Node<P,{}> {
         </div>
       </section>
       <section className="v2-chart chart-controller">
+        <section className="v2-chart controller-container other-controll">
+          <button className="back-to-finder" onClick={()=> this.back()}>
+            <Fa icon="undo"/>
+            最初からやりなおす
+          </button>
+          {this.writePerSelector(this.props)}
+        </section>
         <section className="v2-chart controller-container x-specifier">
           <h1 className="v2-chart controller-title">
             <Fa icon="arrows-h"/>

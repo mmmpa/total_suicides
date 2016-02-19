@@ -31,9 +31,7 @@ article#index
         h1.portal.title
           i.fa.fa-fw.fa-question-circle
           | つかいかた
-        p ページ上下にあるフォームで表示内容を選択して、「表示する」ボタンを押下するとチャートが表示されます。
-        p フォーム中で「大分類」となっているものは、複数回選択できます。
-        p フォーム中で「詳細」となっているものは、縦軸、横軸、分割のいずれか一つのみで選択できます。
+        p 表示内容はチャートページからでも変更できます。
   article.portal.body
     section.portal.section.interest
       section.portal.block
@@ -44,22 +42,19 @@ article#index
         ul.portal.chart-link-list.inner-link
           li.portal.chart-link
             i.fa.fa-bar-chart.fa-fw
-            = link_to '平成21年と26年の、自殺原因', '/chart/area/year/reason/gender?area=0&autoScale=false&gender=0&par=false&year=26%2C21'
+            = link_to '平成21年と26年の、自殺原因', '/v2/chart?base=reason__family%2Chealth%2Clife%2Cwork%2Cpartner%2Cschool%2Cother%2Cunknown&chart1=year__21____&chart2=year__26____'
           li.portal.chart-link
             i.fa.fa-bar-chart.fa-fw
-            = link_to '平成21年と26年の、自殺年齢層', '/chart/area/year/age/none?area=0&year=21%2C26'
+            = link_to '平成21年と26年の、自殺年齢層', '/v2/chart?base=age__o0%2Co20%2Co30%2Co40%2Co50%2Co60%2Co70%2Co80%2Cunknown&chart1=year__21____&chart2=year__26____'
           li.portal.chart-link
             i.fa.fa-bar-chart.fa-fw
-            = link_to '曜日別の自殺者数', '/chart/year/gender/day/none?autoScale=false&gender=0&par=false&year=26%2C25%2C24%2C23%2C22%2C21'
+            = link_to '曜日別の自殺者%', '/v2/chart?base=day__sunday%2Cmonday%2Ctuesday%2Cwednesday%2Cthursday%2Cfriday%2Csaturday&chart1=year__21__26__line&chart2=year__22__26__line&chart3=year__23__26__line&chart4=year__24__26__line&chart5=year__25__26__line&chart6=year__26__26__line&per=true'
           li.portal.chart-link
             i.fa.fa-bar-chart.fa-fw
-            = link_to '年度別、自殺理由の推移（性別で分割）', '/chart/area/reason/year/gender?area=0&autoScale=false&gender=1%2C2&par=false&year=26%2C25%2C24%2C23%2C22%2C21'
+            = link_to '年度別、自殺理由%の推移', '/v2/chart?base=year__21%2C22%2C23%2C24%2C25%2C26&chart1=reason__family____line&chart2=reason__health____line&chart3=reason__life____line&chart4=reason__work____line&chart5=reason__partner____line&chart6=reason__school____line&chart7=reason__other____line&per=true'
           li.portal.chart-link
             i.fa.fa-bar-chart.fa-fw
-            = link_to '年齢層別自殺者の推移', '/chart/area/age/year/none?area=0&autoScale=false&gender=1%2C2&par=false&year=26%2C25%2C24%2C23%2C22%2C21'
-          li.portal.chart-link
-            i.fa.fa-bar-chart.fa-fw
-            =link_to '自殺手段にみる地域の傾向', '/chart/year/way/area/none?area=1%2C2%2C3%2C4%2C5%2C6%2C7%2C8%2C9%2C10%2C11%2C12%2C13%2C14%2C15%2C16%2C17%2C18%2C19%2C20%2C21%2C22%2C23%2C24%2C25%2C26%2C27%2C28%2C29%2C30%2C31%2C32%2C33%2C34%2C35%2C36%2C37%2C38%2C39%2C40%2C41%2C42%2C43%2C44%2C45%2C46%2C47%2C48&autoScale=true&gender=0&par=true&year=26'
+            =link_to '自殺手段にみる地域の傾向（北海道と東京）', '/v2/chart?base=location__building%2Cvehicle%2Csea%2Cmountain&chart1=area__1__26__&chart2=area__13__26__&per=true'
     section.portal.section.src
       section.portal.block
         h1.portal.title
@@ -67,12 +62,6 @@ article#index
           | 出典
         h1.portal.sub-title 自殺の統計 - 内閣府
         p http://www8.cao.go.jp/jisatsutaisaku/toukei/index.html
-      section.portal.block
-        h1.portal.title
-          i.fa.fa-fw.fa-paint-brush
-          | グラフに使用している色について
-        p 色相環順に並べた色を、隣り合った色が似たような色にならないように計算式で選んでいます。
-        p とくに何かのイメージをもって選択されたものではありません。
 
     section.portal.section.reason
       section.portal.block

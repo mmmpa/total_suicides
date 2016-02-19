@@ -11,7 +11,7 @@ export default class HeaderComponent extends Node<{},{}> {
         <h1 className="header title">
           <a onClick={()=> this.dispatch('link', '/')}>
             <Fa icon="heart"/>
-            自殺を知る、自殺を考える
+            自殺を知る、自殺を考える :: 自殺者数チャート
           </a>
         </h1>
       </section>

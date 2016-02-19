@@ -7,25 +7,29 @@ import * as _ from 'lodash'
 let preData = null;
 let preResult = null;
 
-export function sliceRecord(data){
+export function sliceRecord(data) {
 
 }
 
-export function sliceRecordList(data:any[], detailName:string){
-  let tableMap = _.find(tableMaps, ({key})=>{
+export function sliceRecordList(data:any[], detailName:string) {
+  console.log(data)
+
+  let tableMap = _.find(tableMaps, ({key})=> {
     return key == detailName
   }).value;
 
   let result = [];
-  data.forEach((d)=>{
+  data.forEach((d)=> {
     let {year, gender, area} = d;
-    tableMap.forEach(({key, name})=>{
+    tableMap.forEach(({key, name})=> {
       let tip = {year, gender, area};
       tip[detailName] = {
         content: key,
         name
-      }
-      tip.value = d[key];
+      };
+
+      tip.value = d[key] ? d[key].number : 0;
+      tip.per = d[key] ? d[key].per : 0;
       result.push(tip);
     });
   });
@@ -34,7 +38,7 @@ export function sliceRecordList(data:any[], detailName:string){
 }
 
 export function normalize(data:any):ITableList[] {
-  if(data == preData && preResult){
+  if (data == preData && preResult) {
     console.log('same data');
     return preResult;
   }
@@ -64,16 +68,16 @@ export function normalize(data:any):ITableList[] {
   return preResult = result;
 }
 
-export function tableToChart(table):ChartSet{
+export function tableToChart(table):ChartSet {
   return ChartSet.fromTable(table);
 }
 
-export interface ITableList{
+export interface ITableList {
   title:string,
   tables:ITableSet[]
 }
 
-export interface ITableSet{
+export interface ITableSet {
   table:Table,
   chart:ChartSet
 }

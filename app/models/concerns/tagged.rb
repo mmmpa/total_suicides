@@ -24,9 +24,36 @@ module Tagged
       }
     end
 
+    def value_columns
+      self.class.columns.map(&:name).select { |name| !name.include?('_id') || name == 'id' }.map(&:to_sym)
+    end
+
+    def value_total
+      @stored_total ||= value_columns.inject(0) { |a, name| a + self.send(name) }
+    end
+
+    def per(n, total)
+      (n / total.to_f * 100).round(2)
+    end
+
+    def pick_number_and_per
+      value_columns.inject({}) { |a, name|
+        a.merge!(name => {
+          number: self.send(name),
+          per: per(self.send(name), value_total)
+        })
+      }
+    end
+
     def as_json(options = {})
-      options.merge!(except: [:id, :gender_id, :area_id, :year_id])
-      super.merge!(tagged_data).deep_symbolize_keys!
+      if respond_to?(:number)
+        {number: {
+          number: self.number,
+          per: self.rate
+        }}
+      else
+        pick_number_and_per
+      end.merge!(tagged_data)
     end
   end
 end

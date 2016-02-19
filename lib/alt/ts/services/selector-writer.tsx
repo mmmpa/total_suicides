@@ -2,7 +2,7 @@ import * as React from 'react'
 import {Node} from '../lib/eventer'
 import Fa from '../lib/fa';
 import * as _ from 'lodash'
-import {years, areas, genders, tables, tableMaps, tableKeys, allMaps} from "../initializers/constants";
+import {years, areas, genders, tables, tableMaps, tableKeys, allMaps, detectMap} from "../initializers/constants";
 
 export function writeBaseSelector(onChange:(key)=>void, selected:any[], ...exclusion) {
   return detectSelectable(...exclusion).map(({key, name})=> {
@@ -47,25 +47,55 @@ function detectSelectable(...exclusion) {
   return addingTable ? base.concat(tables) : base;
 }
 
-export class ChartDataSelector extends Node<{}, {}> {
+export class ChartDataSelectorBase extends Node<{}, {}> {
   constructor(props) {
     super(props);
     this.state = {
+      x: '',
       base: '',
-      specified: ''
+      specified: '',
+      specifiedRange: ''
     }
   }
 
+  get isAddable():boolean {
+    let {base, specified, specifiedRange} = this.state;
+    if (this.isRequiredRange) {
+      return base !== '' && specified !== '' && specifiedRange !== ''
+    } else {
+      return base !== '' && specified !== ''
+    }
+  }
+
+  get isRequiredRange():boolean {
+    let x = this.props.x || this.state.x;
+    let {base} = this.state;
+    if (base === '' || base === 'year' || x === 'year') {
+      return false;
+    }
+    return true;
+  }
+
   writeBase() {
-    if (!this.props.x || this.props.x === '') {
+    let x = this.props.x || this.state.x;
+    if (x === '') {
       return null;
     }
 
     return <section className="v2-chart sub-controller-container data-selector y">
-      <h1 className="v2-chart sub-controller-title">カテゴリー</h1>
+      <h1 className="v2-chart sub-controller-title">縦軸のカテゴリー</h1>
       {writeBaseSelector((base)=> {
         this.setState({base})
-        }, [this.state.base], this.props.x)}
+        }, [this.state.base], this.props.x, this.state.x)}
+    </section>
+  }
+
+  writeXSelector() {
+    return <section className="v2-chart sub-controller-container data-selector y">
+      <h1 className="v2-chart sub-controller-title">チャートの横軸に並ぶ項目</h1>
+      {writeBaseSelector((x)=> {
+        this.setState({x})
+        }, [this.state.x])}
     </section>
   }
 
@@ -76,7 +106,7 @@ export class ChartDataSelector extends Node<{}, {}> {
     }
 
     return <section className="v2-chart sub-controller-container data-selector y-specifier">
-      <h1 className="v2-chart sub-controller-title">詳細</h1>
+      <h1 className="v2-chart sub-controller-title">縦軸の値</h1>
       {writeSelectorSpecifier(base, (specified)=> {
         this.setState({specified})
         }, [specified])}
@@ -85,7 +115,7 @@ export class ChartDataSelector extends Node<{}, {}> {
 
   writeRangeSpecifier() {
     let {base, specifiedRange} = this.state;
-    if (!base || base === '' || base === 'year' || this.props.x === 'year') {
+    if (!this.isRequiredRange) {
       return null;
     }
 
@@ -109,7 +139,57 @@ export class ChartDataSelector extends Node<{}, {}> {
         {this.writeSpecifier()}
         {this.writeRangeSpecifier()}
         <section className="v2-chart data-selector submit">
-          <button className="submit" onClick={()=> this.add()}>
+          <button className="submit" disabled={!this.isAddable} onClick={()=> this.add()}>
+            <Fa icon="plus-circle"/>
+            チャートにデータを追加
+          </button>
+        </section>
+      </section>
+    </section>
+  }
+}
+
+export class ChartSelector extends ChartDataSelectorBase {
+  find() {
+    let {x, base, specified, specifiedRange} = this.state;
+    this.dispatch('chart:find', {
+      x: x,
+      xSpecified: detectMap(x).map((d)=> d.key),
+      ySpecified: specified,
+      y: base,
+      z: specifiedRange
+    });
+  }
+
+  render() {
+    console.log(this.state, this.isRequiredRange)
+    return <section className="v2-chart data-selector">
+      <section className="v2-chart data-selector">
+        {this.writeXSelector()}
+        {this.writeBase()}
+        {this.writeSpecifier()}
+        {this.writeRangeSpecifier()}
+        <section className="v2-chart data-selector submit">
+          <button className="submit" disabled={!this.isAddable} onClick={()=> this.find()}>
+            <Fa icon="plus-circle"/>
+            チャートを表示
+          </button>
+        </section>
+      </section>
+    </section>
+  }
+}
+
+
+export class ChartDataSelector extends ChartDataSelectorBase {
+  render() {
+    return <section className="v2-chart data-selector">
+      <section className="v2-chart data-selector">
+        {this.writeBase()}
+        {this.writeSpecifier()}
+        {this.writeRangeSpecifier()}
+        <section className="v2-chart data-selector submit">
+          <button className="submit" disabled={!this.isAddable} onClick={()=> this.add()}>
             <Fa icon="plus-circle"/>
             チャートにデータを追加
           </button>

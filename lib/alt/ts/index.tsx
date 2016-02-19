@@ -33,14 +33,14 @@ class App extends Root<P,{}> {
   }
 
   listen(to) {
-    to('link', (uri, query?)=> {
-      window.scrollTo(0, 0);
+    to('link', (uri, query?, calm?)=> {
+      calm || window.scrollTo(0, 0);
       ga('send', 'pageview', 'uri');
       this.props.history.pushState(null, uri, query)
     });
 
     to('title', (sub?)=> {
-      let base = '自殺を知る、自殺を考える';
+      let base = '自殺を知る、自殺を考える :: 自殺者数チャート';
       sub && (base += '::' + sub);
       document.title = base;
     });
@@ -51,17 +51,19 @@ class App extends Root<P,{}> {
 render((
   <Router history={new CreateHistory()}>
     <Route path="" component={App}>
-      <Route path="v2" component={V2}>
-        <Route path="finder" component={V2Finder}/>
-        <Route path="chart" component={V2Chart}/>
-      </Route>
       <Route path="" component={Common}>
+        <Route path="v2" component={V2}>
+          <Route path="finder" component={V2Finder}/>
+          <Route path="chart" component={V2Chart}/>
+        </Route>
         <Route path="chart" component={ChartContext}>
           <Route path="" component={ChartController}>
             <Route path=":base/:table/:x/:y" component={StackBarChart}/>
           </Route>
         </Route>
-        <Route path="*" component={Portal}/>
+        <Route path="" component={V2}>
+          <Route path="*" component={Portal}/>
+        </Route>
       </Route>
     </Route>
   </Router>

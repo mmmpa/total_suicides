@@ -8,6 +8,7 @@ import YearSelector from '../chart-controller/year-selector'
 import GenderSelector from '../chart-controller/gender-selector'
 import AreaSelector from '../chart-controller/area-selector'
 import DetailSelector from '../chart-controller/detail-selector'
+import {ChartSelector} from '../../services/selector-writer'
 
 interface S {
   x:string,
@@ -146,29 +147,7 @@ export default class ChartFinderComponent extends Node<P,S> {
           </label>
           })}
         の自殺者数を
-        {this.writeYSpecifier()}
-        <h1>チャートの横軸</h1>
-        {this.xSelectable.map(({key, name})=>{
-          return <label>
-            <input type="radio" value={key} checked={key === x} onChange={()=> this.selectX(key)}/>
-            {name}
-          </label>
-          })}
-        で並べる
-        {this.writeXSpecifier()}
-        <h1>時期（縦軸にも横軸にも時期が指定されていない場合必要です）</h1>
-        {years.map(({key, name})=>{
-          return <label>
-            <input type="radio" value={key} checked={key === z} onChange={()=> this.selectZ(key)}/>
-            {name}
-          </label>
-          })}
-        <section className="v2-finder section submit">
-          <button onClick={()=> this.find()}>
-            <Fa icon="download"/>
-            以上の設定でデータを表示する
-          </button>
-        </section>
+        <ChartSelector x={x}/>
       </article>
     </div>
   }

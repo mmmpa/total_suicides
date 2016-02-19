@@ -5,6 +5,7 @@ import ChartSet from "../models/chart-set";
 import {retrieveParams, retrieveBaseParams, FetchingParams, ChartBase} from "../services/params-stringifier";
 import * as _ from 'lodash'
 import FetchingChart from "../models/fetched-chart";
+import {pickEnabledFromQuery} from '../services/query-manager'
 
 interface P {
   location:any,
@@ -23,16 +24,34 @@ export default class ChartContext extends Root<P,S> {
   initialState(props) {
     return {
       charts: [],
-      base: null
+      base: null,
+      per: false
     }
   }
 
   componentDidMount() {
+    this.setConfiguration(this.props);
     this.fetchData(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
+    this.setConfiguration(nextProps);
     this.fetchData(nextProps);
+  }
+
+  setConfiguration(props) {
+    let {query} = props.location;
+    let per = pickEnabledFromQuery(query, 'per')
+    this.setState({per});
+  }
+
+  togglePer() {
+    let per = !this.state.per;
+    this.setState({per});
+
+    let {query} = this.props.location;
+    query.per = per;
+    this.dispatch('link', '/v2/chart', query, true);
   }
 
   fetchData(props) {
@@ -111,7 +130,7 @@ export default class ChartContext extends Root<P,S> {
 
     this.loaded = [];
 
-    this.dispatch('link', '/v2/chart', nextQuery);
+    this.dispatch('link', '/v2/chart', nextQuery, true);
   }
 
   add(y, ySpecified, z) {
@@ -134,7 +153,7 @@ export default class ChartContext extends Root<P,S> {
     let nextNumber = 0;
 
 
-    let nextQuery = {base: base.stringify()};
+    let nextQuery = {base: base.stringify(), per: query.per};
     let nextLoaded = []
     let nextLoadedData = []
 
@@ -147,23 +166,30 @@ export default class ChartContext extends Root<P,S> {
       nextLoadedData[nextNumber] = loadedData[i - 1];
       nextNumber++;
     }
-    console.log({nextLoaded, nextQuery})
     this.loaded = nextLoaded;
     this.loadedData = nextLoadedData;
 
-    this.dispatch('link', '/v2/chart', nextQuery);
+    this.dispatch('link', '/v2/chart', nextQuery, true);
   }
 
-  changeType(chartName, type){
+  changeType(chartName, type) {
     let {query} = this.props.location;
     let base:ChartBase = retrieveBaseParams(query.base);
     let params = retrieveParams(query[chartName], base)
     params.chartType = type;
     query[chartName] = params.stringify();
-    this.dispatch('link', '/v2/chart', query);
+    this.dispatch('link', '/v2/chart', query, true);
+  }
+
+  goFinder(){
+    this.dispatch('link', '/');
   }
 
   listen(to) {
+    to('chart:finder', (params)=> {
+      this.goFinder();
+    });
+
     to('chart:find', (params)=> {
       this.find(params);
     });
@@ -178,6 +204,10 @@ export default class ChartContext extends Root<P,S> {
 
     to('chart:remove', (chartName)=> {
       this.remove(chartName);
+    });
+
+    to('chart:per', ()=> {
+      this.togglePer();
     });
 
     to('chart:type', (chartName, type)=> {
