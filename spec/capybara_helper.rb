@@ -20,5 +20,4 @@ end
 Capybara.default_driver = :poltergeist
 Capybara.javascript_driver = :poltergeist
 
-ScreenshotMan.screenshot_dir = "#{Rails.root}/log/ss"
-ScreenshotMan.clean
+ScreenShotMan.dir = "#{Rails.root}/log/ss"

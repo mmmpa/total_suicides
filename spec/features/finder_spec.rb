@@ -2,7 +2,7 @@ require 'capybara_helper'
 
 feature 'トップページ' do
   before :each do |ex|
-    ready_ss(ex)
+    ready_ss(ex, 800)
   end
 
   feature '選択肢の切りかえ' do
