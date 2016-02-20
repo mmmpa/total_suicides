@@ -23,6 +23,7 @@ interface P {
 
 export default class ChartFinderComponent extends Node<P,S> {
   constructor(props) {
+    super(props)
     this.state = {
       x: '',
       xSpecified: [],

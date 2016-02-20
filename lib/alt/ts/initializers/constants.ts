@@ -362,7 +362,7 @@ export let allMaps = [].concat(Constants.tableMaps, Constants.metaMaps);
 export let detectMapMap = (key)=> _.find(allMaps, (m)=> m.key == key);
 export let detectCategoryName = (key)=> detectMapMap(key).name;
 export let detectMap = (key)=> detectMapMap(key).value;
-export let detectCategoryDetailMap = (category, detail)=> {
-  let category = _.find(allMaps, ({key})=> key == category);
+export let detectCategoryDetailMap = (categoryKey, detail)=> {
+  let category = _.find(allMaps, ({key})=> key == categoryKey);
   return _.find(category.value, ({key})=> key == detail);
 };

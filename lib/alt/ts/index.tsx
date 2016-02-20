@@ -58,7 +58,6 @@ render((
         </Route>
         <Route path="chart" component={ChartContext}>
           <Route path="" component={ChartController}>
-            <Route path=":base/:table/:x/:y" component={StackBarChart}/>
           </Route>
         </Route>
         <Route path="" component={V2}>
