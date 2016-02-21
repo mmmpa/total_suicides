@@ -178,7 +178,7 @@ feature 'トップページ' do
         take_ss('年度を選択')
         expect(find('button.submit[disabled]')).to be_truthy
 
-        find('.data-selector.y-specifier input[value="26"]').click
+        find('.data-selector.y-specifier input[value="21"]').click
 
         sleep 0.2
         take_ss('年度の詳細を選択、ボタンが押せるようになる')
@@ -217,7 +217,7 @@ feature 'トップページ' do
         take_ss('地域の詳細を選択、ボタンはまだ押せない')
         expect(find('button.submit[disabled]')).to be_truthy
 
-        find('.data-selector.z-specifier input[value="26"]').click
+        find('.data-selector.z-specifier input[value="21"]').click
 
         sleep 0.2
         take_ss('年度を選択、ボタンが押せるようになる')
@@ -248,7 +248,7 @@ feature 'トップページ' do
         take_ss('年度を選択')
         expect(find('button.submit[disabled]')).to be_truthy
 
-        find('.data-selector.y-specifier input[value="26"]').click
+        find('.data-selector.y-specifier input[value="21"]').click
 
         sleep 0.2
         take_ss('年度の詳細を選択、ボタンが押せるようになる')

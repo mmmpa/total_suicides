@@ -25,7 +25,7 @@ module Tagged
     end
 
     def value_columns
-      self.class.columns.map(&:name).select { |name| !name.include?('_id') || name == 'id' }.map(&:to_sym)
+      self.class.columns.map(&:name).select { |name| !(name.include?('_id') || name == 'id') }.map(&:to_sym)
     end
 
     def value_total

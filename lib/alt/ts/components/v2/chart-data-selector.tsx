@@ -1,10 +1,10 @@
 import * as React from 'react'
-import {Node} from '../lib/eventer'
-import Fa from '../lib/fa';
+import {Node} from '../../lib/eventer'
+import Fa from '../../lib/fa';
 import * as _ from 'lodash'
-import {years, areas, genders, tables, tableMaps, tableKeys, allMaps, detectMap} from "../initializers/constants";
+import {years, areas, genders, tables, tableMaps, tableKeys, allMaps, detectMap} from "../../initializers/constants";
 
-export function writeBaseSelector(onChange:(key)=>void, selected:any[], ...exclusion) {
+function writeBaseSelector(onChange:(key)=>void, selected:any[], ...exclusion) {
   return detectSelectable(...exclusion).map(({key, name})=> {
     return <label key={key}>
       <span className="input-input">
@@ -15,7 +15,7 @@ export function writeBaseSelector(onChange:(key)=>void, selected:any[], ...exclu
   });
 }
 
-export function writeSelectorSpecifier(selectorKey:string, onChange:(key)=>void, selected:any[], type:string = 'radio') {
+function writeSelectorSpecifier(selectorKey:string, onChange:(key)=>void, selected:any[], type:string = 'radio') {
   let keyMap = _.find(allMaps, ({key})=> key == selectorKey).value;
 
   return keyMap.map(({key, name})=> {
@@ -47,7 +47,18 @@ function detectSelectable(...exclusion) {
   return addingTable ? base.concat(tables) : base;
 }
 
-abstract class ChartDataSelectorBase extends Node<{}, {}> {
+interface BP{
+  x?:string
+}
+
+interface BS{
+  x?:string,
+  y?:string,
+  ySpecified?:string,
+  zSpecified?:string
+}
+
+abstract class ChartDataSelectorBase extends Node<BP, BS> {
   constructor(props) {
     super(props);
     this.state = {
@@ -84,12 +95,12 @@ abstract class ChartDataSelectorBase extends Node<{}, {}> {
     this.setState({y: key, ySpecified: '', zSpecified: ''})
   }
 
-  setYSpecified(key) {
-    this.setState({ySpecified: key})
+  setYSpecified(ySpecified) {
+    this.setState({ySpecified})
   }
 
-  setZSpecified(key) {
-    this.setState({zSpecified: key})
+  setZSpecified(zSpecified) {
+    this.setState({zSpecified})
   }
 
   writeBase() {

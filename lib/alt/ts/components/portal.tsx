@@ -2,8 +2,7 @@ import * as React from 'react'
 import {Node} from '../lib/eventer'
 import * as _ from 'lodash';
 import Fa from '../lib/fa'
-import ChartFinder from "./v2/chart-finder";
-import {ChartSelector} from '../services/selector-writer'
+import {ChartSelector} from './v2/chart-data-selector'
 
 interface P {
   indexSrc:string

@@ -4,7 +4,7 @@ import {FetchingParams} from "../services/params-stringifier";
 export default class FetchingChart {
   data_:any[];
 
-  constructor(public key:string, public name:string, public value:FetchingParams, public data:any[] = []) {
+  constructor(public key:string, public name:string, public value:FetchingParams, data:any[] = []) {
     this.data = data;
   }
 

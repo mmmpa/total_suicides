@@ -8,17 +8,25 @@ import ChartSet from "../../models/chart-set";
 import Fa from '../../lib/fa';
 import {ITableList, ITableSet} from "../../services/normalizer";
 import {generateBarProps, tableKeys, tableMaps, areas, years, genders, detectMap, detectCategoryName, detectCategoryDetailMap} from "../../initializers/constants";
-import {writeBaseSelector, writeSelectorSpecifier, ChartDataSelector} from '../../services/selector-writer'
+import {ChartDataSelector} from './chart-data-selector'
 import FetchingChart from "../../models/fetched-chart";
 import {ChartBase} from "../../services/params-stringifier";
 import * as Promise from 'bluebird'
 
 interface P {
   base:ChartBase,
-  charts:FetchingChart[]
+  charts:FetchingChart[],
+  per:boolean
 }
 
-export default class ChartComponent extends Node<P,{}> {
+interface S {
+  baseChartKey?:string,
+  chartsKey?:string,
+  x?:string,
+  xSpecified?: number[]
+}
+
+export default class ChartComponent extends Node<P,S> {
   private chart;
   private promice = Promise.resolve();
 
@@ -30,10 +38,6 @@ export default class ChartComponent extends Node<P,{}> {
       x: '',
       xSpecified: []
     }
-  }
-
-  get autoScale():boolean {
-    return this.props.autoScale;
   }
 
   get per():boolean {
@@ -143,7 +147,7 @@ export default class ChartComponent extends Node<P,{}> {
     });
   }
 
-  arrangeData(chartData, per?) {
+  arrangeData(chartData:FetchingChart, per?:boolean) {
     let {data, value} = chartData;
     if (!data) {
       return;
@@ -163,7 +167,7 @@ export default class ChartComponent extends Node<P,{}> {
       return;
     }
 
-    let charts = this.getAdditionalChart(props);
+    let charts:FetchingChart[] = this.getAdditionalChart(props);
     let chartsKey = charts.map((c)=> c.fullKey).join('--') + (props.per ? 'per' : 'number');
 
     if (this.state.chartsKey == chartsKey) {
@@ -202,8 +206,8 @@ export default class ChartComponent extends Node<P,{}> {
         unload.push(id);
       }
     });
-
-    this.promice = this.promice.then((v)=> {
+ 
+    this.promice = this.promice.then(()=> {
       return new Promise((resolve, _)=> {
         this.chart.load({columns, types, unload});
         setTimeout(()=> resolve(), 500);

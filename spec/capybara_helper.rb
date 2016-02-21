@@ -5,7 +5,8 @@ require 'capybara/poltergeist'
 
 Dir[Rails.root.join('spec/capybara/**/*.rb')].each { |f| require f }
 
-Capybara.app_host = 'http://localhost:3001'
+#Capybara.app_host = 'http://localhost:3001'
+
 Capybara.register_driver :poltergeist do |app|
   Capybara::Poltergeist::Driver.new(app, {
     js_errors: false,

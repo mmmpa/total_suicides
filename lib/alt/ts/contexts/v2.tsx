@@ -13,8 +13,9 @@ interface P {
 }
 
 interface S {
-  charts:FetchingChart[],
-  base:ChartBase
+  charts?:FetchingChart[],
+  base?:ChartBase,
+  per?:boolean
 }
 
 export default class ChartContext extends Root<P,S> {
@@ -213,22 +214,6 @@ export default class ChartContext extends Root<P,S> {
 
     to('chart:type', (chartName, type)=> {
       this.changeType(chartName, type);
-    });
-
-    to('chart:area', (selectedAreas:number[])=> {
-      this.setState({selectedAreas});
-    });
-
-    to('chart:year', (selectedYears)=> {
-      this.setState({selectedYears});
-    });
-
-    to('chart:gender', (selectedGenders)=> {
-      this.setState({selectedGenders});
-    });
-
-    to('chart:detail', (selectedDetail)=> {
-      this.setState({selectedDetail});
     });
   }
 }

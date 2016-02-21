@@ -4,7 +4,6 @@ import * as _ from 'lodash';
 
 import Header from '../components/header'
 import Copyright from '../components/copyright'
-import ChartFinder from '../components/chart-finder'
 
 interface P{
   children:any,

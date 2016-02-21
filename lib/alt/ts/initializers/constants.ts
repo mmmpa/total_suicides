@@ -2,7 +2,8 @@ import * as _ from 'lodash'
 
 interface IKeyNameMap {
   key:any,
-  name:string
+  name:string,
+  value?:IKeyNameMap[]
 }
 
 class Constants {
@@ -362,7 +363,7 @@ export let allMaps = [].concat(Constants.tableMaps, Constants.metaMaps);
 export let detectMapMap = (key)=> _.find(allMaps, (m)=> m.key == key);
 export let detectCategoryName = (key)=> detectMapMap(key).name;
 export let detectMap = (key)=> detectMapMap(key).value;
-export let detectCategoryDetailMap = (categoryKey, detail)=> {
-  let category = _.find(allMaps, ({key})=> key == categoryKey);
-  return _.find(category.value, ({key})=> key == detail);
+export let detectCategoryDetailMap:(category, detail)=>IKeyNameMap = (categoryKey, detail)=> {
+  let category = _.find(allMaps, ({key})=> key == categoryKey) as IKeyNameMap;
+  return _.find(category.value, ({key})=> key == detail) as IKeyNameMap;
 };

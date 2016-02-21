@@ -61382,247 +61382,6 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var React = require('react');
-var eventer_1 = require('../../lib/eventer');
-var constants_1 = require("../../initializers/constants");
-var _ = require('lodash');
-var fa_1 = require("../../lib/fa");
-var AreaSelectorComponent = (function (_super) {
-    __extends(AreaSelectorComponent, _super);
-    function AreaSelectorComponent() {
-        _super.apply(this, arguments);
-    }
-    Object.defineProperty(AreaSelectorComponent.prototype, "selected", {
-        get: function () {
-            return this.props.selected;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    AreaSelectorComponent.prototype.toggle = function (e) {
-        var key = +e.target.value;
-        if (_.includes(this.selected, key)) {
-            this.dispatch('chart:area', _.without(this.selected, key));
-        }
-        else {
-            this.dispatch('chart:area', this.selected.concat([key]));
-        }
-    };
-    AreaSelectorComponent.prototype.selectAll = function (selectKeys) {
-        this.dispatch('chart:area', _.union(this.selected, selectKeys));
-    };
-    AreaSelectorComponent.prototype.deselectAll = function (deselectKeys) {
-        this.dispatch('chart:area', _.without.apply(_, [this.selected].concat(deselectKeys)));
-    };
-    AreaSelectorComponent.prototype.writeWideArea = function (separatedAreas, props) {
-        var _this = this;
-        return separatedAreas.map(function (wideArea) {
-            return React.createElement("section", {"className": "area-selector wide-area-section", "key": "wide-area-selector-" + wideArea.name}, _this.writeSmallArea(wideArea.areas, props));
-        });
-    };
-    AreaSelectorComponent.prototype.writeSmallArea = function (areas, props) {
-        var _this = this;
-        var wideKeys = _.map(areas, function (_a) {
-            var key = _a.key;
-            return key;
-        });
-        return React.createElement("section", {"className": "area-selector small-area-section"}, React.createElement("div", {"className": "area-selector select-all"}, React.createElement("p", null, React.createElement(fa_1.default, {"icon": "check"}), React.createElement("a", {"onClick": function () { return _this.selectAll(wideKeys); }}, "選択")), React.createElement("p", null, React.createElement(fa_1.default, {"icon": "trash"}), React.createElement("a", {"onClick": function () { return _this.deselectAll(wideKeys); }}, "解除"))), React.createElement("ul", {"className": "area-selector area-list"}, _.map(areas, function (area) {
-            return React.createElement("li", {"className": "area-selector selector", "key": "small-area-selector-" + area.key}, React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "checkbox", "value": area.key, "checked": _.includes(_this.selected, area.key), "onChange": _this.toggle.bind(_this)})), React.createElement("span", {"className": "input-label"}, area.name)));
-        })));
-    };
-    AreaSelectorComponent.prototype.render = function () {
-        return React.createElement("div", null, React.createElement("section", {"className": "selector-area area-selector body"}, React.createElement("h1", {"className": "selector-area title"}, React.createElement(fa_1.default, {"icon": "globe"}), "地域"), this.writeWideArea(constants_1.separatedAreas, this.props)));
-    };
-    return AreaSelectorComponent;
-})(eventer_1.Node);
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = AreaSelectorComponent;
-
-},{"../../initializers/constants":229,"../../lib/eventer":230,"../../lib/fa":231,"lodash":54,"react":210}],216:[function(require,module,exports){
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var React = require('react');
-var eventer_1 = require('../../lib/eventer');
-var ChartConfigurationComponent = (function (_super) {
-    __extends(ChartConfigurationComponent, _super);
-    function ChartConfigurationComponent() {
-        _super.apply(this, arguments);
-    }
-    Object.defineProperty(ChartConfigurationComponent.prototype, "autoScale", {
-        get: function () {
-            return this.props.autoScale;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ChartConfigurationComponent.prototype, "par", {
-        get: function () {
-            return this.props.par;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ChartConfigurationComponent.prototype.toggleScale = function (autoScale) {
-        this.dispatch('chart:autoScale', autoScale);
-    };
-    ChartConfigurationComponent.prototype.togglePar = function (par) {
-        this.dispatch('chart:par', par);
-    };
-    ChartConfigurationComponent.prototype.render = function () {
-        var _this = this;
-        return React.createElement("div", null, React.createElement("section", {"className": "chart-config body"}, React.createElement("section", {"className": "chart-config auto-scale"}, React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "radio", "name": "auto-scale", "checked": !this.autoScale, "onChange": function () { return _this.toggleScale(false); }})), React.createElement("span", {"className": "input-label"}, "Y軸最大値を統一する")), React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "radio", "name": "auto-scale", "checked": this.autoScale, "onChange": function () { return _this.toggleScale(true); }})), React.createElement("span", {"className": "input-label"}, "Y軸を自動調整する"))), React.createElement("section", {"className": "chart-config auto-scale"}, React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "radio", "name": "par", "checked": !this.par, "onChange": function () { return _this.togglePar(false); }})), React.createElement("span", {"className": "input-label"}, "人数で表示する")), React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "radio", "name": "par", "checked": this.par, "onChange": function () { return _this.togglePar(true); }})), React.createElement("span", {"className": "input-label"}, "率で表示する")))));
-    };
-    return ChartConfigurationComponent;
-})(eventer_1.Node);
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ChartConfigurationComponent;
-
-},{"../../lib/eventer":230,"react":210}],217:[function(require,module,exports){
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var React = require('react');
-var eventer_1 = require('../../lib/eventer');
-var area_selector_1 = require('./area-selector');
-var year_selector_1 = require('./year-selector');
-var gender_selector_1 = require('./gender-selector');
-var chart_configuration_1 = require('./chart-configuration');
-var ChartControllerComponent = (function (_super) {
-    __extends(ChartControllerComponent, _super);
-    function ChartControllerComponent() {
-        _super.apply(this, arguments);
-    }
-    ChartControllerComponent.prototype.render = function () {
-        var _a = this.props, year = _a.year, area = _a.area, gender = _a.gender, par = _a.par, autoScale = _a.autoScale, tableListList = _a.tableListList, base = _a.base, table = _a.table, x = _a.x, y = _a.y;
-        return React.createElement("div", null, React.createElement("section", {"className": "chart-controller"}, React.createElement("h1", {"className": "chart-controller title"}, "表示内容の絞りこみ", React.createElement("em", null, "（チェックがない場合は、すべて選択されているあつかいになります）")), React.createElement(year_selector_1.default, {"selected": year}), React.createElement(gender_selector_1.default, {"selected": gender}), React.createElement(area_selector_1.default, {"selected": area})), React.createElement(chart_configuration_1.default, React.__spread({}, { par: par, autoScale: autoScale })), React.createElement("article", {"className": "chart-content"}, React.cloneElement(this.props.children || React.createElement("div", null, "blank"), { par: par, autoScale: autoScale, tableListList: tableListList, base: base, table: table, x: x, y: y })));
-    };
-    return ChartControllerComponent;
-})(eventer_1.Node);
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ChartControllerComponent;
-
-},{"../../lib/eventer":230,"./area-selector":215,"./chart-configuration":216,"./gender-selector":218,"./year-selector":219,"react":210}],218:[function(require,module,exports){
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var React = require('react');
-var eventer_1 = require('../../lib/eventer');
-var constants_1 = require("../../initializers/constants");
-var _ = require('lodash');
-var fa_1 = require("../../lib/fa");
-var GenderSelectorComponent = (function (_super) {
-    __extends(GenderSelectorComponent, _super);
-    function GenderSelectorComponent() {
-        _super.apply(this, arguments);
-    }
-    GenderSelectorComponent.prototype.isChecked = function (key) {
-        return _.includes(this.selected, key);
-    };
-    Object.defineProperty(GenderSelectorComponent.prototype, "selected", {
-        get: function () {
-            return this.props.selected;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    GenderSelectorComponent.prototype.toggle = function (key) {
-        var now = this.selected;
-        if (this.isChecked(key)) {
-            now = _.without(now, key);
-        }
-        else {
-            now.push(key);
-        }
-        this.dispatch('chart:gender', now);
-    };
-    GenderSelectorComponent.prototype.selectAll = function () {
-        this.dispatch('chart:gender', [1, 2]);
-    };
-    GenderSelectorComponent.prototype.deselectAll = function () {
-        this.dispatch('chart:gender', []);
-    };
-    GenderSelectorComponent.prototype.render = function () {
-        var _this = this;
-        return React.createElement("div", null, React.createElement("section", {"className": "selector-area gender-selector body"}, React.createElement("h1", {"className": "selector-area title"}, React.createElement(fa_1.default, {"icon": "venus-mars"}), "性別"), React.createElement("div", {"className": "selector-area select-all"}, React.createElement("p", null, React.createElement(fa_1.default, {"icon": "check"}), React.createElement("a", {"onClick": function () { return _this.selectAll(); }}, "選択")), React.createElement("p", null, React.createElement(fa_1.default, {"icon": "trash"}), React.createElement("a", {"onClick": function () { return _this.deselectAll(); }}, "解除"))), React.createElement("section", {"className": "selector-area selector-list"}, _.map(constants_1.genders, function (_a) {
-            var key = _a.key, name = _a.name;
-            return React.createElement("div", {"key": "gender-selector-" + key}, React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "checkbox", "name": "year", "checked": _this.isChecked(key), "onChange": function () { return _this.toggle(key); }})), React.createElement("span", {"className": "input-label"}, name)));
-        }))));
-    };
-    return GenderSelectorComponent;
-})(eventer_1.Node);
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = GenderSelectorComponent;
-
-},{"../../initializers/constants":229,"../../lib/eventer":230,"../../lib/fa":231,"lodash":54,"react":210}],219:[function(require,module,exports){
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var React = require('react');
-var eventer_1 = require('../../lib/eventer');
-var constants_1 = require("../../initializers/constants");
-var _ = require('lodash');
-var fa_1 = require("../../lib/fa");
-var YearSelectorComponent = (function (_super) {
-    __extends(YearSelectorComponent, _super);
-    function YearSelectorComponent() {
-        _super.apply(this, arguments);
-    }
-    YearSelectorComponent.prototype.isChecked = function (key) {
-        return _.includes(this.selected, key);
-    };
-    Object.defineProperty(YearSelectorComponent.prototype, "selected", {
-        get: function () {
-            return this.props.selected;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    YearSelectorComponent.prototype.toggle = function (key) {
-        var now = this.selected;
-        if (this.isChecked(key)) {
-            now = _.without(now, key);
-        }
-        else {
-            now.push(key);
-        }
-        this.dispatch('chart:year', now);
-    };
-    YearSelectorComponent.prototype.selectAll = function () {
-        this.dispatch('chart:year', _.map(constants_1.years, function (_a) {
-            var key = _a.key;
-            return key;
-        }));
-    };
-    YearSelectorComponent.prototype.deselectAll = function () {
-        this.dispatch('chart:year', []);
-    };
-    YearSelectorComponent.prototype.render = function () {
-        var _this = this;
-        return React.createElement("div", null, React.createElement("section", {"className": "selector-area year-selector body"}, React.createElement("h1", {"className": "selector-area title"}, React.createElement(fa_1.default, {"icon": "calendar"}), "年度"), React.createElement("div", {"className": "selector-area select-all"}, React.createElement("p", null, React.createElement(fa_1.default, {"icon": "check"}), React.createElement("a", {"onClick": function () { return _this.selectAll(); }}, "選択")), React.createElement("p", null, React.createElement(fa_1.default, {"icon": "trash"}), React.createElement("a", {"onClick": function () { return _this.deselectAll(); }}, "解除"))), React.createElement("section", {"className": "selector-area selector-list"}, _.map(constants_1.years, function (_a) {
-            var key = _a.key, name = _a.name;
-            return React.createElement("div", {"key": "year-selector-" + key}, React.createElement("label", null, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "checkbox", "name": "year", "checked": _this.isChecked(key), "onChange": function () { return _this.toggle(key); }})), React.createElement("span", {"className": "input-label"}, name)));
-        }))));
-    };
-    return YearSelectorComponent;
-})(eventer_1.Node);
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = YearSelectorComponent;
-
-},{"../../initializers/constants":229,"../../lib/eventer":230,"../../lib/fa":231,"lodash":54,"react":210}],220:[function(require,module,exports){
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var React = require('react');
 var eventer_1 = require('../lib/eventer');
 var _ = require('lodash');
 var header_1 = require('../components/header');
@@ -61649,7 +61408,7 @@ var CommonComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CommonComponent;
 
-},{"../components/copyright":221,"../components/header":222,"../lib/eventer":230,"lodash":54,"react":210}],221:[function(require,module,exports){
+},{"../components/copyright":216,"../components/header":217,"../lib/eventer":224,"lodash":54,"react":210}],216:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -61671,7 +61430,7 @@ var CopyrightComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CopyrightComponent;
 
-},{"../lib/eventer":230,"../lib/fa":231,"react":210}],222:[function(require,module,exports){
+},{"../lib/eventer":224,"../lib/fa":225,"react":210}],217:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -61694,7 +61453,7 @@ var HeaderComponent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = HeaderComponent;
 
-},{"../lib/eventer":230,"../lib/fa":231,"react":210}],223:[function(require,module,exports){
+},{"../lib/eventer":224,"../lib/fa":225,"react":210}],218:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -61704,7 +61463,7 @@ var React = require('react');
 var eventer_1 = require('../lib/eventer');
 var _ = require('lodash');
 var fa_1 = require('../lib/fa');
-var selector_writer_1 = require('../services/selector-writer');
+var chart_data_selector_1 = require('./v2/chart-data-selector');
 var PortalComponent = (function (_super) {
     __extends(PortalComponent, _super);
     function PortalComponent() {
@@ -61725,14 +61484,14 @@ var PortalComponent = (function (_super) {
         });
     };
     PortalComponent.prototype.render = function () {
-        return React.createElement("div", {"id": "raw"}, React.createElement("section", {"className": "v2-chart chart-starter"}, React.createElement("h1", {"className": "v2-chart starter-title"}, React.createElement(fa_1.default, {"icon": "bar-chart"}), "チャートを表示する"), React.createElement(selector_writer_1.ChartSelector, null)), React.createElement("div", {"dangerouslySetInnerHTML": { __html: this.props.indexSrc }}));
+        return React.createElement("div", {"id": "raw"}, React.createElement("section", {"className": "v2-chart chart-starter"}, React.createElement("h1", {"className": "v2-chart starter-title"}, React.createElement(fa_1.default, {"icon": "bar-chart"}), "チャートを表示する"), React.createElement(chart_data_selector_1.ChartSelector, null)), React.createElement("div", {"dangerouslySetInnerHTML": { __html: this.props.indexSrc }}));
     };
     return PortalComponent;
 })(eventer_1.Node);
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PortalComponent;
 
-},{"../lib/eventer":230,"../lib/fa":231,"../services/selector-writer":239,"lodash":54,"react":210}],224:[function(require,module,exports){
+},{"../lib/eventer":224,"../lib/fa":225,"./v2/chart-data-selector":219,"lodash":54,"react":210}],219:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -61740,135 +61499,175 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var React = require('react');
 var eventer_1 = require('../../lib/eventer');
-var constants_1 = require("../../initializers/constants");
+var fa_1 = require('../../lib/fa');
 var _ = require('lodash');
-var selector_writer_1 = require('../../services/selector-writer');
-var ChartFinderComponent = (function (_super) {
-    __extends(ChartFinderComponent, _super);
-    function ChartFinderComponent(props) {
+var constants_1 = require("../../initializers/constants");
+function writeBaseSelector(onChange, selected) {
+    var exclusion = [];
+    for (var _i = 2; _i < arguments.length; _i++) {
+        exclusion[_i - 2] = arguments[_i];
+    }
+    return detectSelectable.apply(void 0, exclusion).map(function (_a) {
+        var key = _a.key, name = _a.name;
+        return React.createElement("label", {"key": key}, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "radio", "value": key, "checked": _.includes(selected, key), "onChange": function () { return onChange(key); }})), React.createElement("span", {"className": "input-label"}, name));
+    });
+}
+function writeSelectorSpecifier(selectorKey, onChange, selected, type) {
+    if (type === void 0) { type = 'radio'; }
+    var keyMap = _.find(constants_1.allMaps, function (_a) {
+        var key = _a.key;
+        return key == selectorKey;
+    }).value;
+    return keyMap.map(function (_a) {
+        var key = _a.key, name = _a.name;
+        return React.createElement("label", {"key": key}, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": type, "value": key, "checked": _.includes(selected, key), "onChange": function () { return onChange(key); }})), React.createElement("span", {"className": "input-label"}, name));
+    });
+}
+function detectSelectable() {
+    var exclusion = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        exclusion[_i - 0] = arguments[_i];
+    }
+    var base = [
+        { key: 'year', name: '年度' },
+        { key: 'gender', name: '性別' },
+        { key: 'area', name: '地域' }
+    ];
+    var addingTable = true;
+    exclusion.forEach(function (ex) {
+        if (_.includes(constants_1.tableKeys, ex)) {
+            addingTable = false;
+        }
+        else {
+            _.remove(base, function (_a) {
+                var key = _a.key;
+                return key == ex;
+            });
+        }
+    });
+    return addingTable ? base.concat(constants_1.tables) : base;
+}
+var ChartDataSelectorBase = (function (_super) {
+    __extends(ChartDataSelectorBase, _super);
+    function ChartDataSelectorBase(props) {
         _super.call(this, props);
         this.state = {
             x: '',
-            xSpecified: [],
-            ySpecified: '',
             y: '',
-            z: ''
+            ySpecified: '',
+            zSpecified: ''
         };
     }
-    ChartFinderComponent.prototype.find = function () {
-        this.dispatch('chart:find', this.state);
-    };
-    ChartFinderComponent.prototype.writeErrorMessage = function (message) {
-        if (!message) {
-            return null;
-        }
-        return React.createElement("p", {"className": "error-message"}, message);
-    };
-    Object.defineProperty(ChartFinderComponent.prototype, "selectable", {
+    Object.defineProperty(ChartDataSelectorBase.prototype, "isAddable", {
         get: function () {
-            return [
-                { key: 'year', name: '年度' },
-                { key: 'gender', name: '性別' },
-                { key: 'area', name: '地域' },
-            ].concat(constants_1.tables);
+            var _a = this.state, x = _a.x, y = _a.y, ySpecified = _a.ySpecified, zSpecified = _a.zSpecified;
+            if (this.isRequiredRange) {
+                return y !== '' && ySpecified !== '' && zSpecified !== '';
+            }
+            else {
+                return y !== '' && ySpecified !== '';
+            }
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(ChartFinderComponent.prototype, "ySelectable", {
+    Object.defineProperty(ChartDataSelectorBase.prototype, "isRequiredRange", {
         get: function () {
-            return this.selectable.map(function (_a) {
-                var key = _a.key, name = _a.name;
-                return { key: key, name: name };
-            });
+            var x = this.props.x || this.state.x;
+            var y = this.state.y;
+            if (y === '' || y === 'year' || x === 'year') {
+                return false;
+            }
+            return true;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(ChartFinderComponent.prototype, "xSelectable", {
-        get: function () {
-            return this.selectable.map(function (_a) {
-                var key = _a.key, name = _a.name;
-                return { key: key, name: name };
-            });
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ChartFinderComponent.prototype.specfiers = function (spec) {
-        switch (spec) {
-            case 'year':
-                return constants_1.years;
-            case 'gender':
-                return constants_1.genders;
-            case 'area':
-                return constants_1.areas;
-            default:
-                var detail = _.find(constants_1.tableMaps, function (_a) {
-                    var key = _a.key;
-                    return key == spec;
-                });
-                return detail ? detail.value : [];
-        }
+    ChartDataSelectorBase.prototype.setX = function (key) {
+        this.setState({ x: key, y: '', ySpecified: '', zSpecified: '' });
     };
-    ChartFinderComponent.prototype.selectX = function (x) {
-        var xSpecified = this.specfiers(x).map(function (_a) {
-            var key = _a.key;
-            return key;
-        });
-        this.setState({ x: x, xSpecified: xSpecified });
+    ChartDataSelectorBase.prototype.setY = function (key) {
+        this.setState({ y: key, ySpecified: '', zSpecified: '' });
     };
-    ChartFinderComponent.prototype.selectXSpecified = function (xKey) {
-        var xSpecified = this.state.xSpecified;
-        if (_.includes(xSpecified, xKey)) {
-            xSpecified = _.without(xSpecified, xKey);
-        }
-        else {
-            xSpecified.push(xKey);
-        }
-        this.setState({ xSpecified: xSpecified });
-    };
-    ChartFinderComponent.prototype.selectYSpecified = function (ySpecified) {
+    ChartDataSelectorBase.prototype.setYSpecified = function (ySpecified) {
         this.setState({ ySpecified: ySpecified });
     };
-    ChartFinderComponent.prototype.selectY = function (y) {
-        var ySpecified = this.specfiers(y)[0].key;
-        this.setState({ y: y, ySpecified: ySpecified });
+    ChartDataSelectorBase.prototype.setZSpecified = function (zSpecified) {
+        this.setState({ zSpecified: zSpecified });
     };
-    ChartFinderComponent.prototype.selectZ = function (z) {
-        this.setState({ z: z });
+    ChartDataSelectorBase.prototype.writeBase = function () {
+        var _this = this;
+        var x = this.props.x || this.state.x;
+        if (x === '') {
+            return null;
+        }
+        return React.createElement("section", {"className": "v2-chart sub-controller-container data-selector y"}, React.createElement("h1", {"className": "v2-chart sub-controller-title"}, "縦軸のカテゴリー"), writeBaseSelector(function (base) {
+            _this.setY(base);
+        }, [this.state.y], this.props.x, this.state.x));
     };
-    ChartFinderComponent.prototype.writeYSpecifier = function () {
+    ChartDataSelectorBase.prototype.writeXSelector = function () {
+        var _this = this;
+        return React.createElement("section", {"className": "v2-chart sub-controller-container data-selector x"}, React.createElement("h1", {"className": "v2-chart sub-controller-title"}, "チャートの横軸に並ぶ項目"), writeBaseSelector(function (x) {
+            _this.setX(x);
+        }, [this.state.x]));
+    };
+    ChartDataSelectorBase.prototype.writeSpecifier = function () {
         var _this = this;
         var _a = this.state, y = _a.y, ySpecified = _a.ySpecified;
-        return React.createElement("section", null, this.specfiers(y).map(function (_a) {
-            var key = _a.key, name = _a.name;
-            return React.createElement("label", null, React.createElement("input", {"type": "radio", "value": "key", "checked": ySpecified == key, "onChange": function () { return _this.selectYSpecified(key); }}), name);
-        }));
+        if (!y) {
+            return null;
+        }
+        return React.createElement("section", {"className": "v2-chart sub-controller-container data-selector y-specifier"}, React.createElement("h1", {"className": "v2-chart sub-controller-title"}, "縦軸の値"), writeSelectorSpecifier(y, function (specified) {
+            _this.setYSpecified(specified);
+        }, [ySpecified]));
     };
-    ChartFinderComponent.prototype.writeXSpecifier = function () {
+    ChartDataSelectorBase.prototype.writeRangeSpecifier = function () {
         var _this = this;
-        var _a = this.state, x = _a.x, xSpecified = _a.xSpecified;
-        return React.createElement("section", null, this.specfiers(x).map(function (_a) {
-            var key = _a.key, name = _a.name;
-            return React.createElement("label", null, React.createElement("input", {"type": "checkbox", "value": "key", "checked": _.includes(xSpecified, key), "onChange": function () { return _this.selectXSpecified(key); }}), name);
-        }));
+        var zSpecified = this.state.zSpecified;
+        if (!this.isRequiredRange) {
+            return null;
+        }
+        return React.createElement("section", {"className": "v2-chart sub-controller-container data-selector z-specifier"}, React.createElement("h1", {"className": "v2-chart sub-controller-title"}, "時期の指定が必要です"), writeSelectorSpecifier('year', function (zSpecified) {
+            _this.setZSpecified(zSpecified);
+        }, [zSpecified]));
     };
-    ChartFinderComponent.prototype.render = function () {
-        var _this = this;
-        var _a = this.props, selectedYears = _a.selectedYears, selectedGenders = _a.selectedGenders, selectedAreas = _a.selectedAreas, selectedDetail = _a.selectedDetail, errors = _a.errors;
-        var _b = this.state, x = _b.x, y = _b.y, z = _b.z;
-        return React.createElement("div", null, React.createElement("article", {"className": "v2-finder body"}, React.createElement("h1", null, "基本となるチャートを決定します"), React.createElement("h1", null, "チャートの縦軸"), "特定の", this.ySelectable.map(function (_a) {
-            var key = _a.key, name = _a.name;
-            return React.createElement("label", null, React.createElement("input", {"type": "radio", "value": key, "checked": key === y, "onChange": function () { return _this.selectY(key); }}), name);
-        }), "の自殺者数を", React.createElement(selector_writer_1.ChartSelector, {x: x})));
-    };
-    return ChartFinderComponent;
+    return ChartDataSelectorBase;
 })(eventer_1.Node);
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ChartFinderComponent;
+var ChartSelector = (function (_super) {
+    __extends(ChartSelector, _super);
+    function ChartSelector() {
+        _super.apply(this, arguments);
+    }
+    ChartSelector.prototype.find = function () {
+        var _a = this.state, x = _a.x, y = _a.y, ySpecified = _a.ySpecified, zSpecified = _a.zSpecified;
+        var xSpecified = constants_1.detectMap(x).map(function (d) { return d.key; });
+        this.dispatch('chart:find', { x: x, xSpecified: xSpecified, y: y, ySpecified: ySpecified, zSpecified: zSpecified });
+    };
+    ChartSelector.prototype.render = function () {
+        var _this = this;
+        return React.createElement("section", {"className": "v2-chart data-selector"}, React.createElement("section", {"className": "v2-chart data-selector"}, this.writeXSelector(), this.writeBase(), this.writeSpecifier(), this.writeRangeSpecifier(), React.createElement("section", {"className": "v2-chart data-selector submit"}, React.createElement("button", {"className": "submit", "disabled": !this.isAddable, "onClick": function () { return _this.find(); }}, React.createElement(fa_1.default, {"icon": "plus-circle"}), "チャートを表示"))));
+    };
+    return ChartSelector;
+})(ChartDataSelectorBase);
+exports.ChartSelector = ChartSelector;
+var ChartDataSelector = (function (_super) {
+    __extends(ChartDataSelector, _super);
+    function ChartDataSelector() {
+        _super.apply(this, arguments);
+    }
+    ChartDataSelector.prototype.add = function () {
+        var _a = this.state, y = _a.y, ySpecified = _a.ySpecified, zSpecified = _a.zSpecified;
+        this.dispatch('chart:add', y, ySpecified, zSpecified);
+    };
+    ChartDataSelector.prototype.render = function () {
+        var _this = this;
+        return React.createElement("section", {"className": "v2-chart data-selector"}, React.createElement("section", {"className": "v2-chart data-selector"}, this.writeBase(), this.writeSpecifier(), this.writeRangeSpecifier(), React.createElement("section", {"className": "v2-chart data-selector submit"}, React.createElement("button", {"className": "submit", "disabled": !this.isAddable, "onClick": function () { return _this.add(); }}, React.createElement(fa_1.default, {"icon": "plus-circle"}), "チャートにデータを追加"))));
+    };
+    return ChartDataSelector;
+})(ChartDataSelectorBase);
+exports.ChartDataSelector = ChartDataSelector;
 
-},{"../../initializers/constants":229,"../../lib/eventer":230,"../../services/selector-writer":239,"lodash":54,"react":210}],225:[function(require,module,exports){
+},{"../../initializers/constants":223,"../../lib/eventer":224,"../../lib/fa":225,"lodash":54,"react":210}],220:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -61880,7 +61679,7 @@ var c3 = require('c3');
 var _ = require('lodash');
 var fa_1 = require('../../lib/fa');
 var constants_1 = require("../../initializers/constants");
-var selector_writer_1 = require('../../services/selector-writer');
+var chart_data_selector_1 = require('./chart-data-selector');
 var Promise = require('bluebird');
 var ChartComponent = (function (_super) {
     __extends(ChartComponent, _super);
@@ -61894,13 +61693,6 @@ var ChartComponent = (function (_super) {
             xSpecified: []
         };
     }
-    Object.defineProperty(ChartComponent.prototype, "autoScale", {
-        get: function () {
-            return this.props.autoScale;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(ChartComponent.prototype, "per", {
         get: function () {
             return this.props.per;
@@ -62055,7 +61847,7 @@ var ChartComponent = (function (_super) {
                 unload.push(id);
             }
         });
-        this.promice = this.promice.then(function (v) {
+        this.promice = this.promice.then(function () {
             return new Promise(function (resolve, _) {
                 _this.chart.load({ columns: columns, types: types, unload: unload });
                 setTimeout(function () { return resolve(); }, 500);
@@ -62126,151 +61918,14 @@ var ChartComponent = (function (_super) {
     };
     ChartComponent.prototype.render = function () {
         var _this = this;
-        return React.createElement("article", {"className": "v2-chart body"}, React.createElement("section", {"className": "v2-chart chart-container"}, React.createElement("div", {"id": "chart"})), React.createElement("section", {"className": "v2-chart chart-controller"}, React.createElement("section", {"className": "v2-chart controller-container other-controll"}, React.createElement("button", {"className": "back-to-finder", "onClick": function () { return _this.back(); }}, React.createElement(fa_1.default, {"icon": "undo"}), "最初からやりなおす"), this.writePerSelector(this.props)), React.createElement("section", {"className": "v2-chart controller-container x-specifier"}, React.createElement("h1", {"className": "v2-chart controller-title"}, React.createElement(fa_1.default, {"icon": "arrows-h"}), "横軸の表示内容の変更"), this.writeXSpecifier(this.props)), React.createElement("section", {"className": "v2-chart controller-container adding-controller"}, React.createElement("h1", {"className": "v2-chart controller-title"}, React.createElement(fa_1.default, {"icon": "arrows-v"}), "縦軸の表示内容を追加"), React.createElement(selector_writer_1.ChartDataSelector, {x: this.selectedX})), React.createElement("section", {"className": "v2-chart controller-container added-chart chart-list"}, React.createElement("h1", {"className": "v2-chart controller-title"}, React.createElement(fa_1.default, {"icon": "ellipsis-v"}), "表示中の内容"), this.writeAdditionalChartSetting())));
+        return React.createElement("article", {"className": "v2-chart body"}, React.createElement("section", {"className": "v2-chart chart-container"}, React.createElement("div", {"id": "chart"})), React.createElement("section", {"className": "v2-chart chart-controller"}, React.createElement("section", {"className": "v2-chart controller-container other-controll"}, React.createElement("button", {"className": "back-to-finder", "onClick": function () { return _this.back(); }}, React.createElement(fa_1.default, {"icon": "undo"}), "最初からやりなおす"), this.writePerSelector(this.props)), React.createElement("section", {"className": "v2-chart controller-container x-specifier"}, React.createElement("h1", {"className": "v2-chart controller-title"}, React.createElement(fa_1.default, {"icon": "arrows-h"}), "横軸の表示内容の変更"), this.writeXSpecifier(this.props)), React.createElement("section", {"className": "v2-chart controller-container adding-controller"}, React.createElement("h1", {"className": "v2-chart controller-title"}, React.createElement(fa_1.default, {"icon": "arrows-v"}), "縦軸の表示内容を追加"), React.createElement(chart_data_selector_1.ChartDataSelector, {x: this.selectedX})), React.createElement("section", {"className": "v2-chart controller-container added-chart chart-list"}, React.createElement("h1", {"className": "v2-chart controller-title"}, React.createElement(fa_1.default, {"icon": "ellipsis-v"}), "表示中の内容"), this.writeAdditionalChartSetting())));
     };
     return ChartComponent;
 })(eventer_1.Node);
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ChartComponent;
 
-},{"../../initializers/constants":229,"../../lib/eventer":230,"../../lib/fa":231,"../../services/selector-writer":239,"bluebird":1,"c3":2,"lodash":54,"react":210}],226:[function(require,module,exports){
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var eventer_1 = require('../lib/eventer');
-var fetcher_1 = require('../services/fetcher');
-var normalizer_1 = require("../services/normalizer");
-var ChartContext = (function (_super) {
-    __extends(ChartContext, _super);
-    function ChartContext() {
-        _super.apply(this, arguments);
-    }
-    ChartContext.prototype.initialState = function (props) {
-        return {};
-    };
-    ChartContext.prototype.componentDidMount = function () {
-        this.fetchData(this.props);
-        this.setTitle(this.props);
-        this.pickState(this.props);
-    };
-    ChartContext.prototype.componentWillReceiveProps = function (nextProps) {
-        this.fetchData(nextProps, this.props);
-        this.setTitle(nextProps);
-        this.pickState(nextProps);
-    };
-    ChartContext.prototype.pickState = function (props) {
-        var area = this.pickSelectedFromQuery(props, 'area');
-        var year = this.pickSelectedFromQuery(props, 'year');
-        var gender = this.pickSelectedFromQuery(props, 'gender');
-        var autoScale = this.pickEnabledFromQuery(props, 'autoScale');
-        var par = this.pickEnabledFromQuery(props, 'par');
-        console.log({ area: area, year: year, gender: gender, autoScale: autoScale, par: par });
-        this.setState({ area: area, year: year, gender: gender, autoScale: autoScale, par: par });
-    };
-    ChartContext.prototype.pickSelectedFromQuery = function (props, name) {
-        var target = props.location.query[name];
-        if (!target) {
-            return [];
-        }
-        return target.toString().split(',').map(function (n) { return +n; });
-    };
-    ChartContext.prototype.pickEnabledFromQuery = function (props, name) {
-        var target = props.location.query[name];
-        return target && target != 'false';
-    };
-    ChartContext.prototype.setTitle = function (props) {
-        var _a = props.params, table = _a.table, x = _a.x;
-        this.dispatch('title', this.detect_text(table) + "\u5225\u306E\u81EA\u6BBA\u8005\u6570\u3092" + this.detect_text(x) + "\u3067\u4E26\u3079\u3066\u8868\u793A");
-    };
-    ChartContext.prototype.detect_text = function (name) {
-        switch (name) {
-            case 'area':
-                return '地域';
-            case 'year':
-                return '年度';
-            case 'gender':
-                return '性別';
-            case 'age':
-                return '年齢層';
-            case 'housemate':
-                return '同居人の有無';
-            case 'job':
-                return '職業';
-            case 'location':
-                return '場所';
-            case 'way':
-                return '手段';
-            case 'hour':
-                return '時間帯';
-            case 'day':
-                return '曜日';
-            case 'reason':
-                return '動機・要因';
-            case 'attempted':
-                return '未遂歴';
-            case 'total':
-                return '総数';
-        }
-    };
-    ChartContext.prototype.fetchData = function (props, preProps) {
-        var _this = this;
-        fetcher_1.fetch(props, function (result) {
-            var _a = props.params, base = _a.base, table = _a.table, x = _a.x, y = _a.y;
-            var data = result.data;
-            var tableListList = normalizer_1.normalize(data);
-            setTimeout(function () { return _this.setState({ tableListList: tableListList, base: base, table: table, x: x, y: y }); }, 1);
-        });
-    };
-    ChartContext.prototype.listen = function (to) {
-        var _this = this;
-        to('chart:find', function (base, table, x, y, query) {
-            var uri = ['/chart', base, table, x, y || 'none'].join('/');
-            _this.dispatch('link', uri, query);
-        });
-        to('chart:area', function (areas) {
-            var query = _this.setToQuery('area', areas);
-            _this.changeQuery(query);
-        });
-        to('chart:autoScale', function (autoScale) {
-            var query = _this.props.location.query;
-            query.autoScale = autoScale;
-            _this.changeQuery(query);
-        });
-        to('chart:par', function (par) {
-            var query = _this.props.location.query;
-            query.par = par;
-            _this.changeQuery(query);
-        });
-        to('chart:year', function (years) {
-            var query = _this.setToQuery('year', years);
-            _this.changeQuery(query);
-        });
-        to('chart:gender', function (genders) {
-            var query = _this.setToQuery('gender', genders);
-            _this.changeQuery(query);
-        });
-    };
-    ChartContext.prototype.setToQuery = function (key, value) {
-        var query = this.props.location.query;
-        if (value && value.length) {
-            query[key] = value.join(',');
-        }
-        else {
-            delete query[key];
-        }
-        return query;
-    };
-    ChartContext.prototype.changeQuery = function (query) {
-        this.props.history.pushState(null, this.props.location.pathname, query);
-    };
-    return ChartContext;
-})(eventer_1.Root);
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ChartContext;
-
-},{"../lib/eventer":230,"../services/fetcher":235,"../services/normalizer":236}],227:[function(require,module,exports){
+},{"../../initializers/constants":223,"../../lib/eventer":224,"../../lib/fa":225,"./chart-data-selector":219,"bluebird":1,"c3":2,"lodash":54,"react":210}],221:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -62450,25 +62105,13 @@ var ChartContext = (function (_super) {
         to('chart:type', function (chartName, type) {
             _this.changeType(chartName, type);
         });
-        to('chart:area', function (selectedAreas) {
-            _this.setState({ selectedAreas: selectedAreas });
-        });
-        to('chart:year', function (selectedYears) {
-            _this.setState({ selectedYears: selectedYears });
-        });
-        to('chart:gender', function (selectedGenders) {
-            _this.setState({ selectedGenders: selectedGenders });
-        });
-        to('chart:detail', function (selectedDetail) {
-            _this.setState({ selectedDetail: selectedDetail });
-        });
     };
     return ChartContext;
 })(eventer_1.Root);
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ChartContext;
 
-},{"../lib/eventer":230,"../models/fetched-chart":233,"../services/fetcher":235,"../services/normalizer":236,"../services/params-stringifier":237,"../services/query-manager":238}],228:[function(require,module,exports){
+},{"../lib/eventer":224,"../models/fetched-chart":227,"../services/fetcher":229,"../services/normalizer":230,"../services/params-stringifier":231,"../services/query-manager":232}],222:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -62479,13 +62122,10 @@ var react_dom_1 = require('react-dom');
 var react_router_1 = require('react-router');
 var CreateHistory = require('history/lib/createBrowserHistory');
 var eventer_1 = require('./lib/eventer');
-var chart_1 = require("./contexts/chart");
 var portal_1 = require("./components/portal");
 var common_1 = require("./components/common");
-var chart_controller_1 = require("./components/chart-controller/chart-controller");
 var v2_1 = require('./contexts/v2');
-var chart_2 = require('./components/v2/chart');
-var chart_finder_1 = require('./components/v2/chart-finder');
+var chart_1 = require('./components/v2/chart');
 var index = document.querySelector('#index');
 index.style.display = 'none';
 var indexSrc = index.innerHTML;
@@ -62514,9 +62154,9 @@ var App = (function (_super) {
     };
     return App;
 })(eventer_1.Root);
-react_dom_1.render((React.createElement(react_router_1.Router, {"history": new CreateHistory()}, React.createElement(react_router_1.Route, {"path": "", "component": App}, React.createElement(react_router_1.Route, {"path": "", "component": common_1.default}, React.createElement(react_router_1.Route, {"path": "v2", "component": v2_1.default}, React.createElement(react_router_1.Route, {"path": "finder", "component": chart_finder_1.default}), React.createElement(react_router_1.Route, {"path": "chart", "component": chart_2.default})), React.createElement(react_router_1.Route, {"path": "chart", "component": chart_1.default}, React.createElement(react_router_1.Route, {"path": "", "component": chart_controller_1.default})), React.createElement(react_router_1.Route, {"path": "", "component": v2_1.default}, React.createElement(react_router_1.Route, {"path": "*", "component": portal_1.default})))))), document.querySelector('#app'));
+react_dom_1.render((React.createElement(react_router_1.Router, {"history": new CreateHistory()}, React.createElement(react_router_1.Route, {"path": "", "component": App}, React.createElement(react_router_1.Route, {"path": "", "component": common_1.default}, React.createElement(react_router_1.Route, {"path": "v2", "component": v2_1.default}, React.createElement(react_router_1.Route, {"path": "chart", "component": chart_1.default})), React.createElement(react_router_1.Route, {"path": "", "component": v2_1.default}, React.createElement(react_router_1.Route, {"path": "*", "component": portal_1.default})))))), document.querySelector('#app'));
 
-},{"./components/chart-controller/chart-controller":217,"./components/common":220,"./components/portal":223,"./components/v2/chart":225,"./components/v2/chart-finder":224,"./contexts/chart":226,"./contexts/v2":227,"./lib/eventer":230,"history/lib/createBrowserHistory":41,"react":210,"react-dom":57,"react-router":77}],229:[function(require,module,exports){
+},{"./components/common":215,"./components/portal":218,"./components/v2/chart":220,"./contexts/v2":221,"./lib/eventer":224,"history/lib/createBrowserHistory":41,"react":210,"react-dom":57,"react-router":77}],223:[function(require,module,exports){
 var _ = require('lodash');
 var Constants = (function () {
     function Constants() {
@@ -62905,7 +62545,7 @@ exports.detectCategoryDetailMap = function (categoryKey, detail) {
     });
 };
 
-},{"lodash":54}],230:[function(require,module,exports){
+},{"lodash":54}],224:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -62984,7 +62624,7 @@ var Root = (function (_super) {
 })(Node);
 exports.Root = Root;
 
-},{"events":8,"react":210}],231:[function(require,module,exports){
+},{"events":8,"react":210}],225:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -63016,7 +62656,7 @@ var Fa = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Fa;
 
-},{"react":210}],232:[function(require,module,exports){
+},{"react":210}],226:[function(require,module,exports){
 var _ = require('lodash');
 var constants_1 = require('../initializers/constants');
 var ChartSet = (function () {
@@ -63060,7 +62700,7 @@ var ChartSet = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ChartSet;
 
-},{"../initializers/constants":229,"lodash":54}],233:[function(require,module,exports){
+},{"../initializers/constants":223,"lodash":54}],227:[function(require,module,exports){
 var _ = require('lodash');
 var FetchingChart = (function () {
     function FetchingChart(key, name, value, data) {
@@ -63068,7 +62708,6 @@ var FetchingChart = (function () {
         this.key = key;
         this.name = name;
         this.value = value;
-        this.data = data;
         this.data = data;
     }
     Object.defineProperty(FetchingChart.prototype, "data", {
@@ -63111,7 +62750,7 @@ var FetchingChart = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = FetchingChart;
 
-},{"lodash":54}],234:[function(require,module,exports){
+},{"lodash":54}],228:[function(require,module,exports){
 var _ = require('lodash');
 var Table = (function () {
     function Table(title, column) {
@@ -63161,7 +62800,7 @@ var Table = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Table;
 
-},{"lodash":54}],235:[function(require,module,exports){
+},{"lodash":54}],229:[function(require,module,exports){
 var constants_1 = require("../initializers/constants");
 var request = require('superagent');
 var Fetcher = (function () {
@@ -63276,7 +62915,7 @@ function fetchRaw(gender, year, area, detail, callback) {
 }
 exports.fetchRaw = fetchRaw;
 
-},{"../initializers/constants":229,"superagent":213}],236:[function(require,module,exports){
+},{"../initializers/constants":223,"superagent":213}],230:[function(require,module,exports){
 var _ = require('lodash');
 var table_1 = require("../models/table");
 var chart_set_1 = require("../models/chart-set");
@@ -63297,13 +62936,13 @@ function sliceRecordList(data, detailName) {
         var year = d.year, gender = d.gender, area = d.area;
         tableMap.forEach(function (_a) {
             var key = _a.key, name = _a.name;
-            var tip = { year: year, gender: gender, area: area };
+            var value = d[key] ? d[key].number : 0;
+            var per = d[key] ? d[key].per : 0;
+            var tip = { year: year, gender: gender, area: area, value: value, per: per };
             tip[detailName] = {
                 content: key,
                 name: name
             };
-            tip.value = d[key] ? d[key].number : 0;
-            tip.per = d[key] ? d[key].per : 0;
             result.push(tip);
         });
     });
@@ -63345,7 +62984,7 @@ function tableToChart(table) {
 }
 exports.tableToChart = tableToChart;
 
-},{"../initializers/constants":229,"../models/chart-set":232,"../models/table":234,"lodash":54}],237:[function(require,module,exports){
+},{"../initializers/constants":223,"../models/chart-set":226,"../models/table":228,"lodash":54}],231:[function(require,module,exports){
 function retrieveBaseParams(stringified) {
     var _a = stringified.split('__'), x = _a[0], xSpecifiedSrc = _a[1];
     var xSpecified = xSpecifiedSrc.split(',').map(function (v) {
@@ -63426,7 +63065,7 @@ var FetchingParams = (function () {
 })();
 exports.FetchingParams = FetchingParams;
 
-},{}],238:[function(require,module,exports){
+},{}],232:[function(require,module,exports){
 function pickEnabledFromQuery(query, name) {
     var target = query[name];
     return target && target != 'false';
@@ -63441,182 +63080,4 @@ function pickSelectedFromQuery(query, name) {
 }
 exports.pickSelectedFromQuery = pickSelectedFromQuery;
 
-},{}],239:[function(require,module,exports){
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var React = require('react');
-var eventer_1 = require('../lib/eventer');
-var fa_1 = require('../lib/fa');
-var _ = require('lodash');
-var constants_1 = require("../initializers/constants");
-function writeBaseSelector(onChange, selected) {
-    var exclusion = [];
-    for (var _i = 2; _i < arguments.length; _i++) {
-        exclusion[_i - 2] = arguments[_i];
-    }
-    return detectSelectable.apply(void 0, exclusion).map(function (_a) {
-        var key = _a.key, name = _a.name;
-        return React.createElement("label", {"key": key}, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": "radio", "value": key, "checked": _.includes(selected, key), "onChange": function () { return onChange(key); }})), React.createElement("span", {"className": "input-label"}, name));
-    });
-}
-exports.writeBaseSelector = writeBaseSelector;
-function writeSelectorSpecifier(selectorKey, onChange, selected, type) {
-    if (type === void 0) { type = 'radio'; }
-    var keyMap = _.find(constants_1.allMaps, function (_a) {
-        var key = _a.key;
-        return key == selectorKey;
-    }).value;
-    return keyMap.map(function (_a) {
-        var key = _a.key, name = _a.name;
-        return React.createElement("label", {"key": key}, React.createElement("span", {"className": "input-input"}, React.createElement("input", {"type": type, "value": key, "checked": _.includes(selected, key), "onChange": function () { return onChange(key); }})), React.createElement("span", {"className": "input-label"}, name));
-    });
-}
-exports.writeSelectorSpecifier = writeSelectorSpecifier;
-function detectSelectable() {
-    var exclusion = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        exclusion[_i - 0] = arguments[_i];
-    }
-    var base = [
-        { key: 'year', name: '年度' },
-        { key: 'gender', name: '性別' },
-        { key: 'area', name: '地域' }
-    ];
-    var addingTable = true;
-    exclusion.forEach(function (ex) {
-        if (_.includes(constants_1.tableKeys, ex)) {
-            addingTable = false;
-        }
-        else {
-            _.remove(base, function (_a) {
-                var key = _a.key;
-                return key == ex;
-            });
-        }
-    });
-    return addingTable ? base.concat(constants_1.tables) : base;
-}
-var ChartDataSelectorBase = (function (_super) {
-    __extends(ChartDataSelectorBase, _super);
-    function ChartDataSelectorBase(props) {
-        _super.call(this, props);
-        this.state = {
-            x: '',
-            y: '',
-            ySpecified: '',
-            zSpecified: ''
-        };
-    }
-    Object.defineProperty(ChartDataSelectorBase.prototype, "isAddable", {
-        get: function () {
-            var _a = this.state, x = _a.x, y = _a.y, ySpecified = _a.ySpecified, zSpecified = _a.zSpecified;
-            if (this.isRequiredRange) {
-                return y !== '' && ySpecified !== '' && zSpecified !== '';
-            }
-            else {
-                return y !== '' && ySpecified !== '';
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ChartDataSelectorBase.prototype, "isRequiredRange", {
-        get: function () {
-            var x = this.props.x || this.state.x;
-            var y = this.state.y;
-            if (y === '' || y === 'year' || x === 'year') {
-                return false;
-            }
-            return true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ChartDataSelectorBase.prototype.setX = function (key) {
-        this.setState({ x: key, y: '', ySpecified: '', zSpecified: '' });
-    };
-    ChartDataSelectorBase.prototype.setY = function (key) {
-        this.setState({ y: key, ySpecified: '', zSpecified: '' });
-    };
-    ChartDataSelectorBase.prototype.setYSpecified = function (key) {
-        this.setState({ ySpecified: key });
-    };
-    ChartDataSelectorBase.prototype.setZSpecified = function (key) {
-        this.setState({ zSpecified: key });
-    };
-    ChartDataSelectorBase.prototype.writeBase = function () {
-        var _this = this;
-        var x = this.props.x || this.state.x;
-        if (x === '') {
-            return null;
-        }
-        return React.createElement("section", {"className": "v2-chart sub-controller-container data-selector y"}, React.createElement("h1", {"className": "v2-chart sub-controller-title"}, "縦軸のカテゴリー"), writeBaseSelector(function (base) {
-            _this.setY(base);
-        }, [this.state.y], this.props.x, this.state.x));
-    };
-    ChartDataSelectorBase.prototype.writeXSelector = function () {
-        var _this = this;
-        return React.createElement("section", {"className": "v2-chart sub-controller-container data-selector x"}, React.createElement("h1", {"className": "v2-chart sub-controller-title"}, "チャートの横軸に並ぶ項目"), writeBaseSelector(function (x) {
-            _this.setX(x);
-        }, [this.state.x]));
-    };
-    ChartDataSelectorBase.prototype.writeSpecifier = function () {
-        var _this = this;
-        var _a = this.state, y = _a.y, ySpecified = _a.ySpecified;
-        if (!y) {
-            return null;
-        }
-        return React.createElement("section", {"className": "v2-chart sub-controller-container data-selector y-specifier"}, React.createElement("h1", {"className": "v2-chart sub-controller-title"}, "縦軸の値"), writeSelectorSpecifier(y, function (specified) {
-            _this.setYSpecified(specified);
-        }, [ySpecified]));
-    };
-    ChartDataSelectorBase.prototype.writeRangeSpecifier = function () {
-        var _this = this;
-        var zSpecified = this.state.zSpecified;
-        if (!this.isRequiredRange) {
-            return null;
-        }
-        return React.createElement("section", {"className": "v2-chart sub-controller-container data-selector z-specifier"}, React.createElement("h1", {"className": "v2-chart sub-controller-title"}, "時期の指定が必要です"), writeSelectorSpecifier('year', function (zSpecified) {
-            _this.setZSpecified(zSpecified);
-        }, [zSpecified]));
-    };
-    return ChartDataSelectorBase;
-})(eventer_1.Node);
-var ChartSelector = (function (_super) {
-    __extends(ChartSelector, _super);
-    function ChartSelector() {
-        _super.apply(this, arguments);
-    }
-    ChartSelector.prototype.find = function () {
-        var _a = this.state, x = _a.x, y = _a.y, ySpecified = _a.ySpecified, zSpecified = _a.zSpecified;
-        var xSpecified = constants_1.detectMap(x).map(function (d) { return d.key; });
-        this.dispatch('chart:find', { x: x, xSpecified: xSpecified, y: y, ySpecified: ySpecified, zSpecified: zSpecified });
-    };
-    ChartSelector.prototype.render = function () {
-        var _this = this;
-        return React.createElement("section", {"className": "v2-chart data-selector"}, React.createElement("section", {"className": "v2-chart data-selector"}, this.writeXSelector(), this.writeBase(), this.writeSpecifier(), this.writeRangeSpecifier(), React.createElement("section", {"className": "v2-chart data-selector submit"}, React.createElement("button", {"className": "submit", "disabled": !this.isAddable, "onClick": function () { return _this.find(); }}, React.createElement(fa_1.default, {"icon": "plus-circle"}), "チャートを表示"))));
-    };
-    return ChartSelector;
-})(ChartDataSelectorBase);
-exports.ChartSelector = ChartSelector;
-var ChartDataSelector = (function (_super) {
-    __extends(ChartDataSelector, _super);
-    function ChartDataSelector() {
-        _super.apply(this, arguments);
-    }
-    ChartDataSelector.prototype.add = function () {
-        var _a = this.state, y = _a.y, ySpecified = _a.ySpecified, zSpecified = _a.zSpecified;
-        this.dispatch('chart:add', y, ySpecified, zSpecified);
-    };
-    ChartDataSelector.prototype.render = function () {
-        var _this = this;
-        return React.createElement("section", {"className": "v2-chart data-selector"}, React.createElement("section", {"className": "v2-chart data-selector"}, this.writeBase(), this.writeSpecifier(), this.writeRangeSpecifier(), React.createElement("section", {"className": "v2-chart data-selector submit"}, React.createElement("button", {"className": "submit", "disabled": !this.isAddable, "onClick": function () { return _this.add(); }}, React.createElement(fa_1.default, {"icon": "plus-circle"}), "チャートにデータを追加"))));
-    };
-    return ChartDataSelector;
-})(ChartDataSelectorBase);
-exports.ChartDataSelector = ChartDataSelector;
-
-},{"../initializers/constants":229,"../lib/eventer":230,"../lib/fa":231,"lodash":54,"react":210}]},{},[228]);
+},{}]},{},[222]);

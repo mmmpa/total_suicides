@@ -28,17 +28,17 @@ describe ApiController, type: :request do
 
     it do
       get api_total_path(gender: '-', year: '21', area: '-')
-      expect(json.first[:number]).to eq(9306)
+      expect(json.first[:number][:number]).to eq(9306)
     end
 
     it do
       get api_age_path(gender: '-', year: '21', area: '-')
-      expect(json.first[:o0]).to eq(205)
+      expect(json.first[:o0][:number]).to eq(205)
     end
 
     it do
       get api_age_path(gender: '2', year: '21', area: '1')
-      expect(json.first[:o0]).to eq(16)
+      expect(json.first[:o0][:number]).to eq(16)
     end
   end
 end

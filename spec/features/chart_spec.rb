@@ -16,17 +16,17 @@ feature 'チャートページ' do
 
     scenario '縦軸1つ' do
       take_ss('すべて表示', 0.5)
-      expect(all('.chart-container .c3-axis-x g.tick').size).to eq(6)
+      expect(all('.chart-container .c3-axis-x g.tick').size).to eq(3)
 
       all('.x-specifier-list input')[0].click
 
       take_ss('一つ減らす', 0.5)
-      expect(all('.chart-container .c3-axis-x g.tick').size).to eq(5)
+      expect(all('.chart-container .c3-axis-x g.tick').size).to eq(2)
 
       all('.x-specifier-list input')[0].click
 
       take_ss('戻す', 0.5)
-      expect(all('.chart-container .c3-axis-x g.tick').size).to eq(6)
+      expect(all('.chart-container .c3-axis-x g.tick').size).to eq(3)
     end
 
     scenario '縦軸複数' do
@@ -35,17 +35,17 @@ feature 'チャートページ' do
       find('button.submit').click
 
       take_ss('すべて表示', 0.5)
-      expect(all('.chart-container .c3-axis-x g.tick').size).to eq(6)
+      expect(all('.chart-container .c3-axis-x g.tick').size).to eq(3)
 
       all('.x-specifier-list input')[0].click
 
       take_ss('一つ減らす', 0.5)
-      expect(all('.chart-container .c3-axis-x g.tick').size).to eq(5)
+      expect(all('.chart-container .c3-axis-x g.tick').size).to eq(2)
 
       all('.x-specifier-list input')[0].click
 
       take_ss('戻す', 0.5)
-      expect(all('.chart-container .c3-axis-x g.tick').size).to eq(6)
+      expect(all('.chart-container .c3-axis-x g.tick').size).to eq(3)
     end
   end
 
@@ -158,7 +158,7 @@ feature 'チャートページ' do
         find('.data-selector.x input[value="area"]').click
         find('.data-selector.y input[value="gender"]').click
         find('.data-selector.y-specifier input[value="0"]').click
-        find('.data-selector.z-specifier input[value="26"]').click
+        find('.data-selector.z-specifier input[value="21"]').click
         find('button.submit').click
       end
 
@@ -187,7 +187,7 @@ feature 'チャートページ' do
         take_ss('女性を選択', 0.2)
         expect(all('button.submit[disabled]').size).to eq(1)
 
-        find('.data-selector.z-specifier input[value="26"]').click
+        find('.data-selector.z-specifier input[value="21"]').click
 
         take_ss('年度を選択', 0.2)
         expect(all('button.submit[disabled]').size).to eq(0)
@@ -210,7 +210,7 @@ feature 'チャートページ' do
         take_ss('首つりを選択', 0.2)
         expect(all('button.submit[disabled]').size).to eq(1)
 
-        find('.data-selector.z-specifier input[value="26"]').click
+        find('.data-selector.z-specifier input[value="21"]').click
 
         take_ss('年度を選択', 0.2)
         expect(all('button.submit[disabled]').size).to eq(0)
@@ -229,7 +229,7 @@ feature 'チャートページ' do
         find('.data-selector.x input[value="age"]').click
         find('.data-selector.y input[value="gender"]').click
         find('.data-selector.y-specifier input[value="0"]').click
-        find('.data-selector.z-specifier input[value="26"]').click
+        find('.data-selector.z-specifier input[value="21"]').click
         find('button.submit').click
       end
 
@@ -259,7 +259,7 @@ feature 'チャートページ' do
         take_ss('女性を選択', 0.2)
         expect(all('button.submit[disabled]').size).to eq(1)
 
-        find('.data-selector.z-specifier input[value="26"]').click
+        find('.data-selector.z-specifier input[value="21"]').click
 
         take_ss('年度を選択', 0.2)
         expect(all('button.submit[disabled]').size).to eq(0)
@@ -282,7 +282,7 @@ feature 'チャートページ' do
         take_ss('北海道を選択', 0.2)
         expect(all('button.submit[disabled]').size).to eq(1)
 
-        find('.data-selector.z-specifier input[value="26"]').click
+        find('.data-selector.z-specifier input[value="21"]').click
 
         take_ss('年度を選択', 0.2)
         expect(all('button.submit[disabled]').size).to eq(0)

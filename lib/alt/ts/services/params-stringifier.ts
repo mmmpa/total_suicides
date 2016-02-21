@@ -23,6 +23,14 @@ export class ChartBase {
   }
 }
 
+interface FetchingParamsParams{
+  y:string,
+  ySpecified:string,
+  zSpecified:string,
+  src?:string,
+  chartType?:string
+}
+
 export class FetchingParams {
   x;
   y;
@@ -37,7 +45,7 @@ export class FetchingParams {
   chartType;
   src;
 
-  constructor(base:ChartBase, {y, zSpecified, ySpecified, src, chartType}) {
+  constructor(base:ChartBase, {y, zSpecified, ySpecified, src, chartType}:FetchingParamsParams) {
     this.x = base.x;
     this.y = y;
     this.zSpecified = zSpecified;

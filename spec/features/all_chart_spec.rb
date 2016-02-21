@@ -1,6 +1,6 @@
 require 'capybara_helper'
 
-feature 'チャートページ' do
+feature 'チャートページ', skip: true do
   before :each do |ex|
     ready_ss(ex, 800)
   end

@@ -2,7 +2,6 @@ import * as _ from 'lodash';
 import Table from "../models/table";
 import ChartSet from "../models/chart-set";
 import {tableMaps} from '../initializers/constants'
-import * as _ from 'lodash'
 
 let preData = null;
 let preResult = null;
@@ -22,14 +21,16 @@ export function sliceRecordList(data:any[], detailName:string) {
   data.forEach((d)=> {
     let {year, gender, area} = d;
     tableMap.forEach(({key, name})=> {
-      let tip = {year, gender, area};
+      let value = d[key] ? d[key].number : 0;
+      let per = d[key] ? d[key].per : 0;
+
+      let tip = {year, gender, area, value, per};
+
       tip[detailName] = {
         content: key,
         name
       };
 
-      tip.value = d[key] ? d[key].number : 0;
-      tip.per = d[key] ? d[key].per : 0;
       result.push(tip);
     });
   });
