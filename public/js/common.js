@@ -62009,8 +62009,8 @@ var ChartComponent = (function (_super) {
         if (!data) {
             return;
         }
-        var y = value.y, ySpecified = value.ySpecified, z = value.z, xSpecified = value.xSpecified, x = value.x;
-        var label = this.detectLabel(y, ySpecified, z);
+        var y = value.y, ySpecified = value.ySpecified, zSpecified = value.zSpecified, xSpecified = value.xSpecified, x = value.x;
+        var label = this.detectLabel(y, ySpecified, zSpecified);
         var xContentList = _.filter(data, function (d) { return _.includes(xSpecified, d[x].content); }).map(function (d) {
             return per ? d.per : d.value;
         });
@@ -62111,9 +62111,9 @@ var ChartComponent = (function (_super) {
             return null;
         }
         return charts.map(function (chart, i) {
-            var _a = chart.value, src = _a.src, gender = _a.gender, area = _a.area, year = _a.year, detailName = _a.detailName, x = _a.x, xSpecified = _a.xSpecified, y = _a.y, ySpecified = _a.ySpecified, z = _a.z, chartType = _a.chartType;
+            var _a = chart.value, src = _a.src, gender = _a.gender, area = _a.area, year = _a.year, detailName = _a.detailName, x = _a.x, xSpecified = _a.xSpecified, y = _a.y, ySpecified = _a.ySpecified, zSpecified = _a.zSpecified, chartType = _a.chartType;
             var _b = chartType == 'line' ? ['unactivated', 'activated'] : ['activated', 'unactivated'], barChartActivation = _b[0], lineChartActivation = _b[1];
-            var label = _this.detectLabel(y, ySpecified, z);
+            var label = _this.detectLabel(y, ySpecified, zSpecified);
             return React.createElement("section", {"className": "v2-chart added-chart chart", "key": "additional-" + i + "-" + chart.key}, React.createElement("div", {"className": "buttons"}, React.createElement("button", {"className": "delete", "disabled": charts.length === 1, "onClick": function () { return _this.remove(chart.name); }}, React.createElement(fa_1.default, {"icon": "trash"}))), React.createElement("div", {"className": "chart-types"}, React.createElement("button", {"className": "bar-chart " + barChartActivation, "onClick": function () { return _this.changeType(chart.name, 'bar'); }}, React.createElement(fa_1.default, {"icon": "bar-chart"})), React.createElement("button", {"className": "line-chart " + lineChartActivation, "onClick": function () { return _this.changeType(chart.name, 'line'); }}, React.createElement(fa_1.default, {"icon": "line-chart"}))), React.createElement("section", {"className": "setting"}, chart.name + "::" + label));
         });
     };
@@ -62383,14 +62383,14 @@ var ChartContext = (function (_super) {
         this.loaded = [];
         this.dispatch('link', '/v2/chart', nextQuery, true);
     };
-    ChartContext.prototype.add = function (y, ySpecified, z) {
+    ChartContext.prototype.add = function (y, ySpecified, zSpecified) {
         var query = this.props.location.query;
         var base = params_stringifier_1.retrieveBaseParams(query.base);
         var nextNumber = 1;
         while (query[("chart" + nextNumber)]) {
             nextNumber++;
         }
-        query[("chart" + nextNumber)] = new params_stringifier_1.FetchingParams(base, { y: y, ySpecified: ySpecified, z: z }).stringify();
+        query[("chart" + nextNumber)] = new params_stringifier_1.FetchingParams(base, { y: y, ySpecified: ySpecified, zSpecified: zSpecified }).stringify();
         this.dispatch('link', '/v2/chart', query);
     };
     ChartContext.prototype.remove = function (chartName) {
@@ -63076,7 +63076,7 @@ var FetchingChart = (function () {
             return this.data_;
         },
         set: function (value) {
-            var _a = this.value, x = _a.x, y = _a.y, xSpecified = _a.xSpecified, ySpecified = _a.ySpecified, z = _a.z;
+            var _a = this.value, x = _a.x, y = _a.y, xSpecified = _a.xSpecified, ySpecified = _a.ySpecified, zSpecified = _a.zSpecified;
             this.data_ = _.filter(value, function (d) {
                 return _.includes(ySpecified, d[y].content);
             });
@@ -63356,8 +63356,8 @@ function retrieveBaseParams(stringified) {
 }
 exports.retrieveBaseParams = retrieveBaseParams;
 function retrieveParams(stringified, base) {
-    var _a = stringified.split('__'), y = _a[0], ySpecified = _a[1], z = _a[2], chartType = _a[3];
-    return new FetchingParams(base, { y: y, z: z, ySpecified: ySpecified, chartType: chartType, src: stringified });
+    var _a = stringified.split('__'), y = _a[0], ySpecified = _a[1], zSpecified = _a[2], chartType = _a[3];
+    return new FetchingParams(base, { y: y, zSpecified: zSpecified, ySpecified: ySpecified, chartType: chartType, src: stringified });
 }
 exports.retrieveParams = retrieveParams;
 var ChartBase = (function () {
@@ -63375,10 +63375,10 @@ exports.ChartBase = ChartBase;
 var FetchingParams = (function () {
     function FetchingParams(base, _a) {
         var _this = this;
-        var y = _a.y, z = _a.z, ySpecified = _a.ySpecified, src = _a.src, chartType = _a.chartType;
+        var y = _a.y, zSpecified = _a.zSpecified, ySpecified = _a.ySpecified, src = _a.src, chartType = _a.chartType;
         this.x = base.x;
         this.y = y;
-        this.z = z;
+        this.zSpecified = zSpecified;
         this.xSpecified = base.xSpecified;
         this.ySpecified = ySpecified;
         this.src = src;
@@ -63409,7 +63409,7 @@ var FetchingParams = (function () {
             this.gender = '0';
         }
         if (!this.year) {
-            this.year = z;
+            this.year = zSpecified;
         }
         if (!this.detailName) {
             this.detailName = 'total';
@@ -63417,10 +63417,10 @@ var FetchingParams = (function () {
         }
     }
     FetchingParams.prototype.stringify = function () {
-        return [this.y, this.ySpecified, this.z, this.chartType].join('__');
+        return [this.y, this.ySpecified, this.zSpecified, this.chartType].join('__');
     };
     FetchingParams.prototype.stringifyAll = function () {
-        return [this.x, this.xSpecified, this.y, this.ySpecified, this.z, this.chartType].join('__');
+        return [this.x, this.xSpecified, this.y, this.ySpecified, this.zSpecified, this.chartType].join('__');
     };
     return FetchingParams;
 })();
@@ -63505,19 +63505,19 @@ var ChartDataSelectorBase = (function (_super) {
         _super.call(this, props);
         this.state = {
             x: '',
-            base: '',
-            specified: '',
-            specifiedRange: ''
+            y: '',
+            ySpecified: '',
+            zSpecified: ''
         };
     }
     Object.defineProperty(ChartDataSelectorBase.prototype, "isAddable", {
         get: function () {
-            var _a = this.state, base = _a.base, specified = _a.specified, specifiedRange = _a.specifiedRange;
+            var _a = this.state, x = _a.x, y = _a.y, ySpecified = _a.ySpecified, zSpecified = _a.zSpecified;
             if (this.isRequiredRange) {
-                return base !== '' && specified !== '' && specifiedRange !== '';
+                return y !== '' && ySpecified !== '' && zSpecified !== '';
             }
             else {
-                return base !== '' && specified !== '';
+                return y !== '' && ySpecified !== '';
             }
         },
         enumerable: true,
@@ -63526,8 +63526,8 @@ var ChartDataSelectorBase = (function (_super) {
     Object.defineProperty(ChartDataSelectorBase.prototype, "isRequiredRange", {
         get: function () {
             var x = this.props.x || this.state.x;
-            var base = this.state.base;
-            if (base === '' || base === 'year' || x === 'year') {
+            var y = this.state.y;
+            if (y === '' || y === 'year' || x === 'year') {
                 return false;
             }
             return true;
@@ -63535,6 +63535,18 @@ var ChartDataSelectorBase = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    ChartDataSelectorBase.prototype.setX = function (key) {
+        this.setState({ x: key, y: '', ySpecified: '', zSpecified: '' });
+    };
+    ChartDataSelectorBase.prototype.setY = function (key) {
+        this.setState({ y: key, ySpecified: '', zSpecified: '' });
+    };
+    ChartDataSelectorBase.prototype.setYSpecified = function (key) {
+        this.setState({ ySpecified: key });
+    };
+    ChartDataSelectorBase.prototype.setZSpecified = function (key) {
+        this.setState({ zSpecified: key });
+    };
     ChartDataSelectorBase.prototype.writeBase = function () {
         var _this = this;
         var x = this.props.x || this.state.x;
@@ -63542,38 +63554,34 @@ var ChartDataSelectorBase = (function (_super) {
             return null;
         }
         return React.createElement("section", {"className": "v2-chart sub-controller-container data-selector y"}, React.createElement("h1", {"className": "v2-chart sub-controller-title"}, "縦軸のカテゴリー"), writeBaseSelector(function (base) {
-            _this.setState({ base: base });
-        }, [this.state.base], this.props.x, this.state.x));
+            _this.setY(base);
+        }, [this.state.y], this.props.x, this.state.x));
     };
     ChartDataSelectorBase.prototype.writeXSelector = function () {
         var _this = this;
         return React.createElement("section", {"className": "v2-chart sub-controller-container data-selector x"}, React.createElement("h1", {"className": "v2-chart sub-controller-title"}, "チャートの横軸に並ぶ項目"), writeBaseSelector(function (x) {
-            _this.setState({ x: x });
+            _this.setX(x);
         }, [this.state.x]));
     };
     ChartDataSelectorBase.prototype.writeSpecifier = function () {
         var _this = this;
-        var _a = this.state, base = _a.base, specified = _a.specified;
-        if (!base) {
+        var _a = this.state, y = _a.y, ySpecified = _a.ySpecified;
+        if (!y) {
             return null;
         }
-        return React.createElement("section", {"className": "v2-chart sub-controller-container data-selector y-specifier"}, React.createElement("h1", {"className": "v2-chart sub-controller-title"}, "縦軸の値"), writeSelectorSpecifier(base, function (specified) {
-            _this.setState({ specified: specified });
-        }, [specified]));
+        return React.createElement("section", {"className": "v2-chart sub-controller-container data-selector y-specifier"}, React.createElement("h1", {"className": "v2-chart sub-controller-title"}, "縦軸の値"), writeSelectorSpecifier(y, function (specified) {
+            _this.setYSpecified(specified);
+        }, [ySpecified]));
     };
     ChartDataSelectorBase.prototype.writeRangeSpecifier = function () {
         var _this = this;
-        var _a = this.state, base = _a.base, specifiedRange = _a.specifiedRange;
+        var zSpecified = this.state.zSpecified;
         if (!this.isRequiredRange) {
             return null;
         }
-        return React.createElement("section", {"className": "v2-chart sub-controller-container data-selector z-specifier"}, React.createElement("h1", {"className": "v2-chart sub-controller-title"}, "時期の指定が必要です"), writeSelectorSpecifier('year', function (specifiedRange) {
-            _this.setState({ specifiedRange: specifiedRange });
-        }, [specifiedRange]));
-    };
-    ChartDataSelectorBase.prototype.add = function () {
-        var _a = this.state, base = _a.base, specified = _a.specified, specifiedRange = _a.specifiedRange;
-        this.dispatch('chart:add', base, specified, specifiedRange);
+        return React.createElement("section", {"className": "v2-chart sub-controller-container data-selector z-specifier"}, React.createElement("h1", {"className": "v2-chart sub-controller-title"}, "時期の指定が必要です"), writeSelectorSpecifier('year', function (zSpecified) {
+            _this.setZSpecified(zSpecified);
+        }, [zSpecified]));
     };
     return ChartDataSelectorBase;
 })(eventer_1.Node);
@@ -63583,14 +63591,9 @@ var ChartSelector = (function (_super) {
         _super.apply(this, arguments);
     }
     ChartSelector.prototype.find = function () {
-        var _a = this.state, x = _a.x, base = _a.base, specified = _a.specified, specifiedRange = _a.specifiedRange;
-        this.dispatch('chart:find', {
-            x: x,
-            xSpecified: constants_1.detectMap(x).map(function (d) { return d.key; }),
-            ySpecified: specified,
-            y: base,
-            z: specifiedRange
-        });
+        var _a = this.state, x = _a.x, y = _a.y, ySpecified = _a.ySpecified, zSpecified = _a.zSpecified;
+        var xSpecified = constants_1.detectMap(x).map(function (d) { return d.key; });
+        this.dispatch('chart:find', { x: x, xSpecified: xSpecified, y: y, ySpecified: ySpecified, zSpecified: zSpecified });
     };
     ChartSelector.prototype.render = function () {
         var _this = this;
@@ -63604,6 +63607,10 @@ var ChartDataSelector = (function (_super) {
     function ChartDataSelector() {
         _super.apply(this, arguments);
     }
+    ChartDataSelector.prototype.add = function () {
+        var _a = this.state, y = _a.y, ySpecified = _a.ySpecified, zSpecified = _a.zSpecified;
+        this.dispatch('chart:add', y, ySpecified, zSpecified);
+    };
     ChartDataSelector.prototype.render = function () {
         var _this = this;
         return React.createElement("section", {"className": "v2-chart data-selector"}, React.createElement("section", {"className": "v2-chart data-selector"}, this.writeBase(), this.writeSpecifier(), this.writeRangeSpecifier(), React.createElement("section", {"className": "v2-chart data-selector submit"}, React.createElement("button", {"className": "submit", "disabled": !this.isAddable, "onClick": function () { return _this.add(); }}, React.createElement(fa_1.default, {"icon": "plus-circle"}), "チャートにデータを追加"))));

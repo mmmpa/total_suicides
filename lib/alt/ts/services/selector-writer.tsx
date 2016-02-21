@@ -52,28 +52,44 @@ abstract class ChartDataSelectorBase extends Node<{}, {}> {
     super(props);
     this.state = {
       x: '',
-      base: '',
-      specified: '',
-      specifiedRange: ''
+      y: '',
+      ySpecified: '',
+      zSpecified: ''
     }
   }
 
   get isAddable():boolean {
-    let {base, specified, specifiedRange} = this.state;
+    let {x, y, ySpecified, zSpecified} = this.state;
     if (this.isRequiredRange) {
-      return base !== '' && specified !== '' && specifiedRange !== ''
+      return y !== '' && ySpecified !== '' && zSpecified !== '';
     } else {
-      return base !== '' && specified !== ''
+      return y !== '' && ySpecified !== '';
     }
   }
 
   get isRequiredRange():boolean {
     let x = this.props.x || this.state.x;
-    let {base} = this.state;
-    if (base === '' || base === 'year' || x === 'year') {
+    let {y} = this.state;
+    if (y === '' || y === 'year' || x === 'year') {
       return false;
     }
     return true;
+  }
+
+  setX(key) {
+    this.setState({x: key, y: '', ySpecified: '', zSpecified: ''})
+  }
+
+  setY(key) {
+    this.setState({y: key, ySpecified: '', zSpecified: ''})
+  }
+
+  setYSpecified(key) {
+    this.setState({ySpecified: key})
+  }
+
+  setZSpecified(key) {
+    this.setState({zSpecified: key})
   }
 
   writeBase() {
@@ -85,8 +101,8 @@ abstract class ChartDataSelectorBase extends Node<{}, {}> {
     return <section className="v2-chart sub-controller-container data-selector y">
       <h1 className="v2-chart sub-controller-title">縦軸のカテゴリー</h1>
       {writeBaseSelector((base)=> {
-        this.setState({base})
-        }, [this.state.base], this.props.x, this.state.x)}
+        this.setY(base)
+        }, [this.state.y], this.props.x, this.state.x)}
     </section>
   }
 
@@ -94,55 +110,45 @@ abstract class ChartDataSelectorBase extends Node<{}, {}> {
     return <section className="v2-chart sub-controller-container data-selector x">
       <h1 className="v2-chart sub-controller-title">チャートの横軸に並ぶ項目</h1>
       {writeBaseSelector((x)=> {
-        this.setState({x})
+        this.setX(x)
         }, [this.state.x])}
     </section>
   }
 
   writeSpecifier() {
-    let {base, specified} = this.state;
-    if (!base) {
+    let {y, ySpecified} = this.state;
+    if (!y) {
       return null;
     }
 
     return <section className="v2-chart sub-controller-container data-selector y-specifier">
       <h1 className="v2-chart sub-controller-title">縦軸の値</h1>
-      {writeSelectorSpecifier(base, (specified)=> {
-        this.setState({specified})
-        }, [specified])}
+      {writeSelectorSpecifier(y, (specified)=> {
+        this.setYSpecified(specified)
+        }, [ySpecified])}
     </section>
   }
 
   writeRangeSpecifier() {
-    let {base, specifiedRange} = this.state;
+    let {zSpecified} = this.state;
     if (!this.isRequiredRange) {
       return null;
     }
 
     return <section className="v2-chart sub-controller-container data-selector z-specifier">
       <h1 className="v2-chart sub-controller-title">時期の指定が必要です</h1>
-      {writeSelectorSpecifier('year', (specifiedRange)=> {
-        this.setState({specifiedRange})
-        }, [specifiedRange])}
+      {writeSelectorSpecifier('year', (zSpecified)=> {
+        this.setZSpecified(zSpecified)
+        }, [zSpecified])}
     </section>
-  }
-
-  add() {
-    let {base, specified, specifiedRange} = this.state;
-    this.dispatch('chart:add', base, specified, specifiedRange);
   }
 }
 
 export class ChartSelector extends ChartDataSelectorBase {
   find() {
-    let {x, base, specified, specifiedRange} = this.state;
-    this.dispatch('chart:find', {
-      x: x,
-      xSpecified: detectMap(x).map((d)=> d.key),
-      ySpecified: specified,
-      y: base,
-      z: specifiedRange
-    });
+    let {x, y, ySpecified, zSpecified} = this.state;
+    let xSpecified = detectMap(x).map((d)=> d.key);
+    this.dispatch('chart:find', {x, xSpecified, y, ySpecified, zSpecified});
   }
 
   render() {
@@ -164,6 +170,11 @@ export class ChartSelector extends ChartDataSelectorBase {
 }
 
 export class ChartDataSelector extends ChartDataSelectorBase {
+  add() {
+    let {y, ySpecified, zSpecified} = this.state;
+    this.dispatch('chart:add', y, ySpecified, zSpecified);
+  }
+
   render() {
     return <section className="v2-chart data-selector">
       <section className="v2-chart data-selector">

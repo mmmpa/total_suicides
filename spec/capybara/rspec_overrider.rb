@@ -2,12 +2,14 @@ module RSpec
   module Core
     class ExampleGroup
       def ready_ss(ex, strict_height = nil)
-        @ss_man = ScreenShotMan.new(self.class.metadata[:full_description].split(' '), ex.metadata[:description])
+        @ss_man = ScreenShotMan.new(ex.full_description.split(' '))
         @ss_man.clean!
         @strict_height = strict_height
       end
 
-      def take_ss(name)
+      def take_ss(name, sleeping = 0)
+        sleep sleeping
+
         height = begin
           page.evaluate_script('document.querySelector("body").clientHeight')
         rescue

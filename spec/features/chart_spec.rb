@@ -2,79 +2,297 @@ require 'capybara_helper'
 
 feature 'チャートページ' do
   before :each do |ex|
-    ready_ss(ex, 800)
+    ready_ss(ex)
   end
 
-  scenario '全てのチャート' do
-    visit '/'
-
-    queries = [
-      '.data-selector.x input',
-      '.data-selector.y input',
-      '.data-selector.y-specifier input',
-      '.data-selector.z-specifier input'
-    ]
-    combinations = []
-
-    all(queries[0]).each do |x|
-      x.click
-      all(queries[1]).each do |y|
-        y.click
-        all(queries[2])[0..3].each do |y_specifier|
-          y_specifier.click
-          z = all(queries[3])
-          if z.size != 0
-            combinations.push [x.value, y.value, y_specifier.value, z.first.value]
-          else
-            combinations.push [x.value, y.value, y_specifier.value]
-          end
-        end
-      end
-    end
-
-    combinations.each do |combination|
-      visit '/'
-      combination.zip(queries) do |value, query|
-        find(query + %{[value="#{value}"]}).click if value.present?
-      end
-      find('button.submit').click
-      sleep 0.5
-      take_ss('チャートを表示')
-    end
-  end
-
-  feature '横軸が年のチャート' do
+  feature 'チャートの横軸編集' do
     before :each do |ex|
       visit '/'
       find('.data-selector.x input[value="year"]').click
       find('.data-selector.y input[value="area"]').click
       find('.data-selector.y-specifier input[value="0"]').click
       find('button.submit').click
-
-      sleep 0.5
-      take_ss('チャートを表示')
     end
 
-    scenario 'チャートの追加' do
+    scenario '縦軸1つ' do
+      take_ss('すべて表示', 0.5)
+      expect(all('.chart-container .c3-axis-x g.tick').size).to eq(6)
 
+      all('.x-specifier-list input')[0].click
+
+      take_ss('一つ減らす', 0.5)
+      expect(all('.chart-container .c3-axis-x g.tick').size).to eq(5)
+
+      all('.x-specifier-list input')[0].click
+
+      take_ss('戻す', 0.5)
+      expect(all('.chart-container .c3-axis-x g.tick').size).to eq(6)
+    end
+
+    scenario '縦軸複数' do
+      find('.data-selector.y input[value="area"]').click
+      find('.data-selector.y-specifier input[value="1"]').click
+      find('button.submit').click
+
+      take_ss('すべて表示', 0.5)
+      expect(all('.chart-container .c3-axis-x g.tick').size).to eq(6)
+
+      all('.x-specifier-list input')[0].click
+
+      take_ss('一つ減らす', 0.5)
+      expect(all('.chart-container .c3-axis-x g.tick').size).to eq(5)
+
+      all('.x-specifier-list input')[0].click
+
+      take_ss('戻す', 0.5)
+      expect(all('.chart-container .c3-axis-x g.tick').size).to eq(6)
     end
   end
 
-  feature '横軸が年以外のチャート' do
+  feature 'チャートの削除' do
     before :each do |ex|
       visit '/'
-      find('.data-selector.x input[value="area"]').click
-      find('.data-selector.y input[value="gender"]').click
+      find('.data-selector.x input[value="year"]').click
+      find('.data-selector.y input[value="area"]').click
       find('.data-selector.y-specifier input[value="0"]').click
-      find('.data-selector.z-specifier input[value="26"]').click
       find('button.submit').click
-
-      sleep 0.5
-      take_ss('チャートを表示')
     end
 
-    scenario 'チャートの追加' do
+    scenario '削除' do
+      take_ss('縦軸が1つだと削除できない', 0.5)
+      expect(all('button.delete[disabled]').size).to eq(1)
 
+      find('.data-selector.y input[value="area"]').click
+      find('.data-selector.y-specifier input[value="1"]').click
+      find('button.submit').click
+
+      take_ss('2つ以上のチャートで削除ボタン有効化', 0.5)
+      expect(all('.chart-container .c3-legend-item').size).to eq(2)
+      expect(all('button.delete[disabled]').size).to eq(0)
+      expect(all('button.delete').size).to eq(2)
+
+      all('button.delete')[1].click
+
+      take_ss('追加された方を削除', 0.5)
+      expect(all('button.delete[disabled]').size).to eq(1)
+      expect(all('.chart-container .c3-legend-item').size).to eq(1)
+
+      find('.data-selector.y input[value="area"]').click
+      find('.data-selector.y-specifier input[value="1"]').click
+      find('button.submit').click
+
+      take_ss('再び追加', 0.5)
+      expect(all('.chart-container .c3-legend-item').size).to eq(2)
+      expect(all('button.delete[disabled]').size).to eq(0)
+      expect(all('button.delete').size).to eq(2)
+
+      all('button.delete')[0].click
+
+      take_ss('最初の縦軸を削除', 0.5)
+      expect(all('button.delete[disabled]').size).to eq(1)
+      expect(all('.chart-container .c3-legend-item').size).to eq(1)
+    end
+  end
+
+  feature 'チャートの追加' do
+    feature '横軸が年のチャートで追加' do
+      before :each do |ex|
+        visit '/'
+        find('.data-selector.x input[value="year"]').click
+        find('.data-selector.y input[value="area"]').click
+        find('.data-selector.y-specifier input[value="0"]').click
+        find('button.submit').click
+
+      end
+
+      scenario '横軸は選択肢に出ない' do
+        take_ss('横軸は選択肢に出ない', 0.5)
+        expect(all('.data-selector.x').size).to eq(0)
+        expect(all('.data-selector.y input[value="year"]').size).to eq(0)
+      end
+
+      scenario 'チャートの追加' do
+        take_ss('チャートを表示', 0.5)
+        expect(all('button.submit[disabled]').size).to eq(1)
+        expect(all('button.delete[disabled]').size).to eq(1)
+        expect(all('.chart-container .c3-legend-item').size).to eq(1)
+
+        find('.data-selector.y input[value="area"]').click
+
+        take_ss('地域を選択', 0.2)
+        expect(all('button.submit[disabled]').size).to eq(1)
+
+        find('.data-selector.y-specifier input[value="1"]').click
+
+        take_ss('北海道を選択', 0.2)
+        expect(all('button.submit[disabled]').size).to eq(0)
+
+        find('button.submit').click
+
+        take_ss('地域を追加', 0.5)
+        expect(all('button.delete[disabled]').size).to eq(0)
+        expect(all('button.delete').size).to eq(2)
+        expect(all('.chart-container .c3-legend-item').size).to eq(2)
+
+        find('.data-selector.y input[value="way"]').click
+
+        take_ss('手段を選択', 0.2)
+        expect(all('button.submit[disabled]').size).to eq(1)
+
+        find('.data-selector.y-specifier input[value="hanging"]').click
+
+        take_ss('首つりを選択', 0.2)
+        expect(all('button.submit[disabled]').size).to eq(0)
+
+        find('button.submit').click
+
+        take_ss('手段を追加', 0.5)
+        expect(all('button.delete').size).to eq(3)
+        expect(all('.chart-container .c3-legend-item').size).to eq(3)
+      end
+    end
+
+    feature '横軸が年以外のチャート（詳細以外）で追加' do
+      before :each do |ex|
+        visit '/'
+        find('.data-selector.x input[value="area"]').click
+        find('.data-selector.y input[value="gender"]').click
+        find('.data-selector.y-specifier input[value="0"]').click
+        find('.data-selector.z-specifier input[value="26"]').click
+        find('button.submit').click
+      end
+
+
+      scenario '横軸は選択肢に出ない' do
+        take_ss('横軸は選択肢に出ない', 0.5)
+        expect(all('.data-selector.x').size).to eq(0)
+        expect(all('.data-selector.y input[value="area"]').size).to eq(0)
+      end
+
+      scenario 'チャートの追加' do
+        take_ss('チャートを表示', 0.5)
+        expect(all('button.submit[disabled]').size).to eq(1)
+        expect(all('button.delete[disabled]').size).to eq(1)
+        expect(all('.chart-container .c3-legend-item').size).to eq(1)
+        expect(all('.data-selector.z-specifier').size).to eq(0)
+
+        find('.data-selector.y input[value="gender"]').click
+
+        take_ss('性別を選択、年度を要求', 0.2)
+        expect(all('button.submit[disabled]').size).to eq(1)
+        expect(all('.data-selector.z-specifier').size).to eq(1)
+
+        find('.data-selector.y-specifier input[value="1"]').click
+
+        take_ss('女性を選択', 0.2)
+        expect(all('button.submit[disabled]').size).to eq(1)
+
+        find('.data-selector.z-specifier input[value="26"]').click
+
+        take_ss('年度を選択', 0.2)
+        expect(all('button.submit[disabled]').size).to eq(0)
+
+        find('button.submit').click
+
+        take_ss('性別を追加', 0.5)
+        expect(all('button.delete[disabled]').size).to eq(0)
+        expect(all('button.delete').size).to eq(2)
+        expect(all('.chart-container .c3-legend-item').size).to eq(2)
+
+        find('.data-selector.y input[value="way"]').click
+
+        take_ss('手段を選択', 0.2)
+        expect(all('button.submit[disabled]').size).to eq(1)
+        expect(all('.data-selector.z-specifier').size).to eq(1)
+
+        find('.data-selector.y-specifier input[value="hanging"]').click
+
+        take_ss('首つりを選択', 0.2)
+        expect(all('button.submit[disabled]').size).to eq(1)
+
+        find('.data-selector.z-specifier input[value="26"]').click
+
+        take_ss('年度を選択', 0.2)
+        expect(all('button.submit[disabled]').size).to eq(0)
+
+        find('button.submit').click
+
+        take_ss('手段を追加', 0.5)
+        expect(all('button.delete').size).to eq(3)
+        expect(all('.chart-container .c3-legend-item').size).to eq(3)
+      end
+    end
+
+    feature '横軸が年以外のチャート（詳細）で追加' do
+      before :each do |ex|
+        visit '/'
+        find('.data-selector.x input[value="age"]').click
+        find('.data-selector.y input[value="gender"]').click
+        find('.data-selector.y-specifier input[value="0"]').click
+        find('.data-selector.z-specifier input[value="26"]').click
+        find('button.submit').click
+      end
+
+      scenario '横軸は選択肢に出ない' do
+        take_ss('他の詳細も選択肢に出ない', 0.5)
+        expect(all('.data-selector.x').size).to eq(0)
+        expect(all('.data-selector.y input[value="age"]').size).to eq(0)
+        expect(all('.data-selector.y input[value="housemate"]').size).to eq(0)
+        expect(all('.data-selector.y input[value="way"]').size).to eq(0)
+      end
+
+      scenario 'チャートの追加' do
+        take_ss('チャートを表示', 0.5)
+        expect(all('button.submit[disabled]').size).to eq(1)
+        expect(all('button.delete[disabled]').size).to eq(1)
+        expect(all('.chart-container .c3-legend-item').size).to eq(1)
+        expect(all('.data-selector.z-specifier').size).to eq(0)
+
+        find('.data-selector.y input[value="gender"]').click
+
+        take_ss('性別を選択、年度を要求', 0.2)
+        expect(all('button.submit[disabled]').size).to eq(1)
+        expect(all('.data-selector.z-specifier').size).to eq(1)
+
+        find('.data-selector.y-specifier input[value="1"]').click
+
+        take_ss('女性を選択', 0.2)
+        expect(all('button.submit[disabled]').size).to eq(1)
+
+        find('.data-selector.z-specifier input[value="26"]').click
+
+        take_ss('年度を選択', 0.2)
+        expect(all('button.submit[disabled]').size).to eq(0)
+
+        find('button.submit').click
+
+        take_ss('性別を追加', 0.5)
+        expect(all('button.delete[disabled]').size).to eq(0)
+        expect(all('button.delete').size).to eq(2)
+        expect(all('.chart-container .c3-legend-item').size).to eq(2)
+
+        find('.data-selector.y input[value="area"]').click
+
+        take_ss('地域を選択', 0.2)
+        expect(all('button.submit[disabled]').size).to eq(1)
+        expect(all('.data-selector.z-specifier').size).to eq(1)
+
+        find('.data-selector.y-specifier input[value="1"]').click
+
+        take_ss('北海道を選択', 0.2)
+        expect(all('button.submit[disabled]').size).to eq(1)
+
+        find('.data-selector.z-specifier input[value="26"]').click
+
+        take_ss('年度を選択', 0.2)
+        expect(all('button.submit[disabled]').size).to eq(0)
+
+        find('button.submit').click
+
+        take_ss('北海道を追加', 0.5)
+        expect(all('button.delete').size).to eq(3)
+        expect(all('.chart-container .c3-legend-item').size).to eq(3)
+      end
     end
   end
 end

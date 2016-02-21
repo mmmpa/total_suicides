@@ -9,9 +9,9 @@ export function retrieveBaseParams(stringified:string):ChartBase {
 }
 
 export function retrieveParams(stringified:string, base:ChartBase):FetchingParams {
-  let [y, ySpecified, z, chartType]= stringified.split('__');
+  let [y, ySpecified, zSpecified, chartType]= stringified.split('__');
 
-  return new FetchingParams(base, {y, z, ySpecified, chartType, src: stringified});
+  return new FetchingParams(base, {y, zSpecified, ySpecified, chartType, src: stringified});
 }
 
 export class ChartBase {
@@ -26,7 +26,7 @@ export class ChartBase {
 export class FetchingParams {
   x;
   y;
-  z;
+  zSpecified;
   xSpecified;
   ySpecified;
   gender;
@@ -37,10 +37,10 @@ export class FetchingParams {
   chartType;
   src;
 
-  constructor(base:ChartBase, {y, z, ySpecified, src, chartType}) {
+  constructor(base:ChartBase, {y, zSpecified, ySpecified, src, chartType}) {
     this.x = base.x;
     this.y = y;
-    this.z = z;
+    this.zSpecified = zSpecified;
     this.xSpecified = base.xSpecified;
     this.ySpecified = ySpecified;
     this.src = src;
@@ -74,7 +74,7 @@ export class FetchingParams {
     }
 
     if (!this.year) {
-      this.year = z
+      this.year = zSpecified
     }
 
     if (!this.detailName) {
@@ -84,10 +84,10 @@ export class FetchingParams {
   }
 
   stringify():string {
-    return [this.y, this.ySpecified, this.z, this.chartType].join('__');
+    return [this.y, this.ySpecified, this.zSpecified, this.chartType].join('__');
   }
 
   stringifyAll():string {
-    return [this.x, this.xSpecified, this.y, this.ySpecified, this.z, this.chartType].join('__');
+    return [this.x, this.xSpecified, this.y, this.ySpecified, this.zSpecified, this.chartType].join('__');
   }
 }

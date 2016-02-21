@@ -148,9 +148,9 @@ export default class ChartComponent extends Node<P,{}> {
     if (!data) {
       return;
     }
-    let {y, ySpecified, z, xSpecified, x} = value;
+    let {y, ySpecified, zSpecified, xSpecified, x} = value;
 
-    let label = this.detectLabel(y, ySpecified, z);
+    let label = this.detectLabel(y, ySpecified, zSpecified);
     let xContentList = _.filter(data, (d)=> _.includes(xSpecified, d[x].content)).map((d)=> {
       return per ? d.per : d.value;
     });
@@ -276,9 +276,9 @@ export default class ChartComponent extends Node<P,{}> {
     }
 
     return charts.map((chart:FetchingChart, i)=> {
-      let {src, gender, area, year, detailName, x, xSpecified, y, ySpecified, z, chartType} = chart.value;
+      let {src, gender, area, year, detailName, x, xSpecified, y, ySpecified, zSpecified, chartType} = chart.value;
       let [barChartActivation, lineChartActivation] = chartType == 'line' ? ['unactivated', 'activated'] : ['activated', 'unactivated'];
-      let label = this.detectLabel(y, ySpecified, z);
+      let label = this.detectLabel(y, ySpecified, zSpecified);
       return <section className="v2-chart added-chart chart" key={`additional-${i}-${chart.key}`}>
         <div className="buttons">
           <button className="delete" disabled={charts.length === 1} onClick={()=> this.remove(chart.name)}>

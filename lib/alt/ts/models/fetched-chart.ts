@@ -9,7 +9,7 @@ export default class FetchingChart {
   }
 
   set data(value:any[]) {
-    let {x, y, xSpecified, ySpecified, z} = this.value;
+    let {x, y, xSpecified, ySpecified, zSpecified} = this.value;
 
     this.data_ = _.filter(value, (d)=> {
       return _.includes(ySpecified, d[y].content);

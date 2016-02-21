@@ -134,14 +134,14 @@ export default class ChartContext extends Root<P,S> {
     this.dispatch('link', '/v2/chart', nextQuery, true);
   }
 
-  add(y, ySpecified, z) {
+  add(y, ySpecified, zSpecified) {
     let {query} = this.props.location;
     let base:ChartBase = retrieveBaseParams(query.base);
     let nextNumber = 1;
     while (query[`chart${nextNumber}`]) {
       nextNumber++;
     }
-    query[`chart${nextNumber}`] = new FetchingParams(base, {y, ySpecified, z}).stringify();
+    query[`chart${nextNumber}`] = new FetchingParams(base, {y, ySpecified, zSpecified}).stringify();
     this.dispatch('link', '/v2/chart', query);
   }
 
@@ -152,7 +152,6 @@ export default class ChartContext extends Root<P,S> {
 
     let base:ChartBase = retrieveBaseParams(query.base);
     let nextNumber = 0;
-
 
     let nextQuery = {base: base.stringify(), per: query.per};
     let nextLoaded = []
@@ -183,7 +182,7 @@ export default class ChartContext extends Root<P,S> {
     this.dispatch('link', '/v2/chart', query, true);
   }
 
-  goFinder(){
+  goFinder() {
     this.dispatch('link', '/');
   }
 
